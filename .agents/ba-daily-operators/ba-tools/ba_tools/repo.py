@@ -63,6 +63,28 @@ def resolve_repo_root(arg: str | None) -> Path:
     return Path.cwd().resolve()
 
 
+def resolve_under_root(raw: str, root: Path) -> Path:
+    """Resolve a CLI-supplied path *raw* relative to *root* (not the CWD).
+
+    Mirrors the convention already used by byte_check, extract_uc, scan_cmd,
+    and template_cmd: an absolute path is honored as-is; a relative path is
+    joined onto *root* before resolution. This keeps every path-taking command
+    consistent with the documented "paths resolve relative to --repo-root"
+    contract and removes the latent dependency on the ambient CWD (WR-01).
+
+    Args:
+        raw: the raw path string from the CLI argument.
+        root: the resolved repository root.
+
+    Returns:
+        An absolute, resolved ``Path``.
+    """
+    candidate = Path(raw)
+    if not candidate.is_absolute():
+        candidate = root / candidate
+    return candidate.resolve()
+
+
 def is_within_root(candidate: Path, root: Path) -> bool:
     """Return True if ``candidate`` is inside (or equal to) ``root``.
 

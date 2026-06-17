@@ -21,7 +21,7 @@ from ba_tools.lint import (
     check_verifiability,
 )
 from ba_tools.output import ok_json
-from ba_tools.repo import is_within_root, resolve_repo_root
+from ba_tools.repo import is_within_root, resolve_repo_root, resolve_under_root
 
 
 def register(subparsers) -> None:
@@ -59,8 +59,9 @@ def run(args) -> None:
     """
     root = resolve_repo_root(getattr(args, "repo_root", None))
 
-    # Resolve and validate requirements path (T-1-01)
-    reqs_path = Path(args.reqs).resolve()
+    # Resolve and validate requirements path (T-1-01).
+    # Relative paths resolve under --repo-root, not the CWD (WR-01).
+    reqs_path = resolve_under_root(args.reqs, root)
     if not is_within_root(reqs_path, root):
         raise BaToolsError([{
             "code": "PATH_TRAVERSAL",
@@ -77,7 +78,7 @@ def run(args) -> None:
     # Default source document (optional — rows can specify their own)
     default_source: Path | None = None
     if getattr(args, "source", None):
-        source_path = Path(args.source).resolve()
+        source_path = resolve_under_root(args.source, root)
         if not is_within_root(source_path, root):
             raise BaToolsError([{
                 "code": "PATH_TRAVERSAL",
@@ -140,7 +141,8 @@ def run(args) -> None:
         source_doc: Path | None = None
 
         if row_source:
-            candidate = Path(row_source).resolve()
+            # Resolve the row-supplied source under --repo-root, not the CWD (WR-01).
+            candidate = resolve_under_root(row_source, root)
             if is_within_root(candidate, root) and candidate.exists():
                 source_doc = candidate
             else:

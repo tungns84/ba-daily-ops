@@ -21,7 +21,7 @@ from ba_tools.lint import (
     detect_reqid_issues,
 )
 from ba_tools.output import ok_json
-from ba_tools.repo import is_within_root, resolve_repo_root
+from ba_tools.repo import is_within_root, resolve_repo_root, resolve_under_root
 
 
 # ---------------------------------------------------------------------------
@@ -135,8 +135,9 @@ def run(args) -> None:
     """
     root = resolve_repo_root(getattr(args, "repo_root", None))
 
-    # Resolve and validate the requirements file path (T-1-01)
-    reqs_path = Path(args.file).resolve()
+    # Resolve and validate the requirements file path (T-1-01).
+    # Relative paths resolve under --repo-root, not the CWD (WR-01).
+    reqs_path = resolve_under_root(args.file, root)
     if not is_within_root(reqs_path, root):
         raise BaToolsError([{
             "code": "PATH_TRAVERSAL",
@@ -184,7 +185,7 @@ def run(args) -> None:
 
     # REQ-ID stability check (TOOL-05) — only when --baseline provided
     if getattr(args, "baseline", None):
-        baseline_path = Path(args.baseline).resolve()
+        baseline_path = resolve_under_root(args.baseline, root)
         if not is_within_root(baseline_path, root):
             raise BaToolsError([{
                 "code": "PATH_TRAVERSAL",

@@ -242,6 +242,47 @@ def test_lint_requirements_ok(tmp_path):
     assert "checked" in payload
 
 
+def test_lint_requirements_relative_path_resolves_under_repo_root(tmp_path):
+    """A relative --reqs path resolves under --repo-root, not the CWD (WR-01).
+
+    The requirements file lives at the repo root; the process CWD is a
+    subdirectory. A bare relative filename must still be found because it is
+    joined onto --repo-root, matching every other path-taking command.
+    """
+    reqs_file = tmp_path / "reqs.md"
+    reqs_file.write_text(
+        "# Requirements\n\n"
+        "| ID | Statement | Source |\n"
+        "|----|-----------|--------|\n"
+        "| TOOL-01 | The system shall return JSON with ok:true on success. | SRS §3.1 |\n",
+        encoding="utf-8",
+    )
+    subdir = tmp_path / "sub"
+    subdir.mkdir()
+
+    # CWD is the subdir; pass the filename relative to repo root.
+    result = _run(["lint-requirements", "reqs.md"], repo_root=str(tmp_path), cwd=str(subdir))
+    payload = _assert_success(result, "lint-requirements relative under root")
+    assert payload["checked"] == 1
+
+
+def test_verify_relative_path_resolves_under_repo_root(tmp_path):
+    """A relative --reqs path resolves under --repo-root, not the CWD (WR-01)."""
+    reqs_file = tmp_path / "reqs.md"
+    reqs_file.write_text(
+        "# Requirements\n\n"
+        "| ID | Statement | Source |\n"
+        "|----|-----------|--------|\n"
+        "| TOOL-01 | The system shall return JSON with ok:true on success. | SRS §3.1 |\n",
+        encoding="utf-8",
+    )
+    subdir = tmp_path / "sub"
+    subdir.mkdir()
+    result = _run(["verify", "--reqs", "reqs.md"], repo_root=str(tmp_path), cwd=str(subdir))
+    payload = _assert_success(result, "verify relative under root")
+    assert "findings" in payload
+
+
 def test_lint_requirements_gfm_alignment_separators(tmp_path):
     """A table with GFM alignment separators (:---:) parses with correct headers (CR-02).
 
