@@ -10,7 +10,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 ### ba-tools CLI (TOOL)
 
 - [ ] **TOOL-01**: `ba-tools init <operator>` returns context JSON (config, routes, default_route, state)
-- [ ] **TOOL-02**: `ba-tools resolve-route <operator>` returns the static DEFAULT_ROUTE only — never infers route from free text
+- [x] **TOOL-02**: `ba-tools resolve-route <operator>` returns the static DEFAULT_ROUTE only — never infers route from free text
 - [ ] **TOOL-03**: `ba-tools state update|patch|advance` writes `.ba-ops/STATE.md` guarded by an `O_EXCL` lockfile (stale-lock reclaimed after 10s)
 - [ ] **TOOL-04**: `ba-tools lint-requirements` flags ambiguity, atomicity, grounding, verifiability, and citation issues
 - [ ] **TOOL-05**: `lint-requirements` enforces REQ-ID stability — IDs are permanent; it flags a material statement change on an existing ID (never silent renumber)
@@ -30,7 +30,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 - [ ] **GATE-01**: Quality gate runs `ba-tools verify` + `ba-critic` judgement after an agent produces an artifact
 - [ ] **GATE-02**: Confirm gate fires before any irreversible/outward step (e.g. overwriting a delivered SRS)
 - [ ] **GATE-03**: Safety gate contract defined for render/embed steps (enforced by deferred plugins): render CLI only, path-traversal + injection scan, `.png`/`.svg` extension check
-- [ ] **GATE-04**: A CI/pre-commit byte-check gate fails if any eager-loaded doc (AGENTS.md / refs) is ≥ 32,768 B (Codex truncates silently)
+- [x] **GATE-04**: A CI/pre-commit byte-check gate fails if any eager-loaded doc (AGENTS.md / refs) is ≥ 32,768 B (Codex truncates silently)
 
 ### SRS Analysis (SRS)
 
@@ -72,7 +72,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 - [ ] **CDX-01**: flat `.agents/skills/ba-*/SKILL.md` layout; frontmatter is `name` + `description` only
 - [ ] **CDX-02**: each operator has `agents/openai.yaml` with `interface.*` fields and `policy.allow_implicit_invocation: false` on the conductor and spine
 - [ ] **CDX-03**: thin workflows under `ba-core/workflows` resolve route → workflow file → follow it
-- [ ] **CDX-04**: `AGENTS.md` is Read-by-skills (not root-auto-loaded) and < 32,768 B; DEFAULT workflow < 38,000 B
+- [x] **CDX-04**: `AGENTS.md` is Read-by-skills (not root-auto-loaded) and < 32,768 B; DEFAULT workflow < 38,000 B
 - [x] **CDX-05**: `ba-tools` JSON output is terse and scannable (explicit `ok`/`failures`, no noise)
 
 ## v2 Requirements
@@ -111,7 +111,7 @@ mermaid / mockup (independent) → uc conductor.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | TOOL-01 | Phase 1 | Pending |
-| TOOL-02 | Phase 1 | Pending |
+| TOOL-02 | Phase 1 | Complete |
 | TOOL-03 | Phase 1 | Pending |
 | TOOL-04 | Phase 1 | Pending |
 | TOOL-05 | Phase 1 | Pending |
@@ -128,7 +128,7 @@ mermaid / mockup (independent) → uc conductor.
 | GATE-01 | Phase 2 | Pending |
 | GATE-02 | Phase 1 | Pending |
 | GATE-03 | Phase 5 | Pending |
-| GATE-04 | Phase 1 | Pending |
+| GATE-04 | Phase 1 | Complete |
 | SRS-01 | Phase 2 | Pending |
 | SRS-02 | Phase 2 | Pending |
 | SRS-03 | Phase 2 | Pending |
@@ -152,7 +152,7 @@ mermaid / mockup (independent) → uc conductor.
 | CDX-01 | Phase 2 | Pending |
 | CDX-02 | Phase 2 | Pending |
 | CDX-03 | Phase 2 | Pending |
-| CDX-04 | Phase 1 | Pending |
+| CDX-04 | Phase 1 | Complete |
 | CDX-05 | Phase 1 | Complete |
 
 **Coverage:**

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-06-17T12:07:22.274Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-06-17T12:16:58.002Z"
 last_activity: 2026-06-17 -- Phase 01 execution started
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 7
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-17)
 ## Current Position
 
 Phase: 01 (deterministic-ba-tools-cli-foundational-gates) — EXECUTING
-Plan: 2 of 7
+Plan: 3 of 7
 Status: Ready to execute
 Last activity: 2026-06-17 -- Phase 01 execution started
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01 P01 | 9 minutes | 3 tasks | 36 files |
+| Phase 01 P02 | 5 minutes | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Recent decisions affecting current work:
 - [Phase ?]: pyproject.toml build-backend set to setuptools.build_meta for universal compatibility
 - [Phase ?]: Package installed editable (pip install -e .[test]) so tests import ba_tools without sys.path hacks
 - [Phase ?]: Wave-0: 15 test stubs xfailed, 8 live tests pass — conftest.py and pyproject.toml not collected test files
+- [Phase ?]: resolve-route: static DEFAULT_ROUTES dict with exact key lookup only (DESIGN §11, T-1-04)
+- [Phase ?]: byte-check: strict less-than semantics (size < limit) — files at exactly 32768 bytes FAIL per Codex silent-truncation
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-17T12:07:22.267Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-06-17T12:16:57.996Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
