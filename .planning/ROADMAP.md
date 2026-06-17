@@ -71,7 +71,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. INDEX.md flags gaps (REQ-IDs with no coverage), orphans (`req_ids` that don't exist in the registry), and stale entries (source hash changed → re-run needed) against a fixture exercising all three
   5. The `ba-srs-analyze` skill ships as flat `.agents/skills/ba-srs-analyze/SKILL.md` (frontmatter `name`+`description` only) with `agents/openai.yaml` carrying `interface.*` fields and `policy.allow_implicit_invocation: false`, and its thin workflow resolves route → workflow file → follows it
 
-**Plans**: TBD
+**Plans**: 4 plans (4 waves)
+Plans:
+- [ ] 02-01-PLAN.md — Wave 1: Wave-0 prereqs — check_grounding dict-fix + scaffold traces subdir + test scaffolds (smoke/skill-schema) + F9 stability fixture
+- [ ] 02-02-PLAN.md — Wave 2: verify JSON branch (--reqs-format) + deterministic JSON→IEEE-830 render command + F1-F4 verify fixtures
+- [ ] 02-03-PLAN.md — Wave 3: trace write (D-05 record + source/statement hash, lockfile) + index update (gap/orphan/stale from traces only) + F10/F12 fixtures
+- [ ] 02-04-PLAN.md — Wave 4: ba-srs-analyze Codex skill + thin workflow (6 routes, CoVe loop) + ba-srs-writer/ba-critic prompts + gates.md + F11 fixture
 
 ### Phase 3: ba-mermaid Diagram Operator
 
@@ -123,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Deterministic ba-tools CLI + Foundational Gates | 7/7 | Complete    | 2026-06-17 |
-| 2. ba-srs-analyze + Quality Gate + Traceability Core | 0/TBD | Not started | - |
+| 2. ba-srs-analyze + Quality Gate + Traceability Core | 0/4 | Not started | - |
 | 3. ba-mermaid Diagram Operator | 0/TBD | Not started | - |
 | 4. ba-mockup Operator | 0/TBD | Not started | - |
 | 5. ba-uc Conductor + End-to-End Integration | 0/TBD | Not started | - |
