@@ -17,18 +17,20 @@ def _run_stub_command(cmd_args: list[str], repo_root: str) -> subprocess.Complet
     )
 
 
-def test_stub_command_exits_2_on_not_implemented(tmp_path):
-    """Every stub command exits 2 (BaToolsError NOT_IMPLEMENTED) before Wave 1.
+def test_error_command_exits_2(tmp_path):
+    """BaToolsError commands exit 2 with ok:false and flat JSON on stderr (TOOL-13).
 
-    Uses 'confirm' which is still a Wave-1 stub (resolve-route is now implemented in Wave 1).
+    Uses 'uc-status' on a directory with no STATE.md — a reliable error path
+    that always raises BaToolsError(NO_STATE) and exits 2.
+    (Wave-0 stub test updated in 01-06: all commands are now implemented.)
     """
-    result = _run_stub_command(["confirm"], str(tmp_path))
+    result = _run_stub_command(["uc-status"], str(tmp_path))
     assert result.returncode == 2, f"Expected exit 2, got {result.returncode}"
 
 
-def test_stub_command_stderr_is_flat_json(tmp_path):
-    """Every stub command emits flat JSON to stderr with ok:false and failures list."""
-    result = _run_stub_command(["confirm"], str(tmp_path))
+def test_error_command_stderr_is_flat_json(tmp_path):
+    """Error commands emit flat JSON to stderr with ok:false and failures list (TOOL-13, D-04)."""
+    result = _run_stub_command(["uc-status"], str(tmp_path))
     try:
         payload = json.loads(result.stderr)
     except json.JSONDecodeError as exc:
