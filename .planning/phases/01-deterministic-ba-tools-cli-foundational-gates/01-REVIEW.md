@@ -26,327 +26,208 @@ files_reviewed_list:
   - .agents/ba-daily-operators/ba-tools/ba_tools/commands/discovery_cmd.py
   - .agents/ba-daily-operators/ba-tools/ba_tools/commands/scan_cmd.py
   - .agents/ba-daily-operators/ba-tools/ba_tools/commands/confirm_cmd.py
-  - .agents/ba-daily-operators/ba-tools/pyproject.toml
-  - .agents/ba-daily-operators/ba-tools/tests/conftest.py
+  - .agents/ba-daily-operators/hooks/pre-commit
   - .agents/ba-daily-operators/ba-tools/tests/test_state.py
   - .agents/ba-daily-operators/ba-tools/tests/test_output_contract.py
-  - .agents/ba-daily-operators/ba-tools/tests/test_byte_check.py
+  - .agents/ba-daily-operators/ba-tools/tests/test_lint_reqs.py
+  - .agents/ba-daily-operators/ba-tools/tests/test_verify.py
 findings:
-  critical: 4
-  warning: 7
+  blocker: 1
+  warning: 5
   info: 4
-  total: 15
+  total: 10
 status: issues_found
 ---
 
-# Phase 01: Code Review Report
+# Phase 01: Code Review Report (Re-Review, iteration 2)
 
 **Reviewed:** 2026-06-17
 **Depth:** standard
-**Files Reviewed:** 27
+**Files Reviewed:** 23 source files + 4 test files
 **Status:** issues_found
 
 ## Summary
 
-`ba-tools` is a deterministic BA operator CLI with a strong test suite covering the
-happy-path output contract, byte-check gate, path traversal, state locking, and the
-lint/verify heuristics. The architecture is clean and the determinism boundary is
-mostly respected (no analysis/judgement in the CLI; agents own authoring).
+Adversarial re-review after the auto-fix pass that claimed to resolve the
+4 Critical + 7 Warning findings from `01-REVIEW.iter1.md`. Each prior finding was
+traced against the actual code (not the changelog), and the new fix surfaces were
+probed for regressions.
 
-However, adversarial review surfaced multiple real defects, several of which break the
-project's own hard contracts:
+**Prior-finding verification (11 traced against code):**
 
-- **The CLI output/exit-code contract is violated on at least two unhappy paths** —
-  a malformed `.ba-ops/config.json` and other un-wrapped `json.loads` / `read_text`
-  failures escape as raw Python tracebacks with **exit code 1**, not the mandated
-  JSON envelope + exit 2 (and they leak a stack trace, violating T-1-07). This was
-  reproduced live.
-- **The Markdown table parser misreads GFM alignment-separator rows** (`:---`,
-  `:---:`), promoting the separator to the header and shifting every column key.
-  This silently corrupts the lint/verify grounding, verifiability, and citation
-  checks — the core traceability spine — for any table that uses alignment colons.
-  Reproduced live.
-- **`uc-status` parses the STATE.md body table that no command ever updates**, while
-  `state advance` increments only the frontmatter `step`. The two are disconnected,
-  so `next_step` is computed from the static scaffold seed forever — the spine's
-  pipeline-position signal does not actually track progress.
-- **Two commands (`lint-requirements`, `verify`) resolve file arguments against CWD**
-  while every other path-taking command resolves against `--repo-root`. This is an
-  inconsistent path contract and a latent traversal-guard weakness; the tests hide it
-  by always passing absolute paths.
+| Prior | Claim | Verdict | Evidence |
+|-------|-------|---------|----------|
+| CR-01 | config read/parse wrapped → BaToolsError, exit 2, no traceback | FIXED | `config.py:49-69` wraps `read_text`/`json.loads`/non-dict in `BaToolsError(BAD_CONFIG)`; `__main__.py:80-98` adds a catch-all sanitized envelope. Covered by `test_malformed_config_json_exits_2_no_traceback`, `test_non_object_config_json_exits_2`. |
+| CR-02 | GFM `:---:` separators parsed in all table parsers | FIXED | `lint_reqs._parse_md_table:74` uses `^:?-+:?$` per cell; `uc_status:68` and `state_store._BODY_SEPARATOR_RE:129` use `^\|[\s:\|-]+\|$`. Header row (has letters) is correctly not classified as separator. |
+| CR-03 | state writes connected to uc-status body table | FIXED, but introduced a regression | `merge_state:241-257` + `update_pipeline_step:134-185` mutate the body table; `test_uc_status_next_step_tracks_state_progress` proves the round-trip. **But routing the body through `_serialize_state` on every write exposed a blank-line accumulation bug — see BLOCKER CR-01.** |
+| CR-04 | advance fails loudly on non-numeric step | FIXED | `state_store.py:279-289` raises `STEP_NOT_NUMERIC`; `test_state_advance_non_numeric_step_fails_loudly` asserts exit 2 + value preserved. |
+| WR-01 | lint/verify resolve under --repo-root | FIXED | `resolve_under_root` (`repo.py:50-69`) used in `lint_reqs.py:146,194` and `verify_cmd.py:64,81,145`; covered by relative-path tests. |
+| WR-02 | dead subprocess block removed | FIXED | `resolve_repo_root` (`repo.py:34-45`) has a single reachable git shell-out, no dead branch. |
+| WR-03 | docstring | FIXED | Module/function docstrings present. |
+| WR-04 | PATH_TRAVERSAL surfaced for row source | FIXED | `verify_cmd.py:149-157` emits a distinct `PATH_TRAVERSAL` before the missing-file branch; asserted by `test_verify_row_source_traversal_is_path_traversal`. |
+| WR-05/06 | escaped pipes + no-op filter | FIXED | `lint_reqs._parse_md_table:58-61` splits on `(?<!\\)\|` and unescapes; `test_lint_requirements_escaped_pipe_in_statement`. |
+| WR-07 | atomicity requires a 2nd normative verb | FIXED | `lint._CONJUNCTION_PATTERN:109-112` requires two normative verbs; verified compound flagged, noun-list and cross-sentence not flagged. |
+| IN-04 | "missing hook" | CONFIRMED FALSE POSITIVE | Hook exists at `.agents/ba-daily-operators/hooks/pre-commit`. |
 
-Note: the required-reading list references
-`.agents/ba-daily-operators/ba-tools/hooks/pre-commit`, which **does not exist** on disk
-(the `hooks/` directory is absent). It could not be reviewed.
+10 of 11 prior findings are genuinely fixed (not papered over). The CR-03 wiring
+introduced one new BLOCKER (CR-01) plus several quality findings detailed below.
+
+## Structural Findings (fallow)
+
+No `<structural_findings>` block was supplied with this review; none to report.
+
+## Narrative Findings (AI reviewer)
 
 ## Critical Issues
 
-### CR-01: Malformed `config.json` (and other unguarded reads) crash with a traceback and exit 1 — violates the CLI error contract and T-1-07
+### CR-01: STATE.md accumulates blank lines on every write — breaks the hash-provable determinism contract
 
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/config.py:44` (called from `commands/init_cmd.py:64`)
-**Issue:** `load_config` calls `json.loads(text)` with no error handling. `json.loads`
-raises `json.JSONDecodeError` (a `ValueError`) — which is **not** a `BaToolsError`, so it
-is not caught by the dispatcher in `__main__.py:72`. Reproduced live: with a malformed
-`.ba-ops/config.json`, `ba-tools init ba-uc` prints a full Python traceback to stderr and
-exits **1**. This breaks three explicit rules: (1) every error must exit 2; (2) every
-error must print the `{"ok": false, "failures": [...]}` JSON envelope; (3) T-1-07 — no
-stack traces in error output. The existing `test_no_stack_trace_in_error_output` only
-exercises the `NO_STATE` path and misses this entirely. The same class of bug exists for
-every unguarded `read_text` / `json.loads` (e.g. `init_cmd.py:70`, `uc_status.py:120`,
-`extract_uc.py:80`, `citation.py:94`, `lint_reqs.py:151`/`:199`, `verify_cmd.py:95`):
-a non-UTF-8 file or a path that becomes unreadable between the `exists()` check and the
-read will throw an uncaught `UnicodeDecodeError`/`OSError`.
+**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/state_store.py:188-202` (root cause spans `_FRONTMATTER_RE:88-90`, `_parse_state:110-119`)
+**Issue:**
+`_FRONTMATTER_RE = r"^---\r?\n(.*?)\r?\n---\r?\n(.*)"` consumes the closing
+`---\n`, so the captured body (`group(2)`) starts with the leading `\n` that
+followed the frontmatter. `_serialize_state` then re-prepends a blank line and
+only right-strips the body:
 
-**Fix:** Wrap parse/read failures and re-raise as `BaToolsError` so the dispatcher
-produces the contract envelope:
 ```python
-# config.py
-def load_config(root: Path) -> dict:
-    config_path = root / ".ba-ops" / "config.json"
-    if not config_path.exists():
-        return {}
-    try:
-        text = config_path.read_text(encoding="utf-8").strip()
-    except (OSError, UnicodeDecodeError) as exc:
-        raise BaToolsError([{"code": "BAD_CONFIG",
-                             "message": f"Could not read config.json: {exc}"}]) from exc
-    if not text:
-        return {}
-    try:
-        cfg = json.loads(text)
-    except (json.JSONDecodeError, ValueError) as exc:
-        raise BaToolsError([{"code": "BAD_CONFIG",
-                             "message": f"config.json is not valid JSON: {exc}"}]) from exc
-    if not isinstance(cfg, dict):
-        raise BaToolsError([{"code": "BAD_CONFIG",
-                             "message": "config.json must be a JSON object"}])
-    return cfg
-```
-Additionally, consider a top-level `except Exception` in `main()` that emits a generic
-sanitized `INTERNAL_ERROR` envelope + exit 2 (without the traceback) as defense-in-depth,
-so no unhandled exception can ever leak a stack trace or a non-2 exit code.
-
-### CR-02: Markdown table parser misreads GFM alignment separators — silently corrupts lint, verify, and the traceability spine
-
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/commands/lint_reqs.py:66`
-(also `uc_status.py:63`, same defect)
-**Issue:** The separator-row detector is `all(re.match(r'^-+$', c) for c in cells)`.
-GFM alignment separators (`:---`, `---:`, `:---:`) contain colons and do **not** match
-`^-+$`. Reproduced live: for a table whose separator row is `|:---|:---------:|`, the
-parser treats the **separator row as the header** (`{'id': ':---', 'statement': ':---------:'}`)
-and the real header row becomes the first data row. Every downstream lookup keyed on
-`id`, `statement`, `status`, `source`, `span`, `section` then reads from the wrong/blank
-column. Consequences: `check_grounding`, `check_verifiability`, `check_atomicity`, and
-the `citation_exists` gate all silently mis-evaluate — the requirement IDs become `:---`,
-real requirements are skipped (`if not req_id or not statement: continue`), and `verify`
-can pass a document it should fail (false negative on a gate). `uc_status._parse_pipeline_steps`
-has the analogous bug at line 63 (`^\|[-| ]+\|$` rejects `|:---|`), causing the
-column-header row to be treated as a data row. This corrupts the core REQ-ID
-traceability value the project is built on.
-**Fix:** Accept colons and spaces in separator cells:
-```python
-# lint_reqs.py — replace the separator check
-if all(re.match(r'^:?-+:?$', c) for c in cells):
-    continue
-# uc_status.py:63 — replace the separator regex
-if re.match(r"^\|[\s:|-]+\|$", stripped):
+lines.append("---")
+lines.append("")            # blank line after frontmatter
+if body:
+    lines.append(body.rstrip())   # rstrip only — body's leading "\n# State..." kept
+    lines.append("")
 ```
 
-### CR-03: `state advance` and `uc-status` operate on disconnected state — `next_step` never tracks real progress
+Because the body's own leading newline survives AND a fresh blank line is added,
+each serialize widens the gap by one line. The CR-03 fix now sends the body
+through `_serialize_state` on **every** `state update|patch|advance` (it must, to
+write the Pipeline Steps table), so the file grows on every write.
 
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/commands/uc_status.py:130-133`
-(and `state_store.py:172-183`, `state_cmd.py`)
-**Issue:** `uc-status` computes `next_step` by parsing the **Markdown body table**
-("## Pipeline Steps") via `_parse_pipeline_steps(body)`. But no command ever writes that
-body table: `merge_state` only rewrites frontmatter keys and passes `body` through
-unchanged (`state_store.py:159, 188`). `state advance` increments the frontmatter `step`
-integer (`state_store.py:182`) — a different field that `uc-status` never reads. The
-scaffold seeds the body table with every step at `pending` (`scaffold.py:128-133`).
-Net effect: after any number of `state advance`/`state update` calls, `uc-status` still
-reports `next_step = "srs-analyze"` because the seeded body never changes. The pipeline
-position — a determinism-critical, hash-provable signal on the spine — is effectively
-frozen and misreports progress. `test_uc_status_ok_after_init` only asserts the keys
-exist, never that `next_step` advances, so the suite does not catch this.
-**Fix:** Make a single source of truth. Either (a) have `uc-status` derive `next_step`
-from frontmatter the state commands actually write, or (b) have `state` commands update
-the body Pipeline Steps table under the lock. Whichever is chosen, add a test that runs
-`state` to mark a step complete and asserts `uc-status` returns the next step.
+Reproduced — 4 successive `patch` writes against a scaffold STATE.md:
 
-### CR-04: `state advance` silently resets the step counter to 1 when `step` is non-numeric
-
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/state_store.py:174-182`
-**Issue:** `advance` does `int(fm.get("step", 0))` inside a `try/except (TypeError, ValueError)`
-that falls back to `current = 0`. The `step` field is a free-form string in practice —
-the project's own tests call `state update --data '{"step": "s1"}'` and `'{"step": "writer_p1"}'`,
-and the scaffold/STATE format treats values as opaque scalars. If the current `step` is
-any non-numeric string, `advance` does **not** error — it silently discards the existing
-value and writes `step: 1`, losing pipeline position with no signal to the caller. For a
-state machine whose entire purpose is durable, no-clobber pipeline memory, a silent reset
-masquerading as an increment is a data-integrity bug.
-**Fix:** Fail loudly instead of silently resetting:
-```python
-elif action == "advance":
-    if "step" in safe_data:
-        fm["step"] = safe_data.pop("step")
-    else:
-        try:
-            current = int(fm.get("step", 0))
-        except (TypeError, ValueError) as exc:
-            raise BaToolsError([{
-                "code": "STEP_NOT_NUMERIC",
-                "message": f"Cannot advance: step is non-numeric ({fm.get('step')!r}).",
-            }]) from exc
-        fm["step"] = str(current + 1)
-    fm.update(safe_data)
 ```
+'---\nstep: 0\nnote: x3\n---\n\n\n\n\n\n# State\n\n## Pipeline Steps...'
+                              ^^^^^^^^^^ blank lines, and counting
+```
+
+This violates the project's determinism boundary: the same logical state
+serializes to a different byte stream depending on how many times it was written.
+Any SHA-256 of STATE.md (the "hash-provable" spine) drifts on every no-op write,
+and the file bloats without bound across a pipeline run. The `_serialize_state`
+fast-path is also non-idempotent, which will surface as flaky hash gates downstream.
+
+**Fix:** make serialization idempotent by stripping the body's leading newline once.
+
+```python
+# Option A — in _serialize_state:
+    if body:
+        lines.append(body.strip("\n"))   # was body.rstrip()
+        lines.append("")
+
+# Option B — in _parse_state (normalize at the boundary):
+    body = m.group(2).lstrip("\n")
+```
+
+Add a regression test asserting
+`merge_state(merge_state(s, d, "patch"), {}, "patch")` is byte-stable after the
+first write.
 
 ## Warnings
 
-### WR-01: `lint-requirements` and `verify` resolve file args against CWD, not `--repo-root` — inconsistent path contract and traversal-guard weakness
+### WR-01: `merge_state` now raises `BaToolsError` but documents only `ValueError`
 
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/commands/lint_reqs.py:137,185`
-and `.agents/ba-daily-operators/ba-tools/ba_tools/commands/verify_cmd.py:63,80`
-**Issue:** These commands do `Path(args.file).resolve()` (resolved relative to the
-process CWD) and then check `is_within_root(reqs_path, root)` against `--repo-root`.
-Every other path-taking command (`byte_check.py:45`, `extract_uc.py:62-65`,
-`scan_cmd.py:63-66`, `template_cmd.py:56-59`) resolves relative paths as
-`repo_root / raw`. Reproduced live: with `--repo-root` set to a parent and the CWD in a
-subdir, a relative `../reqs.md` resolves against CWD and is then rejected/accepted based
-on CWD position rather than repo-root — behavior diverges from the documented
-"paths resolve relative to `--repo-root`" rule (CLAUDE.md portability constraint). The
-tests mask this by always passing absolute paths and setting `cwd=` explicitly. This is
-both a consistency bug and a guard that depends on ambient CWD.
-**Fix:** Resolve relative args under `repo_root` like the other commands:
-```python
-reqs_path = Path(args.file)
-if not reqs_path.is_absolute():
-    reqs_path = root / reqs_path
-reqs_path = reqs_path.resolve()
-```
-Apply the same to `--baseline` (lint) and `--reqs`/`--source` (verify), and to the
-per-row `source` resolution in `verify_cmd.py:143`.
+**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/state_store.py:230-233, 244-256`
+**Issue:** The `Raises:` docstring lists only
+`ValueError: if action is not a recognised value`, yet the function also raises
+`BaToolsError(UNKNOWN_PIPELINE_STEP)` and `BaToolsError(MISSING_PIPELINE_STATUS)`
+(lines 245-256). `merge_state` is a reusable pure helper; an undocumented
+exception type is a latent contract trap for future callers (e.g. a non-CLI caller
+that catches only `ValueError` would leak a `BaToolsError`).
+**Fix:** Document `BaToolsError` (UNKNOWN_PIPELINE_STEP / MISSING_PIPELINE_STATUS)
+in the `Raises:` block.
 
-### WR-02: Dead, misleading subprocess block in `resolve_repo_root`
+### WR-02: `pipeline_step` directive is silently dropped when the body lacks a Pipeline Steps section
 
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/repo.py:35-48`
-**Issue:** The first `try` block spawns `sys.executable -c "<inline script>"`, captures
-the result into `result`, and never uses it. The inline script is itself broken —
-`sys.exit(...)` is called before the `print(...)`, so it could never emit the toplevel
-even if the value were read. A comment then says "Simpler approach: shell out to git
-directly", and the real working block follows. The dead block costs an unnecessary
-subprocess spawn on every invocation that omits `--repo-root` (i.e. the common case) and
-actively misleads maintainers about how root resolution works.
-**Fix:** Delete lines 35-48 entirely; keep only the direct
-`git rev-parse --show-toplevel` block (lines 50-61) and the `Path.cwd()` fallback.
+**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/state_store.py:257` → `update_pipeline_step:134-185`
+**Issue:** A valid canonical `pipeline_step` + `pipeline_status` against a STATE.md
+whose body has no `## Pipeline Steps` table (e.g. a file created by `state update`
+before scaffolding, or after manual body edits) causes `update_pipeline_step` to
+return the body unmodified while the command still reports `ok:true`. The caller
+believes the step was marked complete; `uc-status` will later disagree — a silent
+success-with-no-effect on the core traceability spine.
+**Fix:** Have `update_pipeline_step` report whether a row changed (return a flag or
+compare in/out) and raise `BaToolsError(PIPELINE_ROW_NOT_FOUND)` when a step was
+requested but no matching row existed.
 
-### WR-03: `is_within_root` docstring claims `is_relative_to()` and symlink handling it does not implement
+### WR-03: `byte-check` bypasses `resolve_under_root`, diverging from the unified path convention
 
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/repo.py:66-84`
-**Issue:** The docstring states it "Uses `Path.resolve().is_relative_to()`" and that
-"symlinks ... are handled correctly", but the implementation uses
-`candidate.resolve().relative_to(root.resolve())` in a `try/except ValueError`. The
-behavior is roughly equivalent for the in/out decision, but the docstring is wrong about
-the API used. More substantively, on Windows `Path.resolve()` of a path whose final
-component does not exist does not always canonicalize symlinks/junctions the way the
-comment implies, so the "symlinks handled correctly" claim is overstated for the
-traversal-guard threat model.
-**Fix:** Correct the docstring to describe `relative_to` + `ValueError`, and drop or
-qualify the symlink guarantee. If symlink containment is a real requirement, add an
-explicit test with a symlink/junction pointing outside the root.
+**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/commands/byte_check.py:45`
+**Issue:** Every other path-taking command was converged onto `resolve_under_root`
+(the WR-01 fix), but `byte_check` still hand-rolls `(repo_root / raw).resolve()`.
+Behaviour is currently equivalent and `is_within_root` still catches escapes, so
+this is not a security hole — but it is an inconsistent pattern that defeats the
+purpose of centralizing path resolution and will silently drift if
+`resolve_under_root` semantics change.
+**Fix:** Use `resolve_under_root(raw, repo_root)` for parity.
 
-### WR-04: `verify` per-row source resolution downgrades path-escape into a generic "not found"
+### WR-04: Absolute-or-join path block re-implemented in three more commands
 
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/commands/verify_cmd.py:142-154`
-**Issue:** When a row's `Source` column points outside the repo root, the code collapses
-"outside root" and "does not exist" into a single `SOURCE_NOT_FOUND` finding
-(`if is_within_root(...) and candidate.exists(): ... else: SOURCE_NOT_FOUND`). Elsewhere
-the codebase distinguishes `PATH_TRAVERSAL`/`PATH_ESCAPE` from `FILE_NOT_FOUND` (e.g.
-`byte_check.py`, the top-of-function checks in this same file). A row-supplied source is
-attacker-influenced data (it comes from a requirements file that may be authored by an
-agent or imported), so a traversal attempt should be surfaced as a distinct, auditable
-code, not masked as a benign missing file.
-**Fix:** Split the two conditions and emit `PATH_TRAVERSAL` when
-`not is_within_root(candidate, root)`, reserving `SOURCE_NOT_FOUND` for the
-within-root-but-absent case.
+**File:** `extract_uc.py:62-65`, `scan_cmd.py:63-66`, `template_cmd.py:56-59`
+**Issue:** `extract-uc`, `scan`, and `template` each repeat the exact
+`Path(raw); if not is_absolute(): root/raw; resolve()` block that
+`resolve_under_root` (`repo.py:50-69`) exists to own. The WR-01 fix converged only
+`lint` and `verify`. Five+ copies of a security-relevant path rule mean a future
+correctness fix (UNC paths, `~` expansion, normalization) must be applied in every
+copy or the guard diverges per-command.
+**Fix:** Replace each inline block with `resolve_under_root(raw, repo_root)`.
 
-### WR-05: Markdown table cells split on every `|` — spans/statements containing a literal pipe are silently truncated
+### WR-05: `is_within_root` Windows junction/non-existent-target gap is documented but untested
 
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/commands/lint_reqs.py:53`
-(affects `verify_cmd.py` via shared `_parse_md_table`)
-**Issue:** `_parse_md_table` does `stripped.split("|")` with no handling of escaped pipes
-(`\|`) or inline-code pipes. A requirement `Statement` or a citation `Span` that legitimately
-contains `|` (common in CLI-tooling requirements, regexes, or table-of-options text) will be
-split into extra cells, shifting all subsequent columns and corrupting the row dict. For the
-`verify` citation gate this means a span with a pipe can never match (false FAIL), and for
-lint it mis-assigns `source`/`status`. Determinism is preserved but the parse is incorrect.
-**Fix:** At minimum document the limitation and reject/normalize escaped pipes; ideally
-honor GFM `\|` escaping by splitting on unescaped pipes (e.g. `re.split(r'(?<!\\)\|', stripped)`
-then unescape `\|` → `|` per cell).
-
-### WR-06: `_parse_md_table` no-op filter is confusing dead logic
-
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/commands/lint_reqs.py:55`
-**Issue:** `cells = [c for c in cells if True]` is a no-op list comprehension with a
-comment "keep all (head/tail may be empty)". It does nothing and obscures intent — a
-reader must stop to confirm it is dead. Trivial, but in a parser that is otherwise
-security-relevant, dead logic invites misreading.
-**Fix:** Remove the line.
-
-### WR-07: `check_atomicity` conjunction regex over-matches and will flag many single-clause requirements as FAIL
-
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/lint.py:102-105,197-213`
-**Issue:** `_CONJUNCTION_PATTERN` is
-`\b(shall|must|will|should)\b[^.]*?\b(and|or)\b[^.]*?\b(shall|must|will|should|[a-z]{3,})\b`.
-The final alternative `[a-z]{3,}` matches *any* lowercase word ≥3 chars, so any normative
-sentence containing the word "and"/"or" followed by almost any word is flagged
-ATOMICITY_COMPOUND (a FAIL that gates `verify`). E.g. "The system shall log errors and
-warnings." or "The system shall accept JSON or YAML input." — both single, atomic,
-testable requirements — would FAIL the gate. Because atomicity is FAIL-class (D-07), this
-produces false gate failures on legitimate requirements, undermining trust in the gate.
-**Fix:** Tighten the pattern to require a second *normative verb* after the conjunction
-(drop the `[a-z]{3,}` escape hatch), or downgrade ATOMICITY to WARN and let an agent
-judge. Add tests for the "log errors and warnings" / "JSON or YAML" false-positive cases.
+**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/repo.py:81-100`
+**Issue:** The docstring explicitly warns that on Windows, containment of a
+non-existent target reached via a junction/symlink is "NOT guaranteed" — and there
+is no test exercising traversal through a non-existent path component on Windows,
+which is the project's primary platform (env: win32). The traversal guard is a
+stated security control (T-1-01); its weakest documented case is unverified. (The
+re-resolve of an already-resolved candidate at line 97 is harmless.)
+**Fix:** Add a Windows-targeted test that `root / "missing" / ".." / ".." / "escape.md"`
+is rejected; consider resolving the parent and appending the final component to
+harden non-existent-target containment.
 
 ## Info
 
-### IN-01: `WEASEL_WORDS` contains a duplicate entry
+### IN-01: Duplicate `"effectively"` in `WEASEL_WORDS`
 
 **File:** `.agents/ba-daily-operators/ba-tools/ba_tools/lint.py:38-39`
-**Issue:** `"effectively"` appears twice consecutively in the list. Harmless (the
-ambiguity check returns on first match) but indicates a copy-paste slip and inflates the
-list.
-**Fix:** Remove the duplicate.
+**Issue:** `"effectively"` is listed twice consecutively. Harmless (first match
+returns) but a copy/paste slip in a tuned constant list.
+**Fix:** Remove the duplicate entry.
 
-### IN-02: `check_citation_present` is defined but never called
+### IN-02: `template_cmd.register` sets `func=run` twice (dead default)
 
-**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/lint.py:243-263`
-**Issue:** `check_citation_present` is exported and documented but is not invoked by
-`lint_reqs.py` or `verify_cmd.py` (both call ambiguity/verifiability/atomicity/grounding
-only). It is also incompatible with the actual table parser, which produces flat string
-cells — `row.get("source_trace", {})` would be a string, never the `dict` the function
-branches on, so even if wired up it would be a no-op. Dead/unreachable code on the
-quality path.
-**Fix:** Either wire it into the lint/verify loop with a parser that yields structured
-`source_trace`, or remove it until that data shape exists.
+**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/commands/template_cmd.py:44-45`
+**Issue:** Both the `fill` subparser (line 44) and the parent `template` parser
+(line 45) call `set_defaults(func=run)`. The subparser is `required=True`, so the
+parent default is unreachable and the `template_action != "fill"` guard (line 52)
+can never be False via the parent path.
+**Fix:** Drop the redundant parent `set_defaults` (and optionally the now-dead
+`UNKNOWN_ACTION` guard).
 
-### IN-03: `pyproject.toml` requires `filelock>=3.29.4` but README/CLAUDE.md spec says `filelock 3.x`
+### IN-03: Stale `Timeout` re-export comment in `state_store`
 
-**File:** `.agents/ba-daily-operators/ba-tools/pyproject.toml:11`
-**Issue:** The pin `filelock>=3.29.4` is far more specific (and newer) than the documented
-`filelock 3.x` / "Python 3.8+, no sub-dependencies" guidance in CLAUDE.md. Not a bug, but
-the unexplained floor version may cause needless install friction on machines with an
-older-but-compatible 3.x already present. `pytest>=9.0` is also an aggressive floor.
-**Fix:** Either relax to `filelock>=3,<4` or add a comment explaining why `>=3.29.4` is
-required.
+**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/state_store.py:22`
+**Issue:** `Timeout` is imported with `# noqa: F401 — re-exported for state_cmd`,
+but `state_cmd.py:12` imports `Timeout` directly from `filelock`; nothing consumes
+`state_store.Timeout`. The re-export rationale is stale.
+**Fix:** Drop `Timeout` from the `state_store` import; keep `FileLock`.
 
-### IN-04: Required-reading file `hooks/pre-commit` is missing from the repo
+### IN-04: No test for UC names containing regex/Markdown metacharacters
 
-**File:** `.agents/ba-daily-operators/ba-tools/hooks/pre-commit` (does not exist)
-**Issue:** The review's required-reading list references a pre-commit hook that is not
-present on disk (`hooks/` directory absent). If a pre-commit gate (e.g. running byte-check
-or the test suite) is part of the phase's deliverable, it is missing; if it was descoped,
-the reference should be removed from planning artifacts.
-**Fix:** Confirm whether the hook is in scope. If yes, add it; if no, drop the reference.
+**File:** `.agents/ba-daily-operators/ba-tools/ba_tools/markdown_sections.py:60`
+**Issue:** Heading matching is plain string equality
+(`title_normalised == heading_normalised`), so a UC name with `.` / `*` / `(` is
+matched literally — correct, no regex-injection risk — but unguarded against a
+future refactor toward regex matching.
+**Fix:** Add an `extract-uc` test with a name like `UC-002. Export (PNG) *now*`.
 
 ---
 
