@@ -1,10 +1,11 @@
 ---
 phase: 02-ba-srs-analyze-quality-gate-traceability-core
 verified: 2026-06-18T09:00:00Z
-status: human_needed
-score: 4/5
-behavior_unverified: 1
+status: passed
+score: 5/5
+behavior_unverified: 0
 overrides_applied: 0
+uat_closed: 2026-06-18T10:15:00Z  # human/behavior items exercised end-to-end (full route; live CoVe loop converged "passed after 2"; gap/ok/orphan/stale all demonstrated) — see 02-UAT.md
 human_verification:
   - test: "Run ba-srs-analyze full route on a real source document end-to-end in Codex"
     expected: "Operator is Codex-discoverable; workflow routes to full; ba-srs-writer produces requirements.json; ba-tools verify exits 0; ba-critic runs independently; trace write + index update execute; final INDEX.md shows ok status for the slug. CoVe convergence vocabulary logged to STATE.md."
@@ -20,7 +21,7 @@ behavior_unverified_items:
 
 **Phase Goal:** Running ba-srs-analyze (routes extract/draft/lint/verify/full/iterate) on a source document produces requirements JSON with source_trace {doc, span} per stated req + SRS/BRD .md, gated by ba-tools verify; quality gate runs ba-tools verify then ba-critic CoVe (<=3 revision loops, early-exit-on-convergence); ba-tools trace write records artifact->REQ-ID mapping + statement hash; ba-tools index update rebuilds INDEX.md flagging gaps, orphans, and stale; ba-srs-analyze skill ships as flat .agents/skills/ba-srs-analyze/SKILL.md with Codex-compliant frontmatter.
 **Verified:** 2026-06-18T09:00:00Z
-**Status:** human_needed
+**Status:** passed (human verification closed via 02-UAT.md on 2026-06-18 — full route run end-to-end, live CoVe loop converged "passed after 2", gap/ok/orphan/stale all demonstrated)
 **Re-verification:** No — initial verification
 
 ---
@@ -33,11 +34,11 @@ behavior_unverified_items:
 |---|-------|--------|---------|
 | 1 | ba-srs-analyze routes (extract/draft/lint/verify/full/iterate) registered and resolve-route returns `full` as default | VERIFIED | `python -m ba_tools resolve-route ba-srs-analyze` returns `{"ok":true,"operator":"ba-srs-analyze","default_route":"full"}`. Workflow frontmatter `routes: [extract,draft,lint,verify,full,iterate]` parsed — all 6 `## Route:` sections present. |
 | 2 | ba-tools verify on requirements JSON with source_trace {doc, span} exits 0 for grounded, exits 2 for invented span | VERIFIED | F1 (clean-uc-grounded): exit 0, `{"ok":true,"checked":3}`. F2 (ungrounded-span): exit 2, CITATION_NOT_FOUND on FR-010 invented span. --reqs-format json, _validate_reqs_schema, source_trace.doc-driven citation pipeline all substantively implemented. |
-| 3 | Quality gate runs ba-tools verify then ba-critic CoVe with <=3 revision loops; early-exit-on-convergence logged "passed early" vs "passed after N" | PRESENT_BEHAVIOR_UNVERIFIED | ba-critic.md, gates.md, ba-srs-analyze.md (full route Step 5) all specify the CoVe contract in full. Convergence vocabulary defined. Independence contract encoded (analysis.md explicitly excluded from critic payload in two places). No Python unit test exercises the multi-step loop; ba-critic is an agent workflow, not Python. |
+| 3 | Quality gate runs ba-tools verify then ba-critic CoVe with <=3 revision loops; early-exit-on-convergence logged "passed early" vs "passed after N" | VERIFIED (live, UAT 2026-06-18) | Exercised end-to-end: verify exit 0 → ba-critic loop 1 (fresh context, paths-only) returned converged=false with 2 fails (ungrounded paraphrase + MISSING coverage gap — caught what verify structurally cannot) → writer re-draft → verify exit 0 → ba-critic loop 2 (fresh, no loop-1 memory) converged=true (1 warn). STATE.md logged `note: passed after 2`. Independence honored (analysis.md/SRS.md never in critic payload). Gate 3 (trace+index) ran only on convergence. See 02-UAT.md. Contract files (ba-critic.md, gates.md, ba-srs-analyze.md Step 5) match the exercised behavior. |
 | 4 | ba-tools trace write records D-05 record {kind,slug,artifact_path,source_doc,source_hash,req_ids with statement_hash}; ba-tools index update rebuilds INDEX.md with gaps, orphans, stale | VERIFIED | trace_cmd.py: full D-05 record, regex kind/slug validation, FileLock, PATH_TRAVERSAL guard. index_cmd.py: uniform-input (D-04, hyphen stem filter), srs req_id union (D-08), stale>gap>ok precedence, ## Gaps/Orphans/Stale sections. test_index.py TestGapOrphanStale: 14 tests pass (gap_detection, orphan_detection, stale_detection, sections_present). Full suite: 258 passed. |
 | 5 | ba-srs-analyze skill ships as .agents/skills/ba-srs-analyze/SKILL.md with frontmatter keys {name,description} only; openai.yaml has interface.* and policy.allow_implicit_invocation: false | VERIFIED | SKILL.md frontmatter keys: ['name', 'description'] — exactly two keys, no extras. openai.yaml top-level: ['interface','policy']. interface keys: ['display_name','short_description','default_prompt']. policy.allow_implicit_invocation: False. default_prompt references `ba-tools resolve-route ba-srs-analyze` — no fake `ba-srs-analyze --route` CLI. |
 
-**Score:** 4/5 truths verified (1 present, behavior-unverified)
+**Score:** 5/5 truths verified (truth #3 closed live via 02-UAT.md on 2026-06-18)
 
 ---
 
