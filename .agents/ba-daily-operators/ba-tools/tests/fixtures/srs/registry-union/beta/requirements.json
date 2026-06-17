@@ -1,0 +1,10 @@
+{
+  "requirements": [
+    {
+      "id": "FR-100",
+      "statement": "Beta feature: users can export data as CSV.",
+      "status": "derived",
+      "source_trace": {}
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "requirements": [
+    {
+      "id": "FR-001",
+      "statement": "Alpha feature: users can register an account.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "tests/fixtures/srs/registry-union/alpha/source.md",
+        "span": "users can register an account",
+        "section": "1. Registration"
+      }
+    }
+  ]
+}
