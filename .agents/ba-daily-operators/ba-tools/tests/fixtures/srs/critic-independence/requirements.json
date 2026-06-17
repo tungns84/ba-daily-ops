@@ -1,0 +1,35 @@
+[
+  {
+    "id": "FR-001",
+    "statement": "The system shall require users to authenticate with a username and password before allowing access to any protected resource.",
+    "classification": "FR",
+    "status": "stated",
+    "source_trace": {
+      "section": "2.1 Authentication",
+      "doc": "tests/fixtures/srs/critic-independence/source.md",
+      "span": "authenticate with a username and password before accessing"
+    }
+  },
+  {
+    "id": "FR-002",
+    "statement": "The system shall lock a user account after five consecutive failed login attempts.",
+    "classification": "FR",
+    "status": "stated",
+    "source_trace": {
+      "section": "2.1 Authentication",
+      "doc": "tests/fixtures/srs/critic-independence/source.md",
+      "span": "lock the account after five consecutive failed login attempts"
+    }
+  },
+  {
+    "id": "NFR-001",
+    "statement": "The authentication response time shall not exceed 500 milliseconds under normal load.",
+    "classification": "NFR",
+    "status": "derived",
+    "source_trace": {
+      "section": "3.1 Performance",
+      "doc": "tests/fixtures/srs/critic-independence/source.md",
+      "span": "response times must remain acceptable to users"
+    }
+  }
+]
