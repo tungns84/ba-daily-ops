@@ -195,8 +195,15 @@ def _serialize_state(fm: dict[str, Any], body: str) -> str:
         lines.append(f"{k}: {v}")
     lines.append("---")
     lines.append("")
-    if body:
-        lines.append(body.rstrip())
+    # Strip ALL leading/trailing newlines from the body so serialization is
+    # byte-idempotent (CR-01). The frontmatter regex leaves the body's leading
+    # "\n" in group(2); combined with the blank line appended above, an rstrip
+    # alone would widen the gap by one line on every write, breaking the
+    # hash-provable determinism contract. body.strip("\n") emits exactly one
+    # blank-line separator that is stable across repeated parse/serialize.
+    stripped_body = body.strip("\n")
+    if stripped_body:
+        lines.append(stripped_body)
         lines.append("")
 
     return "\n".join(lines)

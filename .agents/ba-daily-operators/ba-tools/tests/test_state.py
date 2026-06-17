@@ -9,6 +9,7 @@ Tests cover:
 - stale lock file is reclaimed and write succeeds
 """
 
+import hashlib
 import json
 import multiprocessing
 import os
@@ -18,6 +19,8 @@ import time
 from pathlib import Path
 
 import pytest
+
+from ba_tools.state_store import merge_state
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -183,6 +186,63 @@ def test_state_stale_lock_reclaimed(tmp_path):
     state_md = tmp_path / ".ba-ops" / "STATE.md"
     assert state_md.exists()
     assert "after_stale" in state_md.read_text(encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# Determinism / byte-idempotence regression (CR-01)
+# ---------------------------------------------------------------------------
+
+def test_serialize_is_byte_idempotent_on_noop_reserialize():
+    """parse -> serialize must be byte-stable on a no-op (CR-01 regression).
+
+    Routing the body through _serialize_state on every write exposed a
+    blank-line accumulation bug: the body's own leading "\\n" survived AND a
+    fresh blank line was prepended, so STATE.md grew (and its SHA-256 drifted)
+    on every no-op write — breaking the hash-provable determinism contract.
+    A second patch with no logical change MUST reproduce byte-for-byte.
+    """
+    seed = (
+        "---\nstep: 0\nnote: x\n---\n\n"
+        "# State\n\n## Pipeline Steps\n\n"
+        "| Step | Status |\n| --- | --- |\n"
+        "| srs-analyze | pending |\n"
+    )
+
+    once = merge_state(seed, {}, "patch")
+    twice = merge_state(once, {}, "patch")
+
+    assert once == twice, (
+        "No-op re-serialize must be byte-identical (CR-01).\n"
+        f"first  = {once!r}\nsecond = {twice!r}"
+    )
+    assert hashlib.sha256(once.encode("utf-8")).hexdigest() == \
+        hashlib.sha256(twice.encode("utf-8")).hexdigest(), \
+        "SHA-256 of STATE.md must not drift on a no-op write (hash-provable spine)."
+
+    # The body separation must be exactly one blank line, stable across writes.
+    assert "\n\n\n" not in once, f"Blank lines accumulated: {once!r}"
+
+
+def test_state_patch_twice_is_byte_stable_on_disk(tmp_path):
+    """Two identical CLI patches must leave STATE.md byte- and hash-identical (CR-01)."""
+    root = str(tmp_path)
+    _run_state("update", '{"step": "s1", "status": "active"}', root)
+
+    state_md = tmp_path / ".ba-ops" / "STATE.md"
+
+    assert _run_state("patch", '{"note": "n1"}', root).returncode == 0
+    first_bytes = state_md.read_bytes()
+
+    assert _run_state("patch", '{"note": "n1"}', root).returncode == 0
+    second_bytes = state_md.read_bytes()
+
+    assert first_bytes == second_bytes, (
+        "STATE.md must be byte-identical after a repeated no-op patch (CR-01).\n"
+        f"first  = {first_bytes!r}\nsecond = {second_bytes!r}"
+    )
+    assert hashlib.sha256(first_bytes).hexdigest() == \
+        hashlib.sha256(second_bytes).hexdigest(), \
+        "SHA-256 of STATE.md must be stable across repeated no-op writes."
 
 
 # ---------------------------------------------------------------------------
