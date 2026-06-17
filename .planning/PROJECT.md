@@ -21,27 +21,26 @@ appears. If everything else fails, the traceability spine must work.
 
 <!-- Shipped and confirmed valuable. -->
 
-(None yet — ship to validate)
+- [x] Determinism boundary enforced: CLI only does what a file/command/hash can prove; agents own all judgement — *Validated in Phase 1*
+- [x] Verbatim citation-exists check: a `stated` requirement's `source_trace.span` must be a real ≥12-char substring of its source doc (section-scoped, `--cite-scope document` override) — *Validated in Phase 1*
+- [x] Default-route resolution: `--route` optional, falls back to operator's `DEFAULT_ROUTE` via `resolve-route` (never infer route from free text) — *Validated in Phase 1*
+- [x] Byte budgets enforced by gate: pre-commit/CI byte-check fails when an eager-loaded doc ≥ 32,768 B — *Validated in Phase 1*
+- [x] Terse, scannable `ba-tools` JSON output: every success prints UTF-8 JSON to stdout, every `BaToolsError` exits 2 (no traceback leaks) — *Validated in Phase 1*
 
 ### Active
 
 <!-- v1 milestone scope: the daily spine. Building toward these. -->
 
-- [ ] `ba-tools` deterministic Python CLI (init, state, resolve-route, lint-requirements, verify, trace, index, uc-status, discovery, template fill, extract-uc)
-- [ ] Determinism boundary enforced: CLI only does what a file/command/hash can prove; agents own all judgement
-- [ ] Verbatim citation-exists check: a `stated` requirement's `source_trace.span` must be a real ≥12-char substring of its source doc
+- [ ] `ba-tools` deterministic Python CLI (init, state, resolve-route, lint-requirements, verify, trace, index, uc-status, discovery, template fill, extract-uc) — *core commands shipped Phase 1; `trace`/`index` land in Phase 2*
 - [ ] `ba-srs-analyze` operator: sources → atomic, grounded, verifiable requirements (JSON) + SRS/BRD `.md`
 - [ ] `ba-critic` agent: fresh-context Chain-of-Verification self-critique loop (≤3 revisions, read-only)
 - [ ] `ba-mermaid` operator: UC/requirement → Mermaid diagram, MD-inline first (`mmdc` render optional)
 - [ ] `ba-mockup` operator: requirements → UI mockup at `--fidelity html|wireframe`
 - [ ] `ba-uc` conductor: deliver ONE use case end-to-end (srs-analyze → mermaid → mockup → index) as a sequential agent loop, Quality gate between steps, resumable via `uc-status`
-- [ ] Default-route resolution: `--route` optional, falls back to operator's `DEFAULT_ROUTE` via `resolve-route` (never infer route from free text)
-- [ ] `.ba-ops/` file-state spine: PROJECT.md, REQUIREMENTS.md, INDEX.md traceability matrix, STATE.md (lockfile-guarded), config.json (absent = enabled)
+- [ ] `.ba-ops/` file-state spine: PROJECT.md, REQUIREMENTS.md, INDEX.md traceability matrix, STATE.md (lockfile-guarded), config.json (absent = enabled) — *spine scaffold + lockfile-guarded STATE shipped Phase 1; INDEX.md matrix in Phase 2*
 - [ ] `ba-tools index update`: rebuild INDEX.md, flag gaps (missing coverage), orphans (bad req_ids), stale (source-hash drift)
 - [ ] Three verification gates: Confirm (irreversible/outward), Quality (verify + ba-critic), Safety (render/embed, plugins only)
 - [ ] Codex skill layout: flat `.agents/skills/ba-*/SKILL.md` + `agents/openai.yaml`, `allow_implicit_invocation: false` on spine/conductor
-- [ ] Byte budgets honored: AGENTS.md/eager refs < 32,768 B; DEFAULT workflow < 38,000 B
-- [ ] Terse, scannable `ba-tools` JSON output (read by human in Codex chat): short JSON, explicit `ok`/`failures`, no noise
 
 ### Out of Scope
 
@@ -99,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-17 after initialization*
+*Last updated: 2026-06-17 — Phase 1 complete (deterministic `ba-tools` CLI + foundational gates; 19 REQ-IDs satisfied, 142 tests green)*
