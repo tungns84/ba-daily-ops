@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 02
 current_phase_name: ba-srs-analyze-quality-gate-traceability-core
 status: executing
-stopped_at: Phase 02 Plan 01 complete
-last_updated: "2026-06-18T00:00:00.000Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-06-17T17:58:53.854Z"
 last_activity: 2026-06-18
-last_activity_desc: Phase 02 Plan 01 executed (Wave-0 prerequisites + test scaffolding)
+last_activity_desc: Phase 02 Plan 01 executed (Wave-0 prerequisites)
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 11
-  completed_plans: 8
+  completed_plans: 9
   percent: 20
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-06-17)
 ## Current Position
 
 Phase: 02 (ba-srs-analyze-quality-gate-traceability-core) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Plan 01 complete — executing Plan 02
 Last activity: 2026-06-18 — Phase 02 Plan 01 executed (Wave-0 prerequisites)
 
@@ -63,6 +63,7 @@ Progress: [██░░░░░░░░] 20% (Phase 1 of 5 complete)
 | Phase 01 P06 | 12 minutes | 3 tasks | 14 files |
 | Phase 01 P07 | 17 minutes | 2 tasks | 4 files |
 | Phase 02 P01 | 6 | 3 tasks | 10 files |
+| Phase 02 P02 | 45m | 2 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,9 @@ Recent decisions affecting current work:
 - [Phase 02 P01]: _statement_hash normalises with strip+collapse-whitespace but NO case-fold per D-12 spec (case-sensitive drift detection in hashing.py)
 - [Phase 02 P01]: Shared ba_tools/hashing.py extracted in Wave-0 so plan 03 trace_cmd/index_cmd both import from it, eliminating circular-import risk (OpenCode MEDIUM resolved)
 - [Phase 02 P01]: test_smoke.py asserts commands by subparser choice keys not _COMMAND_MODULES list length (Codex LOW feedback resolved)
+- [Phase ?]: source_trace.doc drives citation lookup not CLI --source; source_trace dict preserved on row for dict-aware check_grounding
+- [Phase ?]: render_registry always unions ALL slugs docs never single-slug (D-08)
+- [Phase ?]: section:null in requirements.json means document-scope citation search (D-03)
 
 ### Pending Todos
 
@@ -123,6 +127,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-17T17:37:47.722Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-ba-srs-analyze-quality-gate-traceability-core/02-CONTEXT.md
+Last session: 2026-06-17T17:58:53.847Z
+Stopped at: Completed 02-02-PLAN.md
+Resume file: None

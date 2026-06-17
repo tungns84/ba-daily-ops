@@ -27,17 +27,17 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 ### Verification Gates (GATE)
 
-- [ ] **GATE-01**: Quality gate runs `ba-tools verify` + `ba-critic` judgement after an agent produces an artifact
+- [x] **GATE-01**: Quality gate runs `ba-tools verify` + `ba-critic` judgement after an agent produces an artifact
 - [x] **GATE-02**: Confirm gate fires before any irreversible/outward step (e.g. overwriting a delivered SRS)
 - [ ] **GATE-03**: Safety gate contract defined for render/embed steps (enforced by deferred plugins): render CLI only, path-traversal + injection scan, `.png`/`.svg` extension check
 - [x] **GATE-04**: A CI/pre-commit byte-check gate fails if any eager-loaded doc (AGENTS.md / refs) is ≥ 32,768 B (Codex truncates silently)
 
 ### SRS Analysis (SRS)
 
-- [ ] **SRS-01**: `ba-srs-analyze` turns sources into atomic, grounded, verifiable requirements (JSON)
+- [x] **SRS-01**: `ba-srs-analyze` turns sources into atomic, grounded, verifiable requirements (JSON)
 - [ ] **SRS-02**: `ba-srs-analyze` emits an SRS/BRD `.md`
 - [x] **SRS-03**: every `stated` requirement carries a `source_trace` `{doc, span}`
-- [ ] **SRS-04**: `ba-srs-writer` emits the quality-contract schema that `ba-tools verify` gates
+- [x] **SRS-04**: `ba-srs-writer` emits the quality-contract schema that `ba-tools verify` gates
 - [ ] **SRS-05**: `ba-critic` runs a fresh-context Chain-of-Verification loop (generate per-requirement questions → answer from source independently of the draft → return findings), ≤3 revisions, early-exit on convergence, read-only (never edits)
 - [ ] **SRS-06**: `ba-srs-analyze` supports routes extract/draft/lint/verify/full/iterate (default `full`)
 
@@ -125,14 +125,14 @@ mermaid / mockup (independent) → uc conductor.
 | TOOL-13 | Phase 1 | Complete |
 | TOOL-14 | Phase 1 | Complete |
 | TOOL-15 | Phase 1 | Complete |
-| GATE-01 | Phase 2 | Pending |
+| GATE-01 | Phase 2 | Complete |
 | GATE-02 | Phase 1 | Complete |
 | GATE-03 | Phase 5 | Pending |
 | GATE-04 | Phase 1 | Complete |
-| SRS-01 | Phase 2 | Pending |
+| SRS-01 | Phase 2 | Complete |
 | SRS-02 | Phase 2 | Pending |
 | SRS-03 | Phase 2 | Complete |
-| SRS-04 | Phase 2 | Pending |
+| SRS-04 | Phase 2 | Complete |
 | SRS-05 | Phase 2 | Pending |
 | SRS-06 | Phase 2 | Pending |
 | TRACE-01 | Phase 1 | Complete |
