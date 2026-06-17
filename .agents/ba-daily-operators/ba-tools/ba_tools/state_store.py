@@ -21,6 +21,8 @@ from typing import Any
 
 from filelock import FileLock, Timeout  # noqa: F401 — re-exported for state_cmd
 
+from ba_tools.errors import BaToolsError
+
 # Lock timeout and stale-lock threshold — both 10 seconds per D-02 / DESIGN §8
 STALE_SECONDS: int = 10
 
@@ -117,6 +119,72 @@ def _parse_state(text: str) -> tuple[dict[str, Any], str]:
     return fm, body
 
 
+# Canonical pipeline step names that may appear in the body "Pipeline Steps"
+# table. Kept in sync with uc_status.PIPELINE_STEPS (the single reader of this
+# table). A copy is held here to avoid a circular import (uc_status imports
+# from state_store).
+PIPELINE_STEPS: tuple[str, ...] = ("srs-analyze", "mermaid", "mockup", "index")
+
+# Separator-row detector for the body table (GFM alignment separators allowed).
+_BODY_SEPARATOR_RE = re.compile(r"^\|[\s:|-]+\|$")
+_PIPELINE_HEADING_RE = re.compile(r"^#+\s+Pipeline Steps", re.IGNORECASE)
+_NEXT_HEADING_RE = re.compile(r"^#+\s+")
+
+
+def update_pipeline_step(body: str, step_name: str, status: str) -> str:
+    """Return *body* with the Pipeline Steps row for *step_name* set to *status*.
+
+    Pure, deterministic string surgery — no judgement. Rewrites only the
+    Status cell (column 2) of the matching data row in the '## Pipeline Steps'
+    table; all other cells (e.g. 'Completed At') and all other lines are left
+    byte-for-byte unchanged. If the section or the named row is not found, the
+    body is returned unmodified (the caller validates *step_name* first).
+
+    This makes the body table the single source of truth that ``uc-status``
+    reads: ``state`` writes it under the STATE.md lock; ``uc-status`` reads it.
+    """
+    lines = body.splitlines(keepends=True)
+    in_section = False
+    header_skipped = False
+    out: list[str] = []
+
+    for line in lines:
+        stripped = line.strip()
+        if _PIPELINE_HEADING_RE.match(stripped):
+            in_section = True
+            header_skipped = False
+            out.append(line)
+            continue
+        if in_section and _NEXT_HEADING_RE.match(stripped):
+            in_section = False
+        if not in_section or not stripped.startswith("|"):
+            out.append(line)
+            continue
+        if _BODY_SEPARATOR_RE.match(stripped):
+            header_skipped = True
+            out.append(line)
+            continue
+        if not header_skipped:
+            # Column-header row.
+            header_skipped = True
+            out.append(line)
+            continue
+        # Data row: | step | status | ... |
+        cells = [c.strip() for c in stripped.strip("|").split("|")]
+        if cells and cells[0] == step_name:
+            if len(cells) >= 2:
+                cells[1] = status
+            else:
+                cells.append(status)
+            # Preserve the line's trailing newline (if any) exactly.
+            newline = line[len(line.rstrip("\r\n")):]
+            out.append("| " + " | ".join(cells) + " |" + newline)
+        else:
+            out.append(line)
+
+    return "".join(out)
+
+
 def _serialize_state(fm: dict[str, Any], body: str) -> str:
     """Serialize frontmatter dict + body back to STATE.md text."""
     if not fm and not body.strip():
@@ -150,6 +218,14 @@ def merge_state(existing_text: str, data: dict[str, Any], action: str) -> str:
             - ``advance``: increment the ``step`` field by 1 (or set to 1 if
               absent), then apply any extra allowlisted keys from *data*.
 
+    Reserved keys (CR-03), processed for every action:
+        ``pipeline_step`` + ``pipeline_status`` update the body "Pipeline
+        Steps" table row (the single source of truth read by ``uc-status``).
+        ``pipeline_step`` must be a canonical step name; ``pipeline_status``
+        must be a non-empty string. These keys are consumed here and are never
+        written into frontmatter. Use the ``patch`` action to mark a step
+        without discarding existing frontmatter.
+
     Returns:
         The serialized STATE.md string (YAML frontmatter + body).
 
@@ -158,7 +234,30 @@ def merge_state(existing_text: str, data: dict[str, Any], action: str) -> str:
     """
     fm, body = _parse_state(existing_text)
 
-    # Filter data to allowlisted keys only (T-1-08 security contract)
+    # Reserved body-table directive (CR-03): pipeline_step + pipeline_status
+    # update the body "Pipeline Steps" table that uc-status reads, making it the
+    # single source of truth for pipeline position. These are NOT frontmatter
+    # keys and are never written into frontmatter.
+    pipeline_step = data.get("pipeline_step")
+    pipeline_status = data.get("pipeline_status")
+    if pipeline_step is not None:
+        if pipeline_step not in PIPELINE_STEPS:
+            raise BaToolsError([{
+                "code": "UNKNOWN_PIPELINE_STEP",
+                "message": (
+                    f"pipeline_step {pipeline_step!r} is not a canonical step "
+                    f"(expected one of {list(PIPELINE_STEPS)})."
+                ),
+            }])
+        if not isinstance(pipeline_status, str) or not pipeline_status.strip():
+            raise BaToolsError([{
+                "code": "MISSING_PIPELINE_STATUS",
+                "message": "pipeline_step requires a non-empty pipeline_status string.",
+            }])
+        body = update_pipeline_step(body, pipeline_step, pipeline_status.strip())
+
+    # Filter data to allowlisted keys only (T-1-08 security contract).
+    # The reserved pipeline_* directive keys are consumed above, never written.
     safe_data = {k: v for k, v in data.items() if k in ALLOWED_KEYS}
 
     if action == "update":

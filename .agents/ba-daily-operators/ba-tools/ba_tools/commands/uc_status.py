@@ -19,9 +19,11 @@ from ba_tools.errors import BaToolsError
 from ba_tools.output import ok_json
 from ba_tools.repo import resolve_repo_root
 from ba_tools.state_store import _parse_state
+from ba_tools.state_store import PIPELINE_STEPS as _PIPELINE_STEPS
 
-# Canonical pipeline step order (DESIGN §2 — ba-uc conductor sequence)
-PIPELINE_STEPS: list[str] = ["srs-analyze", "mermaid", "mockup", "index"]
+# Canonical pipeline step order (DESIGN §2 — ba-uc conductor sequence).
+# Single source of truth lives in state_store (the writer); this is the reader.
+PIPELINE_STEPS: list[str] = list(_PIPELINE_STEPS)
 
 # Status values that mean "completed" (case-insensitive check)
 _COMPLETE_STATUSES: frozenset[str] = frozenset({"complete", "completed", "done"})

@@ -177,6 +177,50 @@ def test_uc_status_ok_after_init(tmp_path):
     assert "next_step" in payload
 
 
+def test_uc_status_next_step_tracks_state_progress(tmp_path):
+    """state pipeline_step updates the body table that uc-status reads (CR-03).
+
+    After init, next_step is the first canonical step. Marking that step
+    complete via `state patch` (reserved pipeline_step/pipeline_status keys)
+    must advance uc-status's next_step to the following step.
+    """
+    _run(["init", "ba-uc"], repo_root=str(tmp_path))
+
+    # Baseline: first incomplete step is srs-analyze.
+    payload = _assert_success(_run(["uc-status"], repo_root=str(tmp_path)), "uc-status seed")
+    assert payload["next_step"] == "srs-analyze", (
+        f"Seed next_step should be srs-analyze, got {payload['next_step']!r}"
+    )
+
+    # Mark srs-analyze complete via the reserved body-table directive.
+    mark = _run(
+        ["state", "patch", "--data",
+         '{"pipeline_step": "srs-analyze", "pipeline_status": "complete"}'],
+        repo_root=str(tmp_path),
+    )
+    _assert_success(mark, "state patch pipeline_step")
+
+    # uc-status must now advance to the next canonical step.
+    payload2 = _assert_success(_run(["uc-status"], repo_root=str(tmp_path)), "uc-status advanced")
+    assert payload2["steps"]["srs-analyze"].lower() in {"complete", "completed", "done"}
+    assert payload2["next_step"] == "mermaid", (
+        f"After marking srs-analyze complete, next_step should be mermaid, "
+        f"got {payload2['next_step']!r}"
+    )
+
+
+def test_state_unknown_pipeline_step_exits_2(tmp_path):
+    """An unknown pipeline_step name -> ok:false, UNKNOWN_PIPELINE_STEP, exit 2 (CR-03)."""
+    _run(["init", "ba-uc"], repo_root=str(tmp_path))
+    result = _run(
+        ["state", "patch", "--data",
+         '{"pipeline_step": "not-a-step", "pipeline_status": "complete"}'],
+        repo_root=str(tmp_path),
+    )
+    payload = _assert_error(result, "state UNKNOWN_PIPELINE_STEP")
+    assert any(f.get("code") == "UNKNOWN_PIPELINE_STEP" for f in payload["failures"])
+
+
 # ---------------------------------------------------------------------------
 # lint-requirements — success
 # ---------------------------------------------------------------------------

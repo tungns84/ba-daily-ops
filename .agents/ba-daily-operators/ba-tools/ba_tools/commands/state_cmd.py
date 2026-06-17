@@ -30,7 +30,11 @@ def register(subparsers) -> None:
     p.add_argument(
         "--data",
         required=True,
-        help="JSON string of key/value fields to write into STATE.md frontmatter",
+        help=(
+            "JSON string of key/value fields to write into STATE.md frontmatter. "
+            "Reserved keys pipeline_step + pipeline_status update the body "
+            "Pipeline Steps table that uc-status reads (use with 'patch')."
+        ),
     )
     p.set_defaults(func=run)
 
