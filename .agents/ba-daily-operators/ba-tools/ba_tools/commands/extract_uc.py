@@ -13,12 +13,11 @@ Errors:
 """
 
 import re
-from pathlib import Path
 
 from ba_tools.errors import BaToolsError
 from ba_tools.markdown_sections import extract
 from ba_tools.output import ok_json
-from ba_tools.repo import is_within_root, resolve_repo_root
+from ba_tools.repo import is_within_root, resolve_repo_root, resolve_under_root
 
 # UC spec:  "<file>: ## UC-NNN. <name>"
 # Groups:   (file_part)   (level_hashes)  (uc_id)            (uc_name)
@@ -58,11 +57,8 @@ def run(args) -> None:
     # Full heading text as it appears after the hashes (e.g. "UC-001. My Use Case")
     heading_text = f"{uc_id}. {uc_name}"
 
-    # Resolve the source file under repo root (T-1-01)
-    candidate = Path(file_part)
-    if not candidate.is_absolute():
-        candidate = repo_root / candidate
-    candidate = candidate.resolve()
+    # Resolve the source file under repo root (T-1-01) via the shared helper (WR-04)
+    candidate = resolve_under_root(file_part, repo_root)
 
     if not is_within_root(candidate, repo_root):
         raise BaToolsError([{

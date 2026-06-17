@@ -13,7 +13,7 @@ from pathlib import Path
 
 from ba_tools.errors import BaToolsError
 from ba_tools.output import ok_json
-from ba_tools.repo import is_within_root, resolve_repo_root
+from ba_tools.repo import is_within_root, resolve_repo_root, resolve_under_root
 
 
 def _templates_dir(repo_root: Path) -> Path:
@@ -52,11 +52,8 @@ def run(args) -> None:
     if action != "fill":
         raise BaToolsError([{"code": "UNKNOWN_ACTION", "action": action}])
 
-    # Resolve --out and guard path traversal (T-1-09)
-    out_path = Path(args.out)
-    if not out_path.is_absolute():
-        out_path = repo_root / out_path
-    out_path = out_path.resolve()
+    # Resolve --out via the shared helper, then guard path traversal (T-1-09, WR-04)
+    out_path = resolve_under_root(args.out, repo_root)
 
     if not is_within_root(out_path, repo_root):
         raise BaToolsError([{

@@ -15,11 +15,10 @@ Output on clean:
 """
 
 import re
-from pathlib import Path
 
 from ba_tools.errors import BaToolsError
 from ba_tools.output import ok_json
-from ba_tools.repo import is_within_root, resolve_repo_root
+from ba_tools.repo import resolve_repo_root, resolve_under_root
 
 # Advisory prompt-injection patterns (never block — always WARN only)
 # Each tuple: (human-readable name, compiled pattern)
@@ -59,11 +58,8 @@ def register(subparsers) -> None:
 def run(args) -> None:
     repo_root = resolve_repo_root(getattr(args, "repo_root", None))
 
-    # Resolve file path under repo root (T-1-01)
-    candidate = Path(args.scan_file)
-    if not candidate.is_absolute():
-        candidate = repo_root / candidate
-    candidate = candidate.resolve()
+    # Resolve file path under repo root (T-1-01) via the shared helper (WR-04)
+    candidate = resolve_under_root(args.scan_file, repo_root)
 
     if not candidate.exists():
         raise BaToolsError([{
