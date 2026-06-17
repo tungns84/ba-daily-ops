@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "ba-tools"
+version = "0.1.0"
+description = "Deterministic BA operator CLI"
+requires-python = ">=3.11"
+dependencies = [
+    "filelock>=3.29.4",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=9.0",
+]
+
+[project.scripts]
+ba-tools = "ba_tools.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ba_tools*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
