@@ -9,6 +9,7 @@ Exit contract (D-08):
   - exit 2  → at least one FAIL-class finding (folded lint FAIL + citation FAIL)
 """
 
+import json
 from pathlib import Path
 
 from ba_tools.citation import citation_exists
@@ -30,7 +31,13 @@ def register(subparsers) -> None:
         "verify",
         help="Run the verification gate (citation-exists, lint fold, hash-match) (TOOL-06)",
     )
-    p.add_argument("--reqs", required=True, help="Requirements file path (Markdown table)")
+    p.add_argument("--reqs", required=True, help="Requirements file path (Markdown table or JSON)")
+    p.add_argument(
+        "--reqs-format",
+        choices=["auto", "md", "json"],
+        default="auto",
+        help="Requirements format: auto (detect from extension), md, or json (default: auto)",
+    )
     p.add_argument(
         "--source",
         default=None,
@@ -43,6 +50,185 @@ def register(subparsers) -> None:
         help="Citation search scope (default: section). --cite-scope document overrides per-row.",
     )
     p.set_defaults(func=run)
+
+
+def _validate_reqs_schema(payload) -> None:
+    """Validate the parsed JSON requirements payload structure.
+
+    Raises BaToolsError with SCHEMA_INVALID when the top-level shape is wrong.
+    Raises BaToolsError with INVALID_REQUIREMENT for per-requirement violations.
+
+    Valid shape:
+      - A list of requirement objects, OR
+      - An object with a "requirements" key whose value is a list.
+
+    Per-requirement rules:
+      - Must have "id" (non-empty string)
+      - Must have "statement" (non-empty string)
+      - "status" must be in {"stated", "derived"} if present
+      - A "stated" requirement must have source_trace.span (non-empty)
+    """
+    # Normalize: accept list or {"requirements": [...]}
+    if isinstance(payload, list):
+        reqs_list = payload
+    elif isinstance(payload, dict):
+        if "requirements" not in payload:
+            raise BaToolsError([{
+                "code": "SCHEMA_INVALID",
+                "message": (
+                    "requirements.json must be a list or an object with a "
+                    "'requirements' key."
+                ),
+            }])
+        if not isinstance(payload["requirements"], list):
+            raise BaToolsError([{
+                "code": "SCHEMA_INVALID",
+                "message": (
+                    "'requirements' must be a list, not "
+                    f"{type(payload['requirements']).__name__}."
+                ),
+            }])
+        reqs_list = payload["requirements"]
+    else:
+        raise BaToolsError([{
+            "code": "SCHEMA_INVALID",
+            "message": (
+                f"requirements.json payload must be a list or object, not "
+                f"{type(payload).__name__}."
+            ),
+        }])
+
+    for idx, req in enumerate(reqs_list):
+        if not isinstance(req, dict):
+            raise BaToolsError([{
+                "code": "INVALID_REQUIREMENT",
+                "index": idx,
+                "message": f"Requirement at index {idx} must be an object.",
+            }])
+
+        req_id = req.get("id", "")
+        if not req_id or not str(req_id).strip():
+            raise BaToolsError([{
+                "code": "INVALID_REQUIREMENT",
+                "index": idx,
+                "message": f"Requirement at index {idx} is missing 'id' field.",
+            }])
+
+        statement = req.get("statement", "")
+        if not statement or not str(statement).strip():
+            raise BaToolsError([{
+                "code": "INVALID_REQUIREMENT",
+                "req_id": req_id,
+                "message": f"Requirement '{req_id}' is missing 'statement' field.",
+            }])
+
+        status = str(req.get("status", "stated")).strip().lower()
+        if status not in {"stated", "derived"}:
+            raise BaToolsError([{
+                "code": "INVALID_REQUIREMENT",
+                "req_id": req_id,
+                "message": (
+                    f"Requirement '{req_id}' has invalid status '{status}'. "
+                    "Must be 'stated' or 'derived'."
+                ),
+            }])
+
+        if status == "stated":
+            source_trace = req.get("source_trace", {})
+            if isinstance(source_trace, dict):
+                span = source_trace.get("span", "")
+            else:
+                span = str(source_trace) if source_trace else ""
+            if not span or not str(span).strip():
+                raise BaToolsError([{
+                    "code": "INVALID_REQUIREMENT",
+                    "req_id": req_id,
+                    "message": (
+                        f"Stated requirement '{req_id}' is missing source_trace.span. "
+                        "Add a >=12-char verbatim span from the cited section."
+                    ),
+                }])
+
+
+def _parse_reqs(reqs_text: str, reqs_path: Path, reqs_format: str) -> list[dict]:
+    """Dispatch to the appropriate parser based on reqs_format.
+
+    Args:
+        reqs_text: raw text content of the requirements file.
+        reqs_path: Path to the requirements file (used for format auto-detection).
+        reqs_format: "auto", "md", or "json".
+
+    Returns:
+        A list of row dicts normalized for the verify pipeline.
+        JSON rows carry: id, statement, status, span, section, source (cited doc path string),
+        AND the original source_trace dict under "source_trace" so check_grounding
+        (dict-aware after plan 02-01) reads it correctly.
+
+    Raises:
+        BaToolsError with MALFORMED_JSON if json.loads fails.
+        BaToolsError with SCHEMA_INVALID / INVALID_REQUIREMENT from _validate_reqs_schema.
+    """
+    # Resolve "auto" to concrete format
+    effective_format = reqs_format
+    if reqs_format == "auto":
+        if reqs_path.suffix.lower() == ".json":
+            effective_format = "json"
+        else:
+            effective_format = "md"
+
+    if effective_format == "md":
+        return _parse_md_table(reqs_text)
+
+    # JSON path
+    try:
+        payload = json.loads(reqs_text)
+    except (json.JSONDecodeError, ValueError) as exc:
+        raise BaToolsError([{
+            "code": "MALFORMED_JSON",
+            "message": f"Could not parse requirements.json: {exc}",
+        }]) from exc
+
+    # Schema validation before building rows
+    _validate_reqs_schema(payload)
+
+    # Normalize to list
+    if isinstance(payload, list):
+        reqs_list = payload
+    else:
+        reqs_list = payload["requirements"]
+
+    rows: list[dict] = []
+    for req in reqs_list:
+        req_id = str(req.get("id", "")).strip()
+        statement = str(req.get("statement", "")).strip()
+        status = str(req.get("status", "stated")).strip().lower()
+
+        source_trace = req.get("source_trace", {})
+        if isinstance(source_trace, dict):
+            doc = str(source_trace.get("doc", "") or "").strip()
+            span = str(source_trace.get("span", "") or "").strip()
+            raw_section = source_trace.get("section")
+            # section:null → None (document scope per D-03)
+            section = str(raw_section).strip() if raw_section is not None else None
+        else:
+            doc = str(source_trace).strip() if source_trace else ""
+            span = ""
+            section = None
+
+        row = {
+            "id": req_id,
+            "statement": statement,
+            "status": status,
+            # Flattened fields for citation pipeline
+            "source": doc,          # cited doc path string (from source_trace.doc)
+            "span": span,
+            "section": section,
+            # Preserve original source_trace dict for check_grounding (dict-aware, plan 02-01)
+            "source_trace": source_trace,
+        }
+        rows.append(row)
+
+    return rows
 
 
 def run(args) -> None:
@@ -75,7 +261,7 @@ def run(args) -> None:
             "message": f"Requirements file not found: {args.reqs}",
         }])
 
-    # Default source document (optional — rows can specify their own)
+    # Default source document (optional — rows/JSON source_trace.doc can override)
     default_source: Path | None = None
     if getattr(args, "source", None):
         source_path = resolve_under_root(args.source, root)
@@ -94,7 +280,8 @@ def run(args) -> None:
         default_source = source_path
 
     reqs_text = reqs_path.read_text(encoding="utf-8")
-    rows = _parse_md_table(reqs_text)
+    reqs_format = getattr(args, "reqs_format", "auto")
+    rows = _parse_reqs(reqs_text, reqs_path, reqs_format)
 
     findings: list[dict] = []
     checked = 0
@@ -136,16 +323,16 @@ def run(args) -> None:
             # No span column — skip citation check for this row
             continue
 
-        # Resolve source doc: row's Source column > default_source
+        # Resolve source doc: for JSON rows, source_trace.doc takes priority.
+        # For Markdown rows, row["source"] is the Source column value.
+        # In both cases the "source" key on the row carries the cited doc path.
+        # CLI --source is the fallback ONLY when the row supplies no doc.
         row_source = row.get("source", "").strip()
         source_doc: Path | None = None
 
         if row_source:
-            # Resolve the row-supplied source under --repo-root, not the CWD (WR-01).
+            # Resolve the row-supplied source under --repo-root (WR-01).
             candidate = resolve_under_root(row_source, root)
-            # A row-supplied source is attacker-influenced data: surface a
-            # traversal attempt as its own auditable code, distinct from a
-            # benign missing file (WR-04).
             if not is_within_root(candidate, root):
                 findings.append({
                     "severity": "fail",
@@ -179,8 +366,12 @@ def run(args) -> None:
             })
             continue
 
-        # Section from row's Section column
-        section = row.get("section", "").strip() or None
+        # Section from row's section field (may be None for document-scope, D-03)
+        section = row.get("section")
+        # Normalize empty string to None (both trigger document-scope in citation_exists)
+        if section is not None and not str(section).strip():
+            section = None
+
         cite_scope = getattr(args, "cite_scope", "section")
 
         found = citation_exists(source_doc, span, section, cite_scope=cite_scope)
