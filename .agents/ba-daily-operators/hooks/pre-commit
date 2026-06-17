@@ -1,0 +1,64 @@
+#!/usr/bin/env sh
+# ba-daily-operators pre-commit hook — byte-check gate (GATE-04 layer 2, D-05)
+#
+# Checks staged AGENTS.md and eager-ref docs against the Codex 32768 B limit.
+# Blocks the commit if any checked file >= 32768 bytes.
+#
+# Design decisions (D-05, D-06):
+#   - Resolves Python via the interpreter on PATH (no hard-coded machine path)
+#   - Degrades gracefully when ba_tools is not importable (skip notice, no hard-block)
+#   - ba-tools byte-check subcommand is the source of truth for the limit (D-06)
+#   - Hook enforces the limit at commit time (layer 2); the subcommand enforces it
+#     during operator execution (layer 1)
+#
+# Install:
+#   cp .agents/ba-daily-operators/hooks/pre-commit .git/hooks/pre-commit
+#   chmod +x .git/hooks/pre-commit
+# Or symlink:
+#   ln -sf ../../.agents/ba-daily-operators/hooks/pre-commit .git/hooks/pre-commit
+
+set -e
+
+# Resolve repo root for --repo-root argument
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Collect staged eager-load docs:
+#   - AGENTS.md at any depth
+#   - Any .md file directly under .agents/ paths (eager-refs pattern)
+STAGED_DOCS=""
+while IFS= read -r staged_file; do
+    case "$staged_file" in
+        AGENTS.md|*/AGENTS.md)
+            STAGED_DOCS="${STAGED_DOCS} ${staged_file}"
+            ;;
+    esac
+done < <(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || true)
+
+# If no eager docs are staged, nothing to check — pass immediately
+if [ -z "$STAGED_DOCS" ]; then
+    exit 0
+fi
+
+# Verify ba_tools is importable; if not, skip gracefully (D-06)
+# The subcommand is the source of truth — the hook is the enforcement layer
+if ! python -c "import ba_tools" 2>/dev/null; then
+    echo "[ba-tools pre-commit] SKIP: ba_tools package not importable — byte-check skipped." >&2
+    echo "  Install with: pip install -e .agents/ba-daily-operators/ba-tools" >&2
+    exit 0
+fi
+
+# Run byte-check on all staged eager docs
+# shellcheck disable=SC2086
+BYTE_CHECK_RESULT=0
+python -m ba_tools byte-check $STAGED_DOCS \
+    --repo-root "$REPO_ROOT" \
+    2>&1 || BYTE_CHECK_RESULT=$?
+
+if [ "$BYTE_CHECK_RESULT" -ne 0 ]; then
+    echo "" >&2
+    echo "[ba-tools pre-commit] BLOCKED: One or more staged docs exceed the 32768 B Codex limit." >&2
+    echo "  Reduce file size or split the document before committing." >&2
+    exit 1
+fi
+
+exit 0
