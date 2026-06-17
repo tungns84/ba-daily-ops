@@ -231,7 +231,8 @@ def check_grounding(req_id: str, row: dict) -> dict | None:
     if status not in {"stated", ""}:
         return None
 
-    source_trace = row.get("source_trace", "").strip()
+    _st = row.get("source_trace", "")
+    source_trace = _st.get("doc", "").strip() if isinstance(_st, dict) else _st.strip()
     source = row.get("source", "").strip()
 
     if not source_trace and not source:

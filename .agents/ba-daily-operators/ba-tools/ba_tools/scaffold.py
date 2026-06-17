@@ -154,7 +154,7 @@ _SEED_FILES: list[tuple[str, str]] = [
 ]
 
 # Subdirectories to create (empty, for later operator writes).
-_SUBDIRS: list[str] = ["srs", "mermaid", "mockup", "backlog", "plugins"]
+_SUBDIRS: list[str] = ["srs", "mermaid", "mockup", "backlog", "plugins", "traces"]
 
 
 def ensure_scaffold(root: Path) -> dict:

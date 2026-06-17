@@ -290,3 +290,70 @@ def test_no_baseline_skips_stability_check(tmp_path):
     assert len(stability_findings) == 0, (
         f"Expected no stability findings without --baseline; got {stability_findings}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Task 1 — Phase 2 additions: dict source_trace compat + scaffold traces dir
+# ---------------------------------------------------------------------------
+
+
+def test_grounding_dict_compat():
+    """check_grounding handles dict source_trace without AttributeError.
+
+    Three cases:
+    1. dict with non-empty 'doc' -> grounded (no finding)
+    2. dict with empty 'doc' -> GROUNDING_MISSING
+    3. string source_trace (Phase-1 Markdown path) -> existing behaviour preserved
+    """
+    from ba_tools.lint import check_grounding
+
+    # Case 1: dict with non-empty doc — grounded, no finding
+    row_with_doc = {"source_trace": {"doc": "docs/design.md", "span": "some verbatim text here"}, "status": "stated"}
+    result = check_grounding("FR-001", row_with_doc)
+    assert result is None, (
+        f"Expected no finding when source_trace dict has non-empty 'doc'; got {result}"
+    )
+
+    # Case 2: dict with empty doc — GROUNDING_MISSING
+    row_empty_doc = {"source_trace": {"doc": "", "span": ""}, "status": "stated"}
+    result = check_grounding("FR-002", row_empty_doc)
+    assert result is not None, (
+        "Expected GROUNDING_MISSING finding when source_trace dict has empty 'doc'"
+    )
+    assert result.get("code") == "GROUNDING_MISSING", (
+        f"Expected GROUNDING_MISSING code; got {result.get('code')}"
+    )
+
+    # Case 3: dict absent entirely (no 'doc' key) — GROUNDING_MISSING
+    row_no_doc = {"source_trace": {}, "status": "stated"}
+    result = check_grounding("FR-003", row_no_doc)
+    assert result is not None, (
+        "Expected GROUNDING_MISSING finding when source_trace dict has no 'doc' key"
+    )
+    assert result.get("code") == "GROUNDING_MISSING"
+
+    # Case 4: string source_trace (Phase-1 behaviour preserved)
+    row_string = {"source_trace": "docs/srs.md", "status": "stated"}
+    result = check_grounding("FR-004", row_string)
+    assert result is None, (
+        f"Expected no finding when source_trace is a non-empty string; got {result}"
+    )
+
+    # Case 5: empty string source_trace (Phase-1 behaviour preserved)
+    row_empty_str = {"source_trace": "", "status": "stated"}
+    result = check_grounding("FR-005", row_empty_str)
+    assert result is not None, (
+        "Expected GROUNDING_MISSING when source_trace is an empty string"
+    )
+
+
+def test_scaffold_creates_traces_subdir(tmp_path):
+    """ensure_scaffold creates a .ba-ops/traces/ subdirectory (Wave-0 prerequisite)."""
+    from ba_tools.scaffold import ensure_scaffold
+
+    ensure_scaffold(tmp_path)
+    traces_dir = tmp_path / ".ba-ops" / "traces"
+    assert traces_dir.exists() and traces_dir.is_dir(), (
+        f"Expected .ba-ops/traces/ to be created by ensure_scaffold; "
+        f"found dirs: {[d.name for d in (tmp_path / '.ba-ops').iterdir() if d.is_dir()]}"
+    )
