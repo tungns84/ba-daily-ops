@@ -99,8 +99,15 @@ _VERIFIABLE_PATTERNS: list[re.Pattern] = [
 # These signal two distinct testable clauses joined in one requirement.
 # ---------------------------------------------------------------------------
 
+# Require a SECOND normative verb after the conjunction (WR-07). The previous
+# final alternative `[a-z]{3,}` matched any lowercase word >=3 chars, so any
+# normative sentence containing 'and'/'or' followed by almost any word was
+# flagged ATOMICITY_COMPOUND — a FAIL-class gate. E.g. "shall log errors and
+# warnings" / "shall accept JSON or YAML input" are single atomic requirements
+# and must NOT fail. Demanding a second normative verb only flags genuine
+# multi-obligation requirements ("shall X and shall Y").
 _CONJUNCTION_PATTERN = re.compile(
-    r'\b(shall|must|will|should)\b[^.]*?\b(and|or)\b[^.]*?\b(shall|must|will|should|[a-z]{3,})\b',
+    r'\b(shall|must|will|should)\b[^.]*?\b(and|or)\b[^.]*?\b(shall|must|will|should)\b',
     re.IGNORECASE,
 )
 

@@ -108,12 +108,16 @@ def test_unverifiable_requirement_flagged(tmp_path):
 
 
 def test_compound_requirement_flagged(tmp_path):
-    """lint-requirements flags a requirement with AND/OR conjunction as atomicity FAIL."""
+    """lint-requirements flags a genuine two-obligation requirement as atomicity FAIL.
+
+    Two normative verbs joined by 'and' ("shall validate ... and shall log ...")
+    is a real compound and must still be flagged after the WR-07 tightening.
+    """
     reqs = """# Requirements
 
 | ID | Statement | Status | Source |
 |----|-----------|--------|--------|
-| TOOL-01 | The system shall validate input paths and log all errors within 5 seconds. | stated | SRS §2 |
+| TOOL-01 | The system shall validate input paths and shall log all errors within 5 seconds. | stated | SRS §2 |
 """
     rc, out, err = run_lint(tmp_path, reqs)
     assert rc == 0
@@ -123,6 +127,34 @@ def test_compound_requirement_flagged(tmp_path):
         f"Expected ATOMICITY_COMPOUND; got findings={out.get('findings')}"
     )
     assert all(f["severity"] == "fail" for f in a_findings)
+
+
+def test_atomicity_noun_list_not_flagged(tmp_path):
+    """A single normative verb followed by a noun list is NOT a compound (WR-07).
+
+    "shall log errors and warnings" and "shall accept JSON or YAML input" are
+    single, atomic, testable requirements — they previously FAILed the gate
+    because the old regex's [a-z]{3,} escape hatch matched any word after
+    'and'/'or'. After tightening (second normative verb required) they pass.
+    """
+    for statement in (
+        "The system shall log errors and warnings to the audit file.",
+        "The system shall accept JSON or YAML input and return exit code 0.",
+    ):
+        reqs = (
+            "# Requirements\n\n"
+            "| ID | Statement | Status | Source |\n"
+            "|----|-----------|--------|--------|\n"
+            f"| TOOL-01 | {statement} | stated | SRS §2 |\n"
+        )
+        rc, out, err = run_lint(tmp_path, reqs)
+        assert rc == 0
+        assert out is not None and out.get("ok") is True
+        a_findings = findings_with_code(out, "ATOMICITY_COMPOUND")
+        assert a_findings == [], (
+            f"Single-clause requirement falsely flagged ATOMICITY_COMPOUND: "
+            f"{statement!r} -> {a_findings!r}"
+        )
 
 
 def test_weasel_word_triggers_warn(tmp_path):
