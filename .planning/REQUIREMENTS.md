@@ -35,11 +35,11 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 ### SRS Analysis (SRS)
 
 - [x] **SRS-01**: `ba-srs-analyze` turns sources into atomic, grounded, verifiable requirements (JSON)
-- [ ] **SRS-02**: `ba-srs-analyze` emits an SRS/BRD `.md`
+- [x] **SRS-02**: `ba-srs-analyze` emits an SRS/BRD `.md`
 - [x] **SRS-03**: every `stated` requirement carries a `source_trace` `{doc, span}`
 - [x] **SRS-04**: `ba-srs-writer` emits the quality-contract schema that `ba-tools verify` gates
-- [ ] **SRS-05**: `ba-critic` runs a fresh-context Chain-of-Verification loop (generate per-requirement questions → answer from source independently of the draft → return findings), ≤3 revisions, early-exit on convergence, read-only (never edits)
-- [ ] **SRS-06**: `ba-srs-analyze` supports routes extract/draft/lint/verify/full/iterate (default `full`)
+- [x] **SRS-05**: `ba-critic` runs a fresh-context Chain-of-Verification loop (generate per-requirement questions → answer from source independently of the draft → return findings), ≤3 revisions, early-exit on convergence, read-only (never edits)
+- [x] **SRS-06**: `ba-srs-analyze` supports routes extract/draft/lint/verify/full/iterate (default `full`)
 
 ### Traceability State (TRACE)
 
@@ -69,9 +69,9 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 ### Codex Packaging (CDX)
 
-- [ ] **CDX-01**: flat `.agents/skills/ba-*/SKILL.md` layout; frontmatter is `name` + `description` only
-- [ ] **CDX-02**: each operator has `agents/openai.yaml` with `interface.*` fields and `policy.allow_implicit_invocation: false` on the conductor and spine
-- [ ] **CDX-03**: thin workflows under `ba-core/workflows` resolve route → workflow file → follow it
+- [x] **CDX-01**: flat `.agents/skills/ba-*/SKILL.md` layout; frontmatter is `name` + `description` only
+- [x] **CDX-02**: each operator has `agents/openai.yaml` with `interface.*` fields and `policy.allow_implicit_invocation: false` on the conductor and spine
+- [x] **CDX-03**: thin workflows under `ba-core/workflows` resolve route → workflow file → follow it
 - [x] **CDX-04**: `AGENTS.md` is Read-by-skills (not root-auto-loaded) and < 32,768 B; DEFAULT workflow < 38,000 B
 - [x] **CDX-05**: `ba-tools` JSON output is terse and scannable (explicit `ok`/`failures`, no noise)
 
@@ -130,11 +130,11 @@ mermaid / mockup (independent) → uc conductor.
 | GATE-03 | Phase 5 | Pending |
 | GATE-04 | Phase 1 | Complete |
 | SRS-01 | Phase 2 | Complete |
-| SRS-02 | Phase 2 | Pending |
+| SRS-02 | Phase 2 | Complete |
 | SRS-03 | Phase 2 | Complete |
 | SRS-04 | Phase 2 | Complete |
-| SRS-05 | Phase 2 | Pending |
-| SRS-06 | Phase 2 | Pending |
+| SRS-05 | Phase 2 | Complete |
+| SRS-06 | Phase 2 | Complete |
 | TRACE-01 | Phase 1 | Complete |
 | TRACE-02 | Phase 1 | Complete |
 | TRACE-03 | Phase 2 | Complete |
@@ -149,9 +149,9 @@ mermaid / mockup (independent) → uc conductor.
 | UC-01 | Phase 5 | Pending |
 | UC-02 | Phase 5 | Pending |
 | UC-03 | Phase 5 | Pending |
-| CDX-01 | Phase 2 | Pending |
-| CDX-02 | Phase 2 | Pending |
-| CDX-03 | Phase 2 | Pending |
+| CDX-01 | Phase 2 | Complete |
+| CDX-02 | Phase 2 | Complete |
+| CDX-03 | Phase 2 | Complete |
 | CDX-04 | Phase 1 | Complete |
 | CDX-05 | Phase 1 | Complete |
 
