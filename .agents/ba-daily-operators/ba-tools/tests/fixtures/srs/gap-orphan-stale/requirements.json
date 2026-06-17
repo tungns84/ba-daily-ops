@@ -1,0 +1,24 @@
+{
+  "requirements": [
+    {
+      "id": "FR-001",
+      "statement": "The system shall record artifact provenance in trace records.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "source.md",
+        "section": "Functional Requirements",
+        "span": "The system shall record artifact provenance in trace records."
+      }
+    },
+    {
+      "id": "FR-002",
+      "statement": "The system shall detect stale artifacts by comparing source hashes.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "source.md",
+        "section": "Functional Requirements",
+        "span": "The system shall detect stale artifacts by comparing source hashes."
+      }
+    }
+  ]
+}

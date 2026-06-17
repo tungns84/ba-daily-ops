@@ -29,6 +29,7 @@ from ba_tools.commands import (
     confirm_cmd,
     render_cmd,
     trace_cmd,
+    index_cmd,
 )
 
 _COMMAND_MODULES = [
@@ -46,6 +47,7 @@ _COMMAND_MODULES = [
     confirm_cmd,
     render_cmd,
     trace_cmd,
+    index_cmd,
 ]
 
 

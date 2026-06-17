@@ -1,0 +1,17 @@
+{
+  "kind": "srs",
+  "slug": "demo",
+  "artifact_path": "tests/fixtures/srs/gap-orphan-stale/srs-demo.md",
+  "source_doc": "tests/fixtures/srs/gap-orphan-stale/source.md",
+  "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000",
+  "req_ids": [
+    {
+      "id": "FR-001",
+      "statement_hash": "bbe6dc63b02836e659903db7b07babb87d88dc013c10200b1f87fc23bce8c772"
+    },
+    {
+      "id": "FR-002",
+      "statement_hash": "a2f23267b5eae1888d63692ccb57dc4fc89b01ff38edfe968bd799261a8c5b50"
+    }
+  ]
+}
