@@ -2,168 +2,137 @@
 phase: 01-deterministic-ba-tools-cli-foundational-gates
 fixed_at: 2026-06-17T00:00:00Z
 review_path: .planning/phases/01-deterministic-ba-tools-cli-foundational-gates/01-REVIEW.md
-iteration: 1
-findings_in_scope: 11
-fixed: 11
-skipped: 0
-status: all_fixed
+iteration: 2
+findings_in_scope: 6
+fixed: 3
+skipped: 3
+status: partial
 ---
 
-# Phase 01: Code Review Fix Report
+# Phase 01: Code Review Fix Report (Iteration 2)
 
 **Fixed at:** 2026-06-17
 **Source review:** .planning/phases/01-deterministic-ba-tools-cli-foundational-gates/01-REVIEW.md
-**Iteration:** 1
+**Iteration:** 2
 
 **Summary:**
-- Findings in scope (Critical + Warning): 11
-- Fixed: 11
-- Skipped: 0
+- Findings in scope (Blocker + Warning): 6 (CR-01 blocker, WR-01..WR-05)
+- Fixed: 3 (CR-01, WR-03, WR-04)
+- Skipped: 3 (WR-01, WR-02, WR-05 — out of this run's directed fix scope)
 
 All fixes were applied in an isolated git worktree, each as one atomic commit,
-then verified against the worktree source. Because `ba-tools` is installed as an
-**editable** package pointing at the main repo, the subprocess-based tests would
-otherwise exercise the main-repo source; every test run used
-`PYTHONPATH=<worktree>/.agents/ba-daily-operators/ba-tools` so the worktree code
-was actually exercised. Final full suite: **140 passed** (128 baseline + 12 new).
+then verified against the worktree source. `ba-tools` is an **editable** install;
+the package resolved to the worktree copy (`ba_tools.__file__` confirmed under the
+worktree path) so subprocess-based tests exercised the edited code. Final full
+suite from the package dir: **142 passed** (140 baseline + 2 new CR-01 regression
+tests).
 
-Two fixes change runtime behaviour/semantics (CR-03, WR-07) and are flagged
-**fixed: requires human verification** — automated syntax + unit checks pass, but
-a developer should confirm the design choice is the intended one.
+This iteration's directed scope was the new regression BLOCKER plus the
+path-convention warnings (WR-03 / WR-04). WR-01, WR-02, and WR-05 are
+documentation- and test-hardening warnings that fall outside the directed scope
+for this run and are listed under Skipped with that reason.
 
 ## Fixed Issues
 
-### CR-01: Malformed config.json (and unguarded reads) crash with traceback + exit 1
-
-**Files modified:** `ba_tools/config.py`, `ba_tools/__main__.py`, `tests/test_output_contract.py`
-**Commit:** 20bbad3
-**Applied fix:** `load_config` now wraps the `read_text` (OSError/UnicodeDecodeError)
-and `json.loads` (JSONDecodeError/ValueError) and re-raises `BaToolsError` with code
-`BAD_CONFIG`; it also rejects non-object JSON. Added a top-level `except Exception`
-in `main()` that emits a sanitized `INTERNAL_ERROR` envelope + exit 2 with no
-exception text (defense-in-depth, T-1-07). Added tests for the malformed and
-non-object config paths, asserting exit 2, `BAD_CONFIG`, and no `Traceback`.
-
-### CR-02: Markdown table parser misreads GFM alignment separators
-
-**Files modified:** `ba_tools/commands/lint_reqs.py`, `ba_tools/commands/uc_status.py`, `tests/test_output_contract.py`
-**Commit:** fb4fcfd
-**Applied fix:** `lint_reqs._parse_md_table` separator-cell check changed from
-`^-+$` to `^:?-+:?$` (also fixes `verify`, which reuses this parser).
-`uc_status._parse_pipeline_steps` separator regex changed from `^\|[-| ]+\|$` to
-`^\|[\s:|-]+\|$`. `markdown_sections.py` was inspected — it is a heading extractor
-with no separator logic, so no change was needed there. Added a test asserting a
-table with `:---:` separators yields correct headers and no spurious FAIL findings.
-
-### CR-03: state advance and uc-status operate on disconnected state — fixed: requires human verification
-
-**Files modified:** `ba_tools/state_store.py`, `ba_tools/commands/uc_status.py`, `ba_tools/commands/state_cmd.py`, `tests/test_output_contract.py`
-**Commit:** cccb912
-**Applied fix:** Chose review option (b) — made the body "Pipeline Steps" table the
-single source of truth. Added `state_store.update_pipeline_step(body, step, status)`
-(pure, deterministic row-rewrite of the Status cell; no judgement). `merge_state`
-now honors reserved `--data` keys `pipeline_step` + `pipeline_status` (for any
-action) to update that row under the STATE.md lock, validating the step name
-(`UNKNOWN_PIPELINE_STEP`) and a non-empty status (`MISSING_PIPELINE_STATUS`); the
-reserved keys are consumed and never written into frontmatter. `PIPELINE_STEPS` now
-lives in `state_store` (the writer) and `uc_status` imports it (the reader). Added a
-test that marks `srs-analyze` complete via `state patch` and asserts `uc-status`
-advances `next_step` to `mermaid`, plus an unknown-step error test.
-**Why human verification:** this introduces a new state-write contract
-(`pipeline_step`/`pipeline_status` reserved keys, used with `patch`). Confirm this is
-the intended single-source-of-truth design rather than review option (a) (deriving
-`next_step` from frontmatter the state commands already write).
-
-### CR-04: state advance silently resets step to 1 when non-numeric
+### CR-01: STATE.md accumulates blank lines on every write — breaks the hash-provable determinism contract
 
 **Files modified:** `ba_tools/state_store.py`, `tests/test_state.py`
-**Commit:** d98569a
-**Applied fix:** The auto-increment branch now raises `BaToolsError` with code
-`STEP_NOT_NUMERIC` (exit 2) when the current `step` is non-numeric and no explicit
-`step` is supplied in `--data`; an explicit `step` still overrides. Added tests for
-the loud-failure path (and verifying the existing value is preserved) and for the
-explicit-override path.
+**Commit:** edc855d
+**Applied fix:** `_serialize_state` now normalizes the body with `body.strip("\n")`
+(was `body.rstrip()`) before emitting the single blank-line separator. The
+frontmatter regex `_FRONTMATTER_RE` leaves the body's leading `\n` in `group(2)`;
+combined with the unconditional blank line appended after the closing `---`, the
+old `rstrip` widened the gap by one line on every write. Because the CR-03 fix
+routes the body through `_serialize_state` on every `state update|patch|advance`,
+STATE.md grew without bound and its SHA-256 drifted on no-op writes, violating the
+hash-provable determinism boundary. Stripping all leading/trailing newlines makes
+`parse -> serialize` byte-idempotent: exactly one separator line, stable across
+repeated writes. Added two regression tests:
+`test_serialize_is_byte_idempotent_on_noop_reserialize` (asserts
+`merge_state(merge_state(seed, {}, "patch"), {}, "patch")` is byte- and
+hash-identical, and contains no `\n\n\n` run) and
+`test_state_patch_twice_is_byte_stable_on_disk` (two identical CLI patches leave
+STATE.md byte- and SHA-256-identical on disk).
+**Note:** Verified by the new unit + CLI tests and full-suite green. This is a
+determinism/format fix (not a control-flow logic change), so the byte-stability
+assertions fully characterize correctness.
 
-### WR-01: lint-requirements and verify resolve file args against CWD
+### WR-03: `byte-check` bypasses `resolve_under_root`, diverging from the unified path convention
 
-**Files modified:** `ba_tools/repo.py`, `ba_tools/commands/lint_reqs.py`, `ba_tools/commands/verify_cmd.py`, `tests/test_output_contract.py`
-**Commit:** ae046cf
-**Applied fix:** Added `repo.resolve_under_root(raw, root)` (absolute paths honored
-as-is; relative paths joined onto `root`), matching `byte_check`/`extract_uc`/`scan`/
-`template`. Applied it to `lint`'s `file` and `--baseline`, and `verify`'s `--reqs`,
-`--source`, and per-row `source`. Added tests that a relative `--reqs` path resolves
-under `--repo-root` even when the process CWD is a subdirectory.
+**Files modified:** `ba_tools/commands/byte_check.py`
+**Commit:** 340dcd9
+**Applied fix:** Replaced the hand-rolled `(repo_root / raw).resolve()` with the
+shared `resolve_under_root(raw, repo_root)` and added it to the `repo` import. The
+subsequent `is_within_root` traversal guard is unchanged, so behaviour is identical;
+the change removes the divergent path-resolution copy so a future correctness fix
+(UNC paths, `~`, normalization) lands in one place.
 
-### WR-02: Dead, misleading subprocess block in resolve_repo_root
+### WR-04: Absolute-or-join path block re-implemented in three more commands
 
-**Files modified:** `ba_tools/repo.py`
-**Commit:** f6489a2
-**Applied fix:** Deleted the dead `sys.executable -c <inline script>` block (its
-result was unused and the inline script was broken). Kept the direct
-`git rev-parse --show-toplevel` block and the `Path.cwd()` fallback. Removed the now
-unused `import sys`.
+**Files modified:** `ba_tools/commands/extract_uc.py`, `ba_tools/commands/scan_cmd.py`, `ba_tools/commands/template_cmd.py`
+**Commit:** 2e00ed9
+**Applied fix:** Replaced the repeated
+`Path(raw); if not is_absolute(): root/raw; resolve()` block in `extract-uc`,
+`scan`, and `template` with `resolve_under_root(raw, repo_root)`. In `extract_uc`
+the now-unused `from pathlib import Path` import was removed; in `scan_cmd` the
+unused `is_within_root` import was swapped for `resolve_under_root` (it was already
+unused there). `template_cmd` retains `Path` (used by `_templates_dir`) and
+`is_within_root` (used by its T-1-09 traversal guard). All path commands now share
+one resolution helper, honoring the same `--repo-root` contract with no
+CWD-relative resolution.
 
-### WR-03: is_within_root docstring overstates API and symlink handling
+## Skipped Issues
 
-**Files modified:** `ba_tools/repo.py`
-**Commit:** 54fa989
-**Applied fix:** Docstring now describes the real `relative_to` + `try/except
-ValueError` mechanism and qualifies the Windows symlink/junction caveat. No
-behavioural change.
+### WR-01: `merge_state` now raises `BaToolsError` but documents only `ValueError`
 
-### WR-04: verify per-row source downgrades path-escape to a generic not-found
+**File:** `ba_tools/state_store.py:230-233, 244-256`
+**Reason:** skipped — out of this run's directed fix scope. The iteration-2 task
+directed fixes for the BLOCKER (CR-01) plus path-convention warnings (WR-03/WR-04)
+only. WR-01 is a docstring-completeness warning (document `UNKNOWN_PIPELINE_STEP` /
+`MISSING_PIPELINE_STATUS` in the `Raises:` block); no runtime defect. Recommend
+addressing in a follow-up docstring pass.
+**Original issue:** The `Raises:` docstring lists only `ValueError`, yet
+`merge_state` also raises `BaToolsError(UNKNOWN_PIPELINE_STEP)` and
+`BaToolsError(MISSING_PIPELINE_STATUS)` — an undocumented exception type for a
+reusable pure helper.
 
-**Files modified:** `ba_tools/commands/verify_cmd.py`, `tests/test_output_contract.py`
-**Commit:** 1cda031
-**Applied fix:** Split the combined condition: a row `Source` resolving outside the
-root now emits a distinct `PATH_TRAVERSAL` finding (with the offending path),
-reserving `SOURCE_NOT_FOUND` for the within-root-but-absent case. Added a test using
-a `../` escape that asserts `PATH_TRAVERSAL` is present and `SOURCE_NOT_FOUND` is not.
+### WR-02: `pipeline_step` directive silently dropped when body lacks a Pipeline Steps section
 
-### WR-05: Markdown table cells split on every pipe (escaped pipes truncated)
+**File:** `ba_tools/state_store.py:257` -> `update_pipeline_step:134-185`
+**Reason:** skipped — out of this run's directed fix scope. This is a behavioural
+change (have `update_pipeline_step` report whether a row changed and raise
+`PIPELINE_ROW_NOT_FOUND` when a requested step matched no row). It touches the same
+state-write contract introduced by CR-03 and warrants its own change + test rather
+than being bundled with the determinism BLOCKER fix. Recommend a dedicated
+follow-up so the new error code gets explicit test coverage.
+**Original issue:** A valid `pipeline_step` + `pipeline_status` against a STATE.md
+whose body has no `## Pipeline Steps` table returns the body unmodified while the
+command still reports `ok:true` — a silent success-with-no-effect on the
+traceability spine.
 
-**Files modified:** `ba_tools/commands/lint_reqs.py`, `tests/test_output_contract.py`
-**Commit:** cbc4565 (combined with WR-06 — same line region)
-**Applied fix:** `_parse_md_table` now splits on unescaped pipes only via
-`re.split(r"(?<!\\)\|", stripped)` and unescapes `\|` → `|` per cell, honoring GFM
-escaping. Added a test with an escaped pipe inside a Statement, asserting the Source
-column is not shifted (no false `GROUNDING_MISSING`).
+### WR-05: `is_within_root` Windows junction/non-existent-target gap is documented but untested
 
-### WR-06: _parse_md_table no-op filter is confusing dead logic
-
-**Files modified:** `ba_tools/commands/lint_reqs.py`
-**Commit:** cbc4565 (combined with WR-05)
-**Applied fix:** Removed the dead `cells = [c for c in cells if True]` line. It sat
-in the exact line region rewritten by WR-05, so the two fixes share one atomic
-commit; both finding IDs are recorded in the commit body.
-
-### WR-07: check_atomicity conjunction regex over-matches — fixed: requires human verification
-
-**Files modified:** `ba_tools/lint.py`, `tests/test_lint_reqs.py`
-**Commit:** afde535
-**Applied fix:** Chose review option (a) — dropped the `[a-z]{3,}` escape hatch so
-the conjunction pattern now requires a second normative verb
-(`shall|must|will|should`) after the `and`/`or`. Single-clause requirements with
-noun lists ("shall log errors and warnings", "shall accept JSON or YAML input") no
-longer falsely FAIL. Updated the existing `test_compound_requirement_flagged` to a
-genuine two-normative-verb compound (it relied on the old over-matching behaviour),
-and added `test_atomicity_noun_list_not_flagged` for the false-positive cases.
-**Why human verification:** this is a heuristic semantics change. A genuine compound
-phrased with a single normative verb plus a second non-normative action verb (e.g.
-"the system shall validate paths and log errors") will no longer be flagged. Confirm
-this trade-off (fewer false FAILs, some genuine compounds now missed) is acceptable,
-or consider review option (b) (downgrade ATOMICITY to WARN).
+**File:** `ba_tools/repo.py:81-100`
+**Reason:** skipped — out of this run's directed fix scope. This is a
+test-hardening warning (add a Windows-targeted test for traversal through a
+non-existent path component, and optionally harden non-existent-target containment).
+No behavioural defect is asserted; the existing guard already rejects normalized
+`..` escapes. Recommend a follow-up test-only change on the win32 platform.
+**Original issue:** The docstring warns that on Windows, containment of a
+non-existent target reached via a junction/symlink is "NOT guaranteed", and no test
+exercises traversal through a non-existent path component — the stated security
+control's weakest documented case is unverified.
 
 ## Notes
 
-- IN-04 ("hooks/pre-commit missing") was confirmed a FALSE POSITIVE per the fix
-  guidance — the hook exists at `.agents/ba-daily-operators/hooks/pre-commit`; the
-  reviewer was given the wrong path. No action taken.
-- IN-01, IN-02, IN-03 are Info-tier and out of scope for this `critical_warning`
-  run; they were not fixed.
+- IN-01..IN-04 are Info-tier and out of scope for this `critical_warning` run; not
+  fixed. (IN-04 is a test-coverage suggestion, not a defect.)
+- The 10 of 11 prior (iteration-1) findings the re-review re-verified as genuinely
+  FIXED were not re-touched; only the new regression (CR-01) and the path-convention
+  warnings were in this iteration's directed scope.
 
 ---
 
 _Fixed: 2026-06-17_
 _Fixer: Claude (gsd-code-fixer)_
-_Iteration: 1_
+_Iteration: 2_
