@@ -40,7 +40,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `ba-tools state update|patch|advance` writes `.ba-ops/STATE.md` under a lockfile and a second concurrent writer either waits or reclaims the lock only after the 10s stale window — never clobbers
   4. `ba-tools resolve-route <operator>` returns only the static `DEFAULT_ROUTE` (e.g. `ba-mermaid`→`author`) and never produces a route inferred from free text; every success prints UTF-8 JSON to stdout and every `BaToolsError` exits with code 2
   5. A CI/pre-commit byte-check fails the build when any eager-loaded doc (AGENTS.md / refs) is ≥ 32,768 B, and all paths resolve relative to `--repo-root` with Python resolved via `sys.executable` (no hard-coded machine paths)
-**Plans**: TBD
+**Plans**: 7 plans (3 waves)
+Plans:
+- [ ] 01-01-PLAN.md — Wave 0: package skeleton, shared infra (errors/output/repo), argparse dispatcher, pyproject + filelock install, conftest + 17 test stubs
+- [ ] 01-02-PLAN.md — Wave 1: foundational gates — resolve-route (static DEFAULT_ROUTES) + byte-check (32768 B limit)
+- [ ] 01-03-PLAN.md — Wave 1: state + lockfile (FileLock(timeout=10), Windows stale reclaim, concurrent-write no-clobber test)
+- [ ] 01-04-PLAN.md — Wave 1: init + .ba-ops/ scaffold + config (absent=enabled) + uc-status
+- [ ] 01-05-PLAN.md — Wave 1: quality engine — lint-requirements (heuristics + two-pass REQ-ID stability) + verify (section-scoped citation-exists)
+- [ ] 01-06-PLAN.md — Wave 1: extract-uc + template fill + discovery + scan (advisory) + confirm (pass-through)
+- [ ] 01-07-PLAN.md — Wave 2: cross-command output-contract + path-safety tests + git pre-commit byte-check hook
 
 ### Phase 2: ba-srs-analyze + Quality Gate + Traceability Core
 **Goal**: The highest-value differentiator works end-to-end: sources become atomic, grounded, verifiable requirements (JSON) plus an SRS/BRD `.md`, every `stated` requirement carries a verifiable `source_trace`, the artifact is gated by `ba-tools verify` plus the independent fresh-context `ba-critic` Chain-of-Verification loop, and the `.ba-ops/` traceability matrix (INDEX.md) is rebuilt with gap/orphan/stale detection so REQ-ID coupling is validated before any other operator consumes REQ-IDs.
@@ -94,7 +102,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Deterministic ba-tools CLI + Foundational Gates | 0/TBD | Not started | - |
+| 1. Deterministic ba-tools CLI + Foundational Gates | 0/7 | Planned | - |
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 0/TBD | Not started | - |
 | 3. ba-mermaid Diagram Operator | 0/TBD | Not started | - |
 | 4. ba-mockup Operator | 0/TBD | Not started | - |
