@@ -21,6 +21,8 @@ Public API:
 import json
 from pathlib import Path
 
+from ba_tools.errors import BaToolsError
+
 
 def load_config(root: Path) -> dict:
     """Load .ba-ops/config.json from *root* if it exists.
@@ -34,14 +36,38 @@ def load_config(root: Path) -> dict:
     Returns:
         A dict of configuration keys read from config.json, or ``{}`` if
         the file does not exist or contains only whitespace.
+
+    Raises:
+        BaToolsError(BAD_CONFIG): if the file cannot be read (OSError /
+        UnicodeDecodeError), is not valid JSON, or is not a JSON object.
+        Re-raising as BaToolsError keeps the CLI error contract intact
+        (exit 2 + JSON envelope, no leaked traceback — T-1-07).
     """
     config_path = root / ".ba-ops" / "config.json"
     if not config_path.exists():
         return {}
-    text = config_path.read_text(encoding="utf-8").strip()
+    try:
+        text = config_path.read_text(encoding="utf-8").strip()
+    except (OSError, UnicodeDecodeError) as exc:
+        raise BaToolsError([{
+            "code": "BAD_CONFIG",
+            "message": f"Could not read config.json: {exc}",
+        }]) from exc
     if not text:
         return {}
-    return json.loads(text)
+    try:
+        cfg = json.loads(text)
+    except (json.JSONDecodeError, ValueError) as exc:
+        raise BaToolsError([{
+            "code": "BAD_CONFIG",
+            "message": f"config.json is not valid JSON: {exc}",
+        }]) from exc
+    if not isinstance(cfg, dict):
+        raise BaToolsError([{
+            "code": "BAD_CONFIG",
+            "message": "config.json must be a JSON object",
+        }])
+    return cfg
 
 
 def flag(cfg: dict, name: str) -> bool:

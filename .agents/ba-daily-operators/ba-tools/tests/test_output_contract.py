@@ -370,6 +370,38 @@ def test_no_stack_trace_in_error_output(tmp_path):
     assert "Traceback" not in result.stdout
 
 
+def test_malformed_config_json_exits_2_no_traceback(tmp_path):
+    """Malformed .ba-ops/config.json -> ok:false, BAD_CONFIG, exit 2, no traceback (CR-01).
+
+    Reproduces the contract violation where json.loads on a corrupt config
+    previously escaped as a raw traceback with exit 1. The fix wraps the read
+    and parse in BaToolsError so the dispatcher emits the JSON envelope.
+    """
+    ba_ops = tmp_path / ".ba-ops"
+    ba_ops.mkdir()
+    (ba_ops / "config.json").write_text("{ not valid json", encoding="utf-8")
+
+    result = _run(["init", "ba-uc"], repo_root=str(tmp_path))
+    payload = _assert_error(result, "init BAD_CONFIG")
+    assert any(f.get("code") == "BAD_CONFIG" for f in payload["failures"]), (
+        f"Expected BAD_CONFIG failure, got: {payload['failures']!r}"
+    )
+    # T-1-07: no stack trace must leak on this path either
+    assert "Traceback" not in result.stderr
+    assert "Traceback" not in result.stdout
+
+
+def test_non_object_config_json_exits_2(tmp_path):
+    """config.json containing a JSON array (not an object) -> BAD_CONFIG, exit 2 (CR-01)."""
+    ba_ops = tmp_path / ".ba-ops"
+    ba_ops.mkdir()
+    (ba_ops / "config.json").write_text("[1, 2, 3]", encoding="utf-8")
+
+    result = _run(["init", "ba-uc"], repo_root=str(tmp_path))
+    payload = _assert_error(result, "init BAD_CONFIG non-object")
+    assert any(f.get("code") == "BAD_CONFIG" for f in payload["failures"])
+
+
 # ---------------------------------------------------------------------------
 # Cross-cutting: error goes to STDERR not STDOUT (D-04)
 # ---------------------------------------------------------------------------

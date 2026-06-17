@@ -77,6 +77,25 @@ def main() -> None:
         sys.exit(2)
     except KeyboardInterrupt:
         sys.exit(130)
+    except Exception:
+        # Defense-in-depth (T-1-07): no unhandled exception may ever leak a
+        # Python traceback or escape with a non-2 exit code. Emit a generic,
+        # sanitized INTERNAL_ERROR envelope — deliberately WITHOUT the
+        # exception text, so no stack-trace content or path/secret can leak.
+        print(
+            json.dumps(
+                {
+                    "ok": False,
+                    "failures": [{
+                        "code": "INTERNAL_ERROR",
+                        "message": "An unexpected internal error occurred.",
+                    }],
+                },
+                ensure_ascii=False,
+            ),
+            file=sys.stderr,
+        )
+        sys.exit(2)
 
 
 if __name__ == "__main__":
