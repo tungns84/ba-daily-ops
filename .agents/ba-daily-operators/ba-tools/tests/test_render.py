@@ -12,6 +12,7 @@ Tests cover:
 """
 
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -19,6 +20,26 @@ from pathlib import Path
 import pytest
 
 PYTHON = sys.executable
+
+# Real srs.md template location (installed alongside the package)
+_REAL_TEMPLATE = (
+    Path(__file__).parent.parent
+    / "ba-core" / "templates" / "srs.md"
+)
+
+
+def _setup_template(tmp_path: Path) -> None:
+    """Copy the real srs.md template into the expected location under tmp_path.
+
+    render_cmd resolves the template relative to --repo-root, so it expects:
+    <repo-root>/.agents/ba-daily-operators/ba-tools/ba-core/templates/srs.md
+    """
+    tpl_dst = (
+        tmp_path / ".agents" / "ba-daily-operators" / "ba-tools"
+        / "ba-core" / "templates" / "srs.md"
+    )
+    tpl_dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(str(_REAL_TEMPLATE), str(tpl_dst))
 
 # ---------------------------------------------------------------------------
 # Minimal reqs_doc fixtures
@@ -282,6 +303,7 @@ def test_render_help_succeeds(tmp_path):
 
 def test_render_srs_writes_srs_md(tmp_path):
     """ba-tools render srs --slug demo writes .ba-ops/srs/demo/SRS.md."""
+    _setup_template(tmp_path)
     slug = "demo"
     slug_dir = tmp_path / ".ba-ops" / "srs" / slug
     slug_dir.mkdir(parents=True)
@@ -308,6 +330,7 @@ def test_render_srs_writes_srs_md(tmp_path):
 
 def test_render_srs_byte_identical_twice(tmp_path):
     """Rendering the same slug twice produces byte-identical SRS.md (determinism gate)."""
+    _setup_template(tmp_path)
     slug = "det-test"
     slug_dir = tmp_path / ".ba-ops" / "srs" / slug
     slug_dir.mkdir(parents=True)
@@ -388,9 +411,18 @@ def test_registry_union_all_slugs(tmp_path):
 
 
 def test_render_srs_slug_path_traversal(tmp_path):
-    """A --slug containing '..' that escapes repo root must exit 2 with PATH_TRAVERSAL."""
+    """A --slug containing '..' that escapes repo root must exit 2 with PATH_TRAVERSAL.
+
+    root = tmp_path (e.g. /tmp/abc/)
+    slug_dir = root / '.ba-ops' / 'srs' / '../../../../evil'
+             = root / '.ba-ops' / 'srs' / '../../../../evil'
+             resolves to: parent-of-tmp_path / 'evil'
+    Four levels up: srs → .ba-ops → root → parent → grandparent; then 'evil'.
+    After 4 '..', we are above root → PATH_TRAVERSAL.
+    """
+    traversal_slug = "../../../../evil"
     result = _run_render(
-        ["--repo-root", str(tmp_path), "render", "srs", "--slug", "../../evil"],
+        ["--repo-root", str(tmp_path), "render", "srs", "--slug", traversal_slug],
         cwd=tmp_path,
     )
     assert result.returncode == 2, (
@@ -403,6 +435,7 @@ def test_render_srs_slug_path_traversal(tmp_path):
 
 def test_render_srs_missing_reqs_json(tmp_path):
     """render srs on a slug with no requirements.json exits 2 with FILE_NOT_FOUND."""
+    _setup_template(tmp_path)
     slug_dir = tmp_path / ".ba-ops" / "srs" / "no-reqs"
     slug_dir.mkdir(parents=True)
     # Do NOT write requirements.json

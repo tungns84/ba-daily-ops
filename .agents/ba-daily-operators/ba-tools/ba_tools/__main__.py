@@ -27,6 +27,7 @@ from ba_tools.commands import (
     scan_cmd,
     byte_check,
     confirm_cmd,
+    render_cmd,
 )
 
 _COMMAND_MODULES = [
@@ -42,6 +43,7 @@ _COMMAND_MODULES = [
     scan_cmd,
     byte_check,
     confirm_cmd,
+    render_cmd,
 ]
 
 
