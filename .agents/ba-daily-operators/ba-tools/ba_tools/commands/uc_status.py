@@ -60,7 +60,10 @@ def _parse_pipeline_steps(body: str) -> dict[str, str]:
         stripped = line.strip()
         if not stripped.startswith("|"):
             continue
-        if re.match(r"^\|[-| ]+\|$", stripped):
+        # GFM alignment separators may carry colons (|:---|:---:|) — accept
+        # colons and whitespace so the separator is correctly skipped and the
+        # column-header row is not mistaken for a data row (CR-02).
+        if re.match(r"^\|[\s:|-]+\|$", stripped):
             header_skipped = True
             continue
         if not header_skipped:

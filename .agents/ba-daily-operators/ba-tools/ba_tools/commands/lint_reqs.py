@@ -62,8 +62,10 @@ def _parse_md_table(text: str) -> list[dict]:
         if not cells:
             continue
 
-        # Detect separator row (all dashes)
-        if all(re.match(r'^-+$', c) for c in cells):
+        # Detect separator row. GFM alignment separators may carry colons
+        # (:---, ---:, :---:) — accept an optional leading/trailing colon so
+        # the separator is never mistaken for the header row (CR-02).
+        if all(re.match(r'^:?-+:?$', c) for c in cells):
             continue
 
         if headers is None:

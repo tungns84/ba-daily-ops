@@ -198,6 +198,35 @@ def test_lint_requirements_ok(tmp_path):
     assert "checked" in payload
 
 
+def test_lint_requirements_gfm_alignment_separators(tmp_path):
+    """A table with GFM alignment separators (:---:) parses with correct headers (CR-02).
+
+    Previously the separator row was promoted to the header, shifting every
+    column key and silently corrupting grounding/verifiability checks. The
+    clean, grounded, verifiable requirement below must produce no FAIL findings.
+    """
+    reqs_file = tmp_path / "reqs.md"
+    reqs_file.write_text(
+        "# Requirements\n\n"
+        "| ID | Statement | Source |\n"
+        "|:---|:---------:|---:|\n"
+        "| TOOL-01 | The system shall return JSON with ok:true on success. | SRS §3.1 |\n",
+        encoding="utf-8",
+    )
+    result = _run(["lint-requirements", str(reqs_file)], repo_root=str(tmp_path))
+    payload = _assert_success(result, "lint-requirements gfm separators")
+    # The real requirement must be the one counted — not a ':---' pseudo-row.
+    assert payload["checked"] == 1, (
+        f"Expected exactly 1 checked requirement, got {payload['checked']} "
+        f"(separator row likely mis-parsed). findings={payload['findings']!r}"
+    )
+    # No grounding/verifiability FAIL should fire on this clean, grounded row.
+    fail_codes = [f["code"] for f in payload["findings"] if f.get("severity") == "fail"]
+    assert fail_codes == [], (
+        f"Clean grounded requirement should produce no FAIL findings, got {fail_codes}"
+    )
+
+
 # ---------------------------------------------------------------------------
 # verify — success + CITATION_NOT_FOUND error
 # ---------------------------------------------------------------------------
