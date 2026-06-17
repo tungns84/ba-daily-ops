@@ -9,7 +9,6 @@ No hard-coded machine paths. Python interpreter via sys.executable (DESIGN §11)
 """
 
 import subprocess
-import sys
 from pathlib import Path
 
 
@@ -31,22 +30,7 @@ def resolve_repo_root(arg: str | None) -> Path:
     if arg is not None:
         return Path(arg).resolve()
 
-    # Try git toplevel
-    try:
-        result = subprocess.run(
-            [sys.executable, "-c",
-             "import subprocess, sys; "
-             "r = subprocess.run(['git', 'rev-parse', '--show-toplevel'], "
-             "capture_output=True, text=True); "
-             "sys.exit(0 if r.returncode == 0 else 1); "
-             "print(r.stdout.strip(), end='')"],
-            capture_output=True,
-            text=True,
-        )
-        # Simpler approach: shell out to git directly
-    except Exception:
-        pass
-
+    # Shell out to git directly for the project toplevel.
     try:
         git_result = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
