@@ -15,8 +15,8 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 - [x] **TOOL-04**: `ba-tools lint-requirements` flags ambiguity, atomicity, grounding, verifiability, and citation issues
 - [x] **TOOL-05**: `lint-requirements` enforces REQ-ID stability — IDs are permanent; it flags a material statement change on an existing ID (never silent renumber)
 - [x] **TOOL-06**: `ba-tools verify` gate checks: verbatim citation-exists (≥12-char real substring, **section-scoped**), REQ-ID coverage, hash-match; folds the lint result
-- [ ] **TOOL-07**: `ba-tools trace write` records an artifact→REQ-ID mapping plus a statement hash
-- [ ] **TOOL-08**: `ba-tools index update` rebuilds `.ba-ops/INDEX.md` and flags gaps, orphans, and stale (source-hash drift)
+- [x] **TOOL-07**: `ba-tools trace write` records an artifact→REQ-ID mapping plus a statement hash
+- [x] **TOOL-08**: `ba-tools index update` rebuilds `.ba-ops/INDEX.md` and flags gaps, orphans, and stale (source-hash drift)
 - [x] **TOOL-09**: `ba-tools uc-status` returns single-UC pipeline state + `next_step` (resumable)
 - [x] **TOOL-10**: `ba-tools extract-uc --uc "<spec>"` returns the UC section + parsed identity
 - [x] **TOOL-11**: `ba-tools template fill` scaffolds an artifact from `ba-core/templates`
@@ -46,8 +46,8 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 - [x] **TRACE-01**: `.ba-ops/` scaffold exists: PROJECT.md, REQUIREMENTS.md (the REQ-ID registry), INDEX.md, STATE.md, config.json
 - [x] **TRACE-02**: `.ba-ops/config.json` feature flags default `true` when missing (absent = enabled)
 - [x] **TRACE-03**: every downstream artifact carries a `req_ids` field
-- [ ] **TRACE-04**: `INDEX.md` is a traceability matrix: REQ-ID → SRS § → mermaid → mockup → story
-- [ ] **TRACE-05**: INDEX flags gaps (missing coverage), orphans (req_ids that don't exist), and stale (source hash changed → re-run needed)
+- [x] **TRACE-04**: `INDEX.md` is a traceability matrix: REQ-ID → SRS § → mermaid → mockup → story
+- [x] **TRACE-05**: INDEX flags gaps (missing coverage), orphans (req_ids that don't exist), and stale (source hash changed → re-run needed)
 
 ### Diagram — Mermaid (MMD)
 
@@ -116,8 +116,8 @@ mermaid / mockup (independent) → uc conductor.
 | TOOL-04 | Phase 1 | Complete |
 | TOOL-05 | Phase 1 | Complete |
 | TOOL-06 | Phase 1 | Complete |
-| TOOL-07 | Phase 2 | Pending |
-| TOOL-08 | Phase 2 | Pending |
+| TOOL-07 | Phase 2 | Complete |
+| TOOL-08 | Phase 2 | Complete |
 | TOOL-09 | Phase 1 | Complete |
 | TOOL-10 | Phase 1 | Complete |
 | TOOL-11 | Phase 1 | Complete |
@@ -138,8 +138,8 @@ mermaid / mockup (independent) → uc conductor.
 | TRACE-01 | Phase 1 | Complete |
 | TRACE-02 | Phase 1 | Complete |
 | TRACE-03 | Phase 2 | Complete |
-| TRACE-04 | Phase 2 | Pending |
-| TRACE-05 | Phase 2 | Pending |
+| TRACE-04 | Phase 2 | Complete |
+| TRACE-05 | Phase 2 | Complete |
 | MMD-01 | Phase 3 | Pending |
 | MMD-02 | Phase 3 | Pending |
 | MMD-03 | Phase 3 | Pending |
