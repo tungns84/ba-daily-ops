@@ -21,8 +21,8 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 - [ ] **TOOL-10**: `ba-tools extract-uc --uc "<spec>"` returns the UC section + parsed identity
 - [ ] **TOOL-11**: `ba-tools template fill` scaffolds an artifact from `ba-core/templates`
 - [ ] **TOOL-12**: `ba-tools discovery add|list` captures and lists iteration discoveries
-- [ ] **TOOL-13**: every success prints UTF-8 JSON to stdout; every `BaToolsError` exits with code 2
-- [ ] **TOOL-14**: all paths resolve relative to `--repo-root` (git root / cwd) — no hard-coded machine paths; Python resolved via `sys.executable`
+- [x] **TOOL-13**: every success prints UTF-8 JSON to stdout; every `BaToolsError` exits with code 2
+- [x] **TOOL-14**: all paths resolve relative to `--repo-root` (git root / cwd) — no hard-coded machine paths; Python resolved via `sys.executable`
 - [ ] **TOOL-15**: `ba-tools scan --file <f>` runs an advisory prompt-injection scan
 
 ### Verification Gates (GATE)
@@ -73,7 +73,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 - [ ] **CDX-02**: each operator has `agents/openai.yaml` with `interface.*` fields and `policy.allow_implicit_invocation: false` on the conductor and spine
 - [ ] **CDX-03**: thin workflows under `ba-core/workflows` resolve route → workflow file → follow it
 - [ ] **CDX-04**: `AGENTS.md` is Read-by-skills (not root-auto-loaded) and < 32,768 B; DEFAULT workflow < 38,000 B
-- [ ] **CDX-05**: `ba-tools` JSON output is terse and scannable (explicit `ok`/`failures`, no noise)
+- [x] **CDX-05**: `ba-tools` JSON output is terse and scannable (explicit `ok`/`failures`, no noise)
 
 ## v2 Requirements
 
@@ -122,8 +122,8 @@ mermaid / mockup (independent) → uc conductor.
 | TOOL-10 | Phase 1 | Pending |
 | TOOL-11 | Phase 1 | Pending |
 | TOOL-12 | Phase 1 | Pending |
-| TOOL-13 | Phase 1 | Pending |
-| TOOL-14 | Phase 1 | Pending |
+| TOOL-13 | Phase 1 | Complete |
+| TOOL-14 | Phase 1 | Complete |
 | TOOL-15 | Phase 1 | Pending |
 | GATE-01 | Phase 2 | Pending |
 | GATE-02 | Phase 1 | Pending |
@@ -153,9 +153,10 @@ mermaid / mockup (independent) → uc conductor.
 | CDX-02 | Phase 2 | Pending |
 | CDX-03 | Phase 2 | Pending |
 | CDX-04 | Phase 1 | Pending |
-| CDX-05 | Phase 1 | Pending |
+| CDX-05 | Phase 1 | Complete |
 
 **Coverage:**
+
 - v1 requirements: 44 total (registry actual count; the prior "35" header figure was a stale estimate — corrected here)
 - Mapped to phases: 44 ✓
 - Unmapped: 0 ✓

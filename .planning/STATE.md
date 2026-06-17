@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-06-17T11:46:44.209Z"
-last_activity: 2026-06-17 — Roadmap created (5 phases, 44 v1 requirements mapped)
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-06-17T12:07:22.274Z"
+last_activity: 2026-06-17 -- Phase 01 execution started
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 7
+  completed_plans: 1
   percent: 0
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-17)
 
 **Core value:** REQ-ID traceability across artifacts — one requirement seen consistently across SRS, diagram, mockup, and backlog, so drift surfaces the moment it appears.
-**Current focus:** Phase 1 — Deterministic ba-tools CLI + Foundational Gates
+**Current focus:** Phase 01 — deterministic-ba-tools-cli-foundational-gates
 
 ## Current Position
 
-Phase: 1 of 5 (Deterministic ba-tools CLI + Foundational Gates)
-Plan: 0 of TBD in current phase
+Phase: 01 (deterministic-ba-tools-cli-foundational-gates) — EXECUTING
+Plan: 2 of 7
 Status: Ready to execute
-Last activity: 2026-06-17 — Roadmap created (5 phases, 44 v1 requirements mapped)
+Last activity: 2026-06-17 -- Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01 P01 | 9 minutes | 3 tasks | 36 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,9 @@ Recent decisions affecting current work:
 - [Phase 1]: Citation-exists match is section-scoped by default, `--cite-scope document` override (Open Decision #1).
 - [Phase 1]: REQ-ID stability lint lands in Phase 1 with a renumbered-requirements fixture (Open Decision #4).
 - [Phase 2]: ba-critic loop early-exits on convergence, logged (Open Decision #3); WARN_INJECTION advisory in v1 (Open Decision #2).
+- [Phase ?]: pyproject.toml build-backend set to setuptools.build_meta for universal compatibility
+- [Phase ?]: Package installed editable (pip install -e .[test]) so tests import ba_tools without sys.path hacks
+- [Phase ?]: Wave-0: 15 test stubs xfailed, 8 live tests pass — conftest.py and pyproject.toml not collected test files
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-17T11:09:08.870Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-deterministic-ba-tools-cli-foundational-gates/01-CONTEXT.md
+Last session: 2026-06-17T12:07:22.267Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None
