@@ -1,0 +1,84 @@
+"""
+Repository root resolution and path-traversal guard (TOOL-14, T-1-01).
+
+All ba-tools commands receive an optional --repo-root argument. These helpers:
+1. Resolve that argument to an absolute Path (or fall back to git toplevel / cwd).
+2. Validate that a candidate path is inside the resolved root (traversal guard).
+
+No hard-coded machine paths. Python interpreter via sys.executable (DESIGN §11).
+"""
+
+import subprocess
+import sys
+from pathlib import Path
+
+
+def resolve_repo_root(arg: str | None) -> Path:
+    """Return an absolute Path to use as the repository root.
+
+    Resolution order (first that works wins):
+      1. ``arg`` — the value of ``--repo-root`` from the CLI, if provided.
+      2. ``git rev-parse --show-toplevel`` — the git project root, if the
+         current working directory is inside a git repository.
+      3. ``Path.cwd()`` — the current working directory as a last resort.
+
+    Args:
+        arg: raw string value of the ``--repo-root`` CLI argument, or None.
+
+    Returns:
+        An absolute, resolved ``pathlib.Path``.
+    """
+    if arg is not None:
+        return Path(arg).resolve()
+
+    # Try git toplevel
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c",
+             "import subprocess, sys; "
+             "r = subprocess.run(['git', 'rev-parse', '--show-toplevel'], "
+             "capture_output=True, text=True); "
+             "sys.exit(0 if r.returncode == 0 else 1); "
+             "print(r.stdout.strip(), end='')"],
+            capture_output=True,
+            text=True,
+        )
+        # Simpler approach: shell out to git directly
+    except Exception:
+        pass
+
+    try:
+        git_result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+        )
+        if git_result.returncode == 0:
+            toplevel = git_result.stdout.strip()
+            if toplevel:
+                return Path(toplevel).resolve()
+    except (FileNotFoundError, OSError):
+        pass
+
+    return Path.cwd().resolve()
+
+
+def is_within_root(candidate: Path, root: Path) -> bool:
+    """Return True if ``candidate`` is inside (or equal to) ``root``.
+
+    Uses ``Path.resolve().is_relative_to()`` so symlinks and ``..`` traversal
+    are handled correctly. Both paths are resolved before comparison (T-1-01).
+
+    Args:
+        candidate: path to test.
+        root: the repository root or allowed directory.
+
+    Returns:
+        True if ``candidate.resolve()`` is ``root.resolve()`` or a descendant.
+        False otherwise (path-traversal detected).
+    """
+    try:
+        candidate.resolve().relative_to(root.resolve())
+        return True
+    except ValueError:
+        return False
