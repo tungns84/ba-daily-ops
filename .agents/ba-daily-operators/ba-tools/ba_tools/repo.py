@@ -72,8 +72,18 @@ def resolve_under_root(raw: str, root: Path) -> Path:
 def is_within_root(candidate: Path, root: Path) -> bool:
     """Return True if ``candidate`` is inside (or equal to) ``root``.
 
-    Uses ``Path.resolve().is_relative_to()`` so symlinks and ``..`` traversal
-    are handled correctly. Both paths are resolved before comparison (T-1-01).
+    Resolves both paths and tests containment via
+    ``candidate.resolve().relative_to(root.resolve())`` inside a
+    ``try/except ValueError`` (a ``ValueError`` means *candidate* is not under
+    *root*). ``..`` traversal is normalised away by ``resolve()`` before the
+    comparison (T-1-01).
+
+    Symlink caveat: on POSIX, ``resolve()`` canonicalises symlinks so a link
+    pointing outside *root* is correctly rejected. On Windows, ``resolve()`` of
+    a path whose final component does not exist does not always canonicalise
+    junctions/symlinks, so containment of a non-existent target via a junction
+    is NOT guaranteed here. Callers that require hard symlink containment must
+    add an explicit check/test.
 
     Args:
         candidate: path to test.
