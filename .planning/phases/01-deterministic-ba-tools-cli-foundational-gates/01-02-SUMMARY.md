@@ -147,3 +147,4 @@ Commits verified:
 - 7681447 (test 01-02: RED byte-check)
 - 29a87e9 (feat 01-02: GREEN byte-check)
 - 7666885 (fix 01-02: output_contract stub fixture)
+- 59a0c76 (docs 01-02: metadata commit)
