@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-05-PLAN.md
-last_updated: "2026-06-17T12:50:58.850Z"
-last_activity: 2026-06-17 -- Phase 01 execution started
+stopped_at: Completed 01-06-PLAN.md
+last_updated: "2026-06-17T13:00:00Z"
+last_activity: 2026-06-17 -- Phase 01 Plan 06 completed
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 0
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-06-17)
 ## Current Position
 
 Phase: 01 (deterministic-ba-tools-cli-foundational-gates) — EXECUTING
-Plan: 6 of 7
+Plan: 7 of 7
 Status: Ready to execute
-Last activity: 2026-06-17 -- Phase 01 execution started
+Last activity: 2026-06-17 -- Phase 01 Plan 06 completed (utility commands: extract-uc, template, discovery, scan, confirm)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P03 | 5 minutes | - tasks | - files |
 | Phase 01 P04 | 7 minutes | 2 tasks | 7 files |
 | Phase 01 P05 | 8m | - tasks | - files |
+| Phase 01 P06 | 12 minutes | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,10 @@ Recent decisions affecting current work:
 - [Phase ?]: lint-requirements exits 0 always (reporter not gate); verify owns gating per D-08
 - [Phase ?]: verify reads Source/Section/Span columns from Markdown table rows for per-req citation
 - [Phase ?]: citation_exists returns False for spans shorter than 12 chars regardless of cite_scope
+- [Phase 01 P06]: markdown_sections.extract stops only at same-or-higher heading level (Pitfall-5 fix)
+- [Phase 01 P06]: template fill uses string.Template safe_substitute so unknown ${vars} remain as-is
+- [Phase 01 P06]: scan emits advisory WARN findings only, always exit 0 (Open Decision #2, D-07/D-08)
+- [Phase 01 P06]: confirm is v1 pass-through exiting 0; --yes flag reserved for future non-interactive use
 
 ### Pending Todos
 
@@ -107,6 +112,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-17T12:50:58.843Z
-Stopped at: Completed 01-05-PLAN.md
+Last session: 2026-06-17T13:00:00Z
+Stopped at: Completed 01-06-PLAN.md
 Resume file: None

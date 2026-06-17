@@ -18,17 +18,17 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 - [ ] **TOOL-07**: `ba-tools trace write` records an artifact→REQ-ID mapping plus a statement hash
 - [ ] **TOOL-08**: `ba-tools index update` rebuilds `.ba-ops/INDEX.md` and flags gaps, orphans, and stale (source-hash drift)
 - [x] **TOOL-09**: `ba-tools uc-status` returns single-UC pipeline state + `next_step` (resumable)
-- [ ] **TOOL-10**: `ba-tools extract-uc --uc "<spec>"` returns the UC section + parsed identity
-- [ ] **TOOL-11**: `ba-tools template fill` scaffolds an artifact from `ba-core/templates`
-- [ ] **TOOL-12**: `ba-tools discovery add|list` captures and lists iteration discoveries
+- [x] **TOOL-10**: `ba-tools extract-uc --uc "<spec>"` returns the UC section + parsed identity
+- [x] **TOOL-11**: `ba-tools template fill` scaffolds an artifact from `ba-core/templates`
+- [x] **TOOL-12**: `ba-tools discovery add|list` captures and lists iteration discoveries
 - [x] **TOOL-13**: every success prints UTF-8 JSON to stdout; every `BaToolsError` exits with code 2
 - [x] **TOOL-14**: all paths resolve relative to `--repo-root` (git root / cwd) — no hard-coded machine paths; Python resolved via `sys.executable`
-- [ ] **TOOL-15**: `ba-tools scan --file <f>` runs an advisory prompt-injection scan
+- [x] **TOOL-15**: `ba-tools scan --file <f>` runs an advisory prompt-injection scan
 
 ### Verification Gates (GATE)
 
 - [ ] **GATE-01**: Quality gate runs `ba-tools verify` + `ba-critic` judgement after an agent produces an artifact
-- [ ] **GATE-02**: Confirm gate fires before any irreversible/outward step (e.g. overwriting a delivered SRS)
+- [x] **GATE-02**: Confirm gate fires before any irreversible/outward step (e.g. overwriting a delivered SRS)
 - [ ] **GATE-03**: Safety gate contract defined for render/embed steps (enforced by deferred plugins): render CLI only, path-traversal + injection scan, `.png`/`.svg` extension check
 - [x] **GATE-04**: A CI/pre-commit byte-check gate fails if any eager-loaded doc (AGENTS.md / refs) is ≥ 32,768 B (Codex truncates silently)
 
@@ -119,14 +119,14 @@ mermaid / mockup (independent) → uc conductor.
 | TOOL-07 | Phase 2 | Pending |
 | TOOL-08 | Phase 2 | Pending |
 | TOOL-09 | Phase 1 | Complete |
-| TOOL-10 | Phase 1 | Pending |
-| TOOL-11 | Phase 1 | Pending |
-| TOOL-12 | Phase 1 | Pending |
+| TOOL-10 | Phase 1 | Complete |
+| TOOL-11 | Phase 1 | Complete |
+| TOOL-12 | Phase 1 | Complete |
 | TOOL-13 | Phase 1 | Complete |
 | TOOL-14 | Phase 1 | Complete |
-| TOOL-15 | Phase 1 | Pending |
+| TOOL-15 | Phase 1 | Complete |
 | GATE-01 | Phase 2 | Pending |
-| GATE-02 | Phase 1 | Pending |
+| GATE-02 | Phase 1 | Complete |
 | GATE-03 | Phase 5 | Pending |
 | GATE-04 | Phase 1 | Complete |
 | SRS-01 | Phase 2 | Pending |
