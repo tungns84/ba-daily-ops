@@ -12,9 +12,9 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 - [x] **TOOL-01**: `ba-tools init <operator>` returns context JSON (config, routes, default_route, state)
 - [x] **TOOL-02**: `ba-tools resolve-route <operator>` returns the static DEFAULT_ROUTE only — never infers route from free text
 - [x] **TOOL-03**: `ba-tools state update|patch|advance` writes `.ba-ops/STATE.md` guarded by an `O_EXCL` lockfile (stale-lock reclaimed after 10s)
-- [ ] **TOOL-04**: `ba-tools lint-requirements` flags ambiguity, atomicity, grounding, verifiability, and citation issues
-- [ ] **TOOL-05**: `lint-requirements` enforces REQ-ID stability — IDs are permanent; it flags a material statement change on an existing ID (never silent renumber)
-- [ ] **TOOL-06**: `ba-tools verify` gate checks: verbatim citation-exists (≥12-char real substring, **section-scoped**), REQ-ID coverage, hash-match; folds the lint result
+- [x] **TOOL-04**: `ba-tools lint-requirements` flags ambiguity, atomicity, grounding, verifiability, and citation issues
+- [x] **TOOL-05**: `lint-requirements` enforces REQ-ID stability — IDs are permanent; it flags a material statement change on an existing ID (never silent renumber)
+- [x] **TOOL-06**: `ba-tools verify` gate checks: verbatim citation-exists (≥12-char real substring, **section-scoped**), REQ-ID coverage, hash-match; folds the lint result
 - [ ] **TOOL-07**: `ba-tools trace write` records an artifact→REQ-ID mapping plus a statement hash
 - [ ] **TOOL-08**: `ba-tools index update` rebuilds `.ba-ops/INDEX.md` and flags gaps, orphans, and stale (source-hash drift)
 - [x] **TOOL-09**: `ba-tools uc-status` returns single-UC pipeline state + `next_step` (resumable)
@@ -113,9 +113,9 @@ mermaid / mockup (independent) → uc conductor.
 | TOOL-01 | Phase 1 | Complete |
 | TOOL-02 | Phase 1 | Complete |
 | TOOL-03 | Phase 1 | Complete |
-| TOOL-04 | Phase 1 | Pending |
-| TOOL-05 | Phase 1 | Pending |
-| TOOL-06 | Phase 1 | Pending |
+| TOOL-04 | Phase 1 | Complete |
+| TOOL-05 | Phase 1 | Complete |
+| TOOL-06 | Phase 1 | Complete |
 | TOOL-07 | Phase 2 | Pending |
 | TOOL-08 | Phase 2 | Pending |
 | TOOL-09 | Phase 1 | Complete |
