@@ -92,6 +92,41 @@ def test_state_advance_increments_step(tmp_path):
     assert "status: running" in content, "Advance must preserve non-step fields"
 
 
+def test_state_advance_non_numeric_step_fails_loudly(tmp_path):
+    """advance on a non-numeric step must exit 2 STEP_NOT_NUMERIC, not silently reset (CR-04)."""
+    root = str(tmp_path)
+
+    # Seed with a free-form (non-numeric) step value, as the project's own
+    # workflows do (e.g. 'writer_p1').
+    _run_state("update", '{"step": "writer_p1", "status": "running"}', root)
+
+    result = _run_state("advance", "{}", root)
+    assert result.returncode == 2, (
+        f"advance on non-numeric step must exit 2, got {result.returncode}. "
+        f"stderr={result.stderr}"
+    )
+    err = json.loads(result.stderr)
+    assert err["ok"] is False
+    codes = [f["code"] for f in err["failures"]]
+    assert "STEP_NOT_NUMERIC" in codes, f"Expected STEP_NOT_NUMERIC, got {codes}"
+
+    # The existing step must be preserved (no clobber to '1').
+    state_md = tmp_path / ".ba-ops" / "STATE.md"
+    content = state_md.read_text(encoding="utf-8")
+    assert "step: writer_p1" in content, "Non-numeric step must be preserved on failed advance"
+
+
+def test_state_advance_explicit_step_on_non_numeric(tmp_path):
+    """advance with an explicit step in --data overrides even a non-numeric current step (CR-04)."""
+    root = str(tmp_path)
+    _run_state("update", '{"step": "writer_p1"}', root)
+
+    result = _run_state("advance", '{"step": "5"}', root)
+    assert result.returncode == 0, f"Explicit step advance failed: {result.stderr}"
+    state_md = tmp_path / ".ba-ops" / "STATE.md"
+    assert "step: 5" in state_md.read_text(encoding="utf-8")
+
+
 def test_state_bad_data_exits_2(tmp_path):
     """Malformed --data (not valid JSON) exits 2 with BAD_DATA failure code."""
     root = str(tmp_path)

@@ -269,15 +269,23 @@ def merge_state(existing_text: str, data: dict[str, Any], action: str) -> str:
         fm.update(safe_data)
 
     elif action == "advance":
-        # Increment step counter, then apply extra keys
-        try:
-            current = int(fm.get("step", 0))
-        except (TypeError, ValueError):
-            current = 0
-        # Allow data to override step explicitly; otherwise auto-increment
+        # Allow data to override step explicitly; otherwise auto-increment.
         if "step" in safe_data:
             fm["step"] = safe_data.pop("step")
         else:
+            # Fail loudly instead of silently resetting to 1 (CR-04): a silent
+            # reset of a non-numeric step would lose durable pipeline position
+            # with no signal to the caller.
+            try:
+                current = int(fm.get("step", 0))
+            except (TypeError, ValueError) as exc:
+                raise BaToolsError([{
+                    "code": "STEP_NOT_NUMERIC",
+                    "message": (
+                        f"Cannot advance: step is non-numeric ({fm.get('step')!r}). "
+                        "Pass an explicit step in --data to set it."
+                    ),
+                }]) from exc
             fm["step"] = str(current + 1)
         fm.update(safe_data)
 
