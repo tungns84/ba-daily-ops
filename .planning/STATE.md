@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-06-17T12:26:13.867Z"
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-06-17T12:35:47.065Z"
 last_activity: 2026-06-17 -- Phase 01 execution started
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 7
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-17)
 ## Current Position
 
 Phase: 01 (deterministic-ba-tools-cli-foundational-gates) — EXECUTING
-Plan: 4 of 7
+Plan: 5 of 7
 Status: Ready to execute
 Last activity: 2026-06-17 -- Phase 01 execution started
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P01 | 9 minutes | 3 tasks | 36 files |
 | Phase 01 P02 | 5 minutes | 2 tasks | 5 files |
 | Phase 01 P03 | 5 minutes | - tasks | - files |
+| Phase 01 P04 | 7 minutes | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,8 @@ Recent decisions affecting current work:
 - [Phase ?]: STATE.md format: YAML frontmatter + Markdown body matching .planning/STATE.md convention
 - [Phase ?]: acquire_state_lock(): FileLock(timeout=10) + mtime stale check + os.remove with except PermissionError: pass (D-01/D-02, RESEARCH Pattern 2 + Pitfall 1)
 - [Phase ?]: ALLOWED_KEYS frozenset in state_store.py as single source of truth for STATE.md key allowlist (T-1-08 security contract)
+- [Phase ?]: STATE.md seed uses unquoted YAML scalars to match _parse_state() simple key:value parser
+- [Phase ?]: OPERATOR_ROUTES dict in init_cmd.py is canonical full route list per operator (DEFAULT_ROUTES carries default only)
 
 ### Pending Todos
 
@@ -100,6 +103,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-17T12:26:13.860Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-06-17T12:35:47.056Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None

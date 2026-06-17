@@ -9,7 +9,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 ### ba-tools CLI (TOOL)
 
-- [ ] **TOOL-01**: `ba-tools init <operator>` returns context JSON (config, routes, default_route, state)
+- [x] **TOOL-01**: `ba-tools init <operator>` returns context JSON (config, routes, default_route, state)
 - [x] **TOOL-02**: `ba-tools resolve-route <operator>` returns the static DEFAULT_ROUTE only — never infers route from free text
 - [x] **TOOL-03**: `ba-tools state update|patch|advance` writes `.ba-ops/STATE.md` guarded by an `O_EXCL` lockfile (stale-lock reclaimed after 10s)
 - [ ] **TOOL-04**: `ba-tools lint-requirements` flags ambiguity, atomicity, grounding, verifiability, and citation issues
@@ -17,7 +17,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 - [ ] **TOOL-06**: `ba-tools verify` gate checks: verbatim citation-exists (≥12-char real substring, **section-scoped**), REQ-ID coverage, hash-match; folds the lint result
 - [ ] **TOOL-07**: `ba-tools trace write` records an artifact→REQ-ID mapping plus a statement hash
 - [ ] **TOOL-08**: `ba-tools index update` rebuilds `.ba-ops/INDEX.md` and flags gaps, orphans, and stale (source-hash drift)
-- [ ] **TOOL-09**: `ba-tools uc-status` returns single-UC pipeline state + `next_step` (resumable)
+- [x] **TOOL-09**: `ba-tools uc-status` returns single-UC pipeline state + `next_step` (resumable)
 - [ ] **TOOL-10**: `ba-tools extract-uc --uc "<spec>"` returns the UC section + parsed identity
 - [ ] **TOOL-11**: `ba-tools template fill` scaffolds an artifact from `ba-core/templates`
 - [ ] **TOOL-12**: `ba-tools discovery add|list` captures and lists iteration discoveries
@@ -43,8 +43,8 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 ### Traceability State (TRACE)
 
-- [ ] **TRACE-01**: `.ba-ops/` scaffold exists: PROJECT.md, REQUIREMENTS.md (the REQ-ID registry), INDEX.md, STATE.md, config.json
-- [ ] **TRACE-02**: `.ba-ops/config.json` feature flags default `true` when missing (absent = enabled)
+- [x] **TRACE-01**: `.ba-ops/` scaffold exists: PROJECT.md, REQUIREMENTS.md (the REQ-ID registry), INDEX.md, STATE.md, config.json
+- [x] **TRACE-02**: `.ba-ops/config.json` feature flags default `true` when missing (absent = enabled)
 - [ ] **TRACE-03**: every downstream artifact carries a `req_ids` field
 - [ ] **TRACE-04**: `INDEX.md` is a traceability matrix: REQ-ID → SRS § → mermaid → mockup → story
 - [ ] **TRACE-05**: INDEX flags gaps (missing coverage), orphans (req_ids that don't exist), and stale (source hash changed → re-run needed)
@@ -110,7 +110,7 @@ mermaid / mockup (independent) → uc conductor.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TOOL-01 | Phase 1 | Pending |
+| TOOL-01 | Phase 1 | Complete |
 | TOOL-02 | Phase 1 | Complete |
 | TOOL-03 | Phase 1 | Complete |
 | TOOL-04 | Phase 1 | Pending |
@@ -118,7 +118,7 @@ mermaid / mockup (independent) → uc conductor.
 | TOOL-06 | Phase 1 | Pending |
 | TOOL-07 | Phase 2 | Pending |
 | TOOL-08 | Phase 2 | Pending |
-| TOOL-09 | Phase 1 | Pending |
+| TOOL-09 | Phase 1 | Complete |
 | TOOL-10 | Phase 1 | Pending |
 | TOOL-11 | Phase 1 | Pending |
 | TOOL-12 | Phase 1 | Pending |
@@ -135,8 +135,8 @@ mermaid / mockup (independent) → uc conductor.
 | SRS-04 | Phase 2 | Pending |
 | SRS-05 | Phase 2 | Pending |
 | SRS-06 | Phase 2 | Pending |
-| TRACE-01 | Phase 1 | Pending |
-| TRACE-02 | Phase 1 | Pending |
+| TRACE-01 | Phase 1 | Complete |
+| TRACE-02 | Phase 1 | Complete |
 | TRACE-03 | Phase 2 | Pending |
 | TRACE-04 | Phase 2 | Pending |
 | TRACE-05 | Phase 2 | Pending |
