@@ -143,15 +143,26 @@ def run(args) -> None:
         if row_source:
             # Resolve the row-supplied source under --repo-root, not the CWD (WR-01).
             candidate = resolve_under_root(row_source, root)
-            if is_within_root(candidate, root) and candidate.exists():
+            # A row-supplied source is attacker-influenced data: surface a
+            # traversal attempt as its own auditable code, distinct from a
+            # benign missing file (WR-04).
+            if not is_within_root(candidate, root):
+                findings.append({
+                    "severity": "fail",
+                    "code": "PATH_TRAVERSAL",
+                    "req_id": req_id,
+                    "path": row_source,
+                    "message": f"Source document path resolves outside repo root: {row_source}",
+                })
+                continue
+            if candidate.exists():
                 source_doc = candidate
             else:
-                # Row specifies a source but it can't be resolved
                 findings.append({
                     "severity": "fail",
                     "code": "SOURCE_NOT_FOUND",
                     "req_id": req_id,
-                    "message": f"Source document not found or outside root: {row_source}",
+                    "message": f"Source document not found: {row_source}",
                 })
                 continue
 

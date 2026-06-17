@@ -355,6 +355,31 @@ def test_verify_citation_error_exits_2(tmp_path):
     assert any(f.get("code") == "CITATION_NOT_FOUND" for f in payload["failures"])
 
 
+def test_verify_row_source_traversal_is_path_traversal(tmp_path):
+    """A row Source pointing outside the repo root -> PATH_TRAVERSAL, not SOURCE_NOT_FOUND (WR-04).
+
+    The repo root is a subdirectory; the row's Source uses ../ to escape it.
+    The escape must be surfaced as an auditable PATH_TRAVERSAL code.
+    """
+    root = tmp_path / "repo"
+    root.mkdir()
+    reqs_file = root / "reqs.md"
+    reqs_file.write_text(
+        "# Requirements\n\n"
+        "| ID | Statement | Source | Section | Span | Status |\n"
+        "|----|-----------|--------|---------|------|--------|\n"
+        "| TOOL-01 | The system shall validate paths. | ../escape.md | Background | a span here twelve | stated |\n",
+        encoding="utf-8",
+    )
+    result = _run(["verify", "--reqs", "reqs.md"], repo_root=str(root), cwd=str(root))
+    payload = _assert_error(result, "verify PATH_TRAVERSAL row source")
+    codes = [f.get("code") for f in payload["failures"]]
+    assert "PATH_TRAVERSAL" in codes, f"Expected PATH_TRAVERSAL, got {codes}"
+    assert "SOURCE_NOT_FOUND" not in codes, (
+        "A traversal escape must not be masked as SOURCE_NOT_FOUND (WR-04)"
+    )
+
+
 # ---------------------------------------------------------------------------
 # extract-uc — success + FILE_NOT_FOUND error
 # ---------------------------------------------------------------------------
