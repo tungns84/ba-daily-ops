@@ -15,7 +15,7 @@ from pathlib import Path
 
 from ba_tools.errors import BaToolsError
 from ba_tools.output import ok_json
-from ba_tools.repo import is_within_root, resolve_repo_root
+from ba_tools.repo import is_within_root, resolve_repo_root, resolve_under_root
 
 CODEX_LIMIT = 32768  # bytes — DESIGN §7 hard limit (Codex truncates AT this value)
 
@@ -42,7 +42,9 @@ def run(args) -> None:
     failures: list[dict] = []
 
     for raw in args.paths:
-        resolved = (repo_root / raw).resolve()
+        # WR-03: use the shared helper so byte-check honors the same
+        # --repo-root path contract as every other command.
+        resolved = resolve_under_root(raw, repo_root)
 
         # T-1-01: reject path-traversal attempts
         if not is_within_root(resolved, repo_root):
