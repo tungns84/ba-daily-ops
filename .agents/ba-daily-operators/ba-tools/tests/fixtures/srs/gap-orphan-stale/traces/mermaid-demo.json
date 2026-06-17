@@ -1,0 +1,17 @@
+{
+  "kind": "mermaid",
+  "slug": "demo",
+  "artifact_path": "tests/fixtures/srs/gap-orphan-stale/mermaid-demo.mmd",
+  "source_doc": "tests/fixtures/srs/gap-orphan-stale/source.md",
+  "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000",
+  "req_ids": [
+    {
+      "id": "FR-001",
+      "statement_hash": "bbe6dc63b02836e659903db7b07babb87d88dc013c10200b1f87fc23bce8c772"
+    },
+    {
+      "id": "ORPHAN-001",
+      "statement_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

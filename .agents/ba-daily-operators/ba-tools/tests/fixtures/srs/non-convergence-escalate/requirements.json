@@ -1,0 +1,14 @@
+{
+  "requirements": [
+    {
+      "id": "FR-DRAFT-001",
+      "statement": "The system shall escalate persistent quality failures to the operator.",
+      "status": "draft",
+      "source_trace": {
+        "doc": "source.md",
+        "section": "Functional Requirements",
+        "span": "The system shall escalate persistent quality failures to the operator."
+      }
+    }
+  ]
+}
