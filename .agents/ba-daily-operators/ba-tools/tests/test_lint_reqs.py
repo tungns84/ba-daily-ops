@@ -22,7 +22,12 @@ def run_lint(tmp_path, reqs_content, baseline_content=None, extra_args=None):
     reqs_file = tmp_path / "reqs.md"
     reqs_file.write_text(reqs_content, encoding="utf-8")
 
-    cmd = [sys.executable, "-m", "ba_tools", "lint-requirements", str(reqs_file)]
+    # Pass --repo-root so path-safety check uses tmp_path as root (T-1-01)
+    cmd = [
+        sys.executable, "-m", "ba_tools",
+        "--repo-root", str(tmp_path),
+        "lint-requirements", str(reqs_file),
+    ]
 
     if baseline_content is not None:
         baseline_file = tmp_path / "baseline.md"
