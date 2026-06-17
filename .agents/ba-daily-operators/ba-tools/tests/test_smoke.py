@@ -32,18 +32,17 @@ PHASE_1_COMMANDS = [
     "confirm",
 ]
 
-# ---------------------------------------------------------------------------
-# EXTENSION POINT (plan 03): add "trace" and "index" to the list below once
-# trace_cmd and index_cmd are registered in __main__.py.
-# ---------------------------------------------------------------------------
-# PHASE_2_COMMANDS = ["trace", "index"]  # uncomment in plan 03
+# Phase 2 Plan 03: trace and index commands (now registered in __main__.py)
+PHASE_2_COMMANDS = ["trace", "index"]
+
+ALL_COMMANDS = PHASE_1_COMMANDS + PHASE_2_COMMANDS
 
 
 class TestCommandsRegistered:
-    """Assert each Phase-1 command name is discoverable via the built parser."""
+    """Assert each command name is discoverable via the built parser."""
 
     def test_commands_registered(self):
-        """Every Phase-1 command name is present in the parser's subparser choices."""
+        """Every Phase-1 and Phase-2 command name is present in the parser's subparser choices."""
         from ba_tools.__main__ import build_parser
 
         parser = build_parser()
@@ -51,16 +50,16 @@ class TestCommandsRegistered:
         subparser_choices = parser._subparsers._group_actions[0].choices
         registered_names = set(subparser_choices.keys())
 
-        missing = [cmd for cmd in PHASE_1_COMMANDS if cmd not in registered_names]
+        missing = [cmd for cmd in ALL_COMMANDS if cmd not in registered_names]
         assert missing == [], (
-            f"Expected all Phase-1 commands registered; missing: {missing}\n"
+            f"Expected all commands registered; missing: {missing}\n"
             f"Registered: {sorted(registered_names)}"
         )
 
 
-@pytest.mark.parametrize("cmd_name", PHASE_1_COMMANDS)
+@pytest.mark.parametrize("cmd_name", ALL_COMMANDS)
 def test_command_help_exits_zero(cmd_name):
-    """Every Phase-1 command's --help exits 0 (not ImportError / AttributeError)."""
+    """Every command's --help exits 0 (not ImportError / AttributeError)."""
     result = subprocess.run(
         [sys.executable, "-m", "ba_tools", cmd_name, "--help"],
         capture_output=True,
