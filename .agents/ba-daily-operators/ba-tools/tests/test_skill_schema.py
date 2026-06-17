@@ -4,9 +4,9 @@ These tests validate that skill metadata files conform to the documented
 contract (CLAUDE.md "Codex Skill Contract"):
   - SKILL.md frontmatter has exactly {name, description} — no extra keys
   - agents/openai.yaml has nested interface.* keys + policy.allow_implicit_invocation
+  - default_prompt uses skill-native wording and does NOT contain a fake CLI literal
 
-Tests are marked skip until skill files land in plan 04, so this scaffold
-collects cleanly and provides ready-to-activate helpers for plans 03/04 to extend.
+Skill-path tests were skipped (plan 01) until skill files landed in plan 04 — now live.
 """
 
 import re
@@ -25,7 +25,10 @@ _AGENTS_ROOT = Path(__file__).parent.parent.parent.parent  # .agents/ba-daily-op
 _SKILL_DIRS = [
     _REPO_ROOT / ".agents" / "skills",
 ]
-_OPENAI_YAML = _REPO_ROOT / "agents" / "openai.yaml"
+# openai.yaml lives per-skill: .agents/skills/<skill>/agents/openai.yaml
+# We check the ba-srs-analyze skill specifically
+_BA_SRS_SKILL_DIR = _REPO_ROOT / ".agents" / "skills" / "ba-srs-analyze"
+_OPENAI_YAML = _BA_SRS_SKILL_DIR / "agents" / "openai.yaml"
 
 
 # ---------------------------------------------------------------------------
@@ -37,6 +40,7 @@ def parse_skill_md_frontmatter(skill_md_path: Path) -> dict:
     """Parse YAML frontmatter from a SKILL.md file.
 
     Returns a dict of key: value pairs from the --- block.
+    Handles block scalars (> and |) so continuation lines are NOT treated as keys.
     Raises ValueError if no frontmatter found.
     """
     text = skill_md_path.read_text(encoding="utf-8")
@@ -51,10 +55,21 @@ def parse_skill_md_frontmatter(skill_md_path: Path) -> dict:
         fm_lines.append(line)
 
     result = {}
+    in_block_scalar = False
     for line in fm_lines:
-        if ":" in line:
-            key, _, value = line.partition(":")
-            result[key.strip()] = value.strip()
+        # A top-level key must start at column 0 (no leading whitespace)
+        if line and not line[0].isspace():
+            in_block_scalar = False
+            if ":" in line:
+                key, _, value = line.partition(":")
+                key = key.strip()
+                value = value.strip()
+                result[key] = value
+                # If value is a block scalar indicator, all following indented lines belong to it
+                if value in (">", "|", ">-", "|-", ">+", "|+"):
+                    in_block_scalar = True
+        # Indented lines: skip if inside a block scalar (continuation of previous key)
+        # Also skip lines that are pure continuation of a multi-line value
     return result
 
 
@@ -95,12 +110,16 @@ def parse_openai_yaml_structure(yaml_path: Path) -> dict:
     return result
 
 
+def read_openai_yaml_full(yaml_path: Path) -> str:
+    """Return the full text of the openai.yaml for substring assertions."""
+    return yaml_path.read_text(encoding="utf-8")
+
+
 # ---------------------------------------------------------------------------
-# SKILL.md frontmatter schema tests
+# SKILL.md frontmatter schema tests (live — plan 04 skill files exist)
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skip(reason="skill files land in plan 04 — activate then")
 def test_skill_md_frontmatter_keys_only_name_description():
     """SKILL.md frontmatter must contain exactly {name, description} — no extra keys.
 
@@ -123,11 +142,10 @@ def test_skill_md_frontmatter_keys_only_name_description():
 
 
 # ---------------------------------------------------------------------------
-# agents/openai.yaml nesting schema tests
+# agents/openai.yaml nesting schema tests (live — plan 04 skill files exist)
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skip(reason="skill files land in plan 04 — activate then")
 def test_openai_yaml_nesting_structure():
     """agents/openai.yaml must nest display_name/short_description/default_prompt under interface:
     and allow_implicit_invocation under policy: (CLAUDE.md 'CONFIRMED with structural note').
@@ -159,6 +177,36 @@ def test_openai_yaml_nesting_structure():
     assert "allow_implicit_invocation" in structure["policy"], (
         "agents/openai.yaml 'policy:' section missing 'allow_implicit_invocation'; "
         "must be nested under policy:, not at flat top level."
+    )
+
+    # allow_implicit_invocation must be false (never true)
+    raw_value = structure["policy"]["allow_implicit_invocation"]
+    assert raw_value.lower() in ("false", "no", "0"), (
+        f"agents/openai.yaml 'policy.allow_implicit_invocation' must be false; got: {raw_value!r}"
+    )
+
+
+def test_openai_yaml_default_prompt_no_fake_cli():
+    """default_prompt must NOT contain the fake CLI pattern 'ba-srs-analyze --route'.
+
+    Per PLAN review (Codex HIGH): the default_prompt must use skill-native wording
+    ('use the workflow, route full') and must NEVER look like a runnable shell
+    command ('ba-srs-analyze --route full ...' — no such binary exists).
+    It MAY reference 'ba-tools resolve-route ba-srs-analyze' (the real CLI).
+    """
+    assert _OPENAI_YAML.exists(), (
+        f"agents/openai.yaml not found at {_OPENAI_YAML}"
+    )
+    full_text = read_openai_yaml_full(_OPENAI_YAML)
+
+    # The fake CLI pattern: 'ba-srs-analyze --route' (with a space before --)
+    # This is the forbidden form — it implies ba-srs-analyze is a shell binary.
+    fake_cli_pattern = "ba-srs-analyze --route"
+    assert fake_cli_pattern not in full_text, (
+        f"agents/openai.yaml default_prompt contains the fake CLI literal "
+        f"{fake_cli_pattern!r}. Use skill-native wording instead "
+        f"(e.g. 'Use the ba-srs-analyze workflow, route full'). "
+        f"The skill is not a shell binary — there is no ba-srs-analyze command on PATH."
     )
 
 

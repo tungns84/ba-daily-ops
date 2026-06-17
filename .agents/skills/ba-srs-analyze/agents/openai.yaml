@@ -1,0 +1,17 @@
+interface:
+  display_name: "BA SRS Analyze"
+  short_description: "Source doc -> grounded requirements.json + IEEE-830 SRS, quality-gated by ba-tools verify + ba-critic CoVe."
+  default_prompt: |
+    Use the ba-srs-analyze workflow on the given source document, route `full`
+    (resolve the route via `ba-tools resolve-route ba-srs-analyze`).
+
+    To start: open .agents/ba-daily-operators/ba-core/workflows/ba-srs-analyze.md
+    and follow the `full` route step list, beginning with:
+      1. Run `ba-tools resolve-route ba-srs-analyze` to confirm the default route.
+      2. Run `ba-tools init ba-srs-analyze` for scaffold context.
+      3. Follow the extract → draft → verify → ba-critic CoVe → trace write → index update sequence.
+
+    Provide the source document path and an optional --slug.
+    Example: source = path/to/meeting-notes.md, slug = meeting-001
+policy:
+  allow_implicit_invocation: false
