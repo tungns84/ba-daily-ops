@@ -104,16 +104,62 @@ Deferred. Tracked, not in the current roadmap.
 
 ## Traceability
 
-Populated during roadmap creation (gsd-roadmapper). Each v1 requirement maps to exactly one phase.
+Each v1 requirement maps to exactly one phase. Phases derive from the confirmed
+build order (DESIGN §10): ba-tools (full) → srs-analyze + traceability core →
+mermaid / mockup (independent) → uc conductor.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (all v1 REQ-IDs) | TBD | Pending |
+| TOOL-01 | Phase 1 | Pending |
+| TOOL-02 | Phase 1 | Pending |
+| TOOL-03 | Phase 1 | Pending |
+| TOOL-04 | Phase 1 | Pending |
+| TOOL-05 | Phase 1 | Pending |
+| TOOL-06 | Phase 1 | Pending |
+| TOOL-07 | Phase 2 | Pending |
+| TOOL-08 | Phase 2 | Pending |
+| TOOL-09 | Phase 1 | Pending |
+| TOOL-10 | Phase 1 | Pending |
+| TOOL-11 | Phase 1 | Pending |
+| TOOL-12 | Phase 1 | Pending |
+| TOOL-13 | Phase 1 | Pending |
+| TOOL-14 | Phase 1 | Pending |
+| TOOL-15 | Phase 1 | Pending |
+| GATE-01 | Phase 2 | Pending |
+| GATE-02 | Phase 1 | Pending |
+| GATE-03 | Phase 5 | Pending |
+| GATE-04 | Phase 1 | Pending |
+| SRS-01 | Phase 2 | Pending |
+| SRS-02 | Phase 2 | Pending |
+| SRS-03 | Phase 2 | Pending |
+| SRS-04 | Phase 2 | Pending |
+| SRS-05 | Phase 2 | Pending |
+| SRS-06 | Phase 2 | Pending |
+| TRACE-01 | Phase 1 | Pending |
+| TRACE-02 | Phase 1 | Pending |
+| TRACE-03 | Phase 2 | Pending |
+| TRACE-04 | Phase 2 | Pending |
+| TRACE-05 | Phase 2 | Pending |
+| MMD-01 | Phase 3 | Pending |
+| MMD-02 | Phase 3 | Pending |
+| MMD-03 | Phase 3 | Pending |
+| MOCK-01 | Phase 4 | Pending |
+| MOCK-02 | Phase 4 | Pending |
+| MOCK-03 | Phase 4 | Pending |
+| UC-01 | Phase 5 | Pending |
+| UC-02 | Phase 5 | Pending |
+| UC-03 | Phase 5 | Pending |
+| CDX-01 | Phase 2 | Pending |
+| CDX-02 | Phase 2 | Pending |
+| CDX-03 | Phase 2 | Pending |
+| CDX-04 | Phase 1 | Pending |
+| CDX-05 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 35 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 35 ⚠️ (resolved by roadmapper)
+- v1 requirements: 44 total (registry actual count; the prior "35" header figure was a stale estimate — corrected here)
+- Mapped to phases: 44 ✓
+- Unmapped: 0 ✓
+- Per phase: Phase 1 = 19, Phase 2 = 15, Phase 3 = 3, Phase 4 = 3, Phase 5 = 4
 
 ## Open Decisions (resolved with recommended defaults; revisit in phase discussion)
 
@@ -126,4 +172,4 @@ Populated during roadmap creation (gsd-roadmapper). Each v1 requirement maps to 
 
 ---
 *Requirements defined: 2026-06-17*
-*Last updated: 2026-06-17 after initial definition*
+*Last updated: 2026-06-17 after roadmap creation (traceability mapped, coverage corrected to 44)*
