@@ -18,14 +18,17 @@ def _run_stub_command(cmd_args: list[str], repo_root: str) -> subprocess.Complet
 
 
 def test_stub_command_exits_2_on_not_implemented(tmp_path):
-    """Every stub command exits 2 (BaToolsError NOT_IMPLEMENTED) before Wave 1."""
-    result = _run_stub_command(["resolve-route", "ba-mermaid"], str(tmp_path))
+    """Every stub command exits 2 (BaToolsError NOT_IMPLEMENTED) before Wave 1.
+
+    Uses 'confirm' which is still a Wave-1 stub (resolve-route is now implemented in Wave 1).
+    """
+    result = _run_stub_command(["confirm"], str(tmp_path))
     assert result.returncode == 2, f"Expected exit 2, got {result.returncode}"
 
 
 def test_stub_command_stderr_is_flat_json(tmp_path):
     """Every stub command emits flat JSON to stderr with ok:false and failures list."""
-    result = _run_stub_command(["resolve-route", "ba-mermaid"], str(tmp_path))
+    result = _run_stub_command(["confirm"], str(tmp_path))
     try:
         payload = json.loads(result.stderr)
     except json.JSONDecodeError as exc:
