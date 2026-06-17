@@ -1,0 +1,14 @@
+{
+  "requirements": [
+    {
+      "id": "NFR-010",
+      "statement": "The system shall use encrypted communications.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "tests/fixtures/srs/paraphrased-span/source.md",
+        "span": "All communications must be secured with modern encryption standards",
+        "section": "2. Security Requirements"
+      }
+    }
+  ]
+}

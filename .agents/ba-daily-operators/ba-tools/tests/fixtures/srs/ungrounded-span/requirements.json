@@ -1,0 +1,14 @@
+{
+  "requirements": [
+    {
+      "id": "FR-010",
+      "statement": "The system shall process requests quickly.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "tests/fixtures/srs/ungrounded-span/source.md",
+        "span": "This span text was entirely invented and does not appear anywhere in the document.",
+        "section": "2. Functional Requirements"
+      }
+    }
+  ]
+}

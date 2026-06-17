@@ -1,0 +1,14 @@
+{
+  "requirements": [
+    {
+      "id": "FR-050",
+      "statement": "The system shall persist audit log entries to durable storage.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "tests/fixtures/srs/doc-mismatch/source_b.md",
+        "span": "The system shall persist all audit log entries to durable storage before returning success.",
+        "section": "2. Data Requirements"
+      }
+    }
+  ]
+}

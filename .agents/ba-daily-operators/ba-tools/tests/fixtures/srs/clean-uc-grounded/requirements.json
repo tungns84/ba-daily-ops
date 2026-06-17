@@ -1,0 +1,34 @@
+{
+  "requirements": [
+    {
+      "id": "FR-001",
+      "statement": "The system shall require users to authenticate before accessing protected resources.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "tests/fixtures/srs/clean-uc-grounded/source.md",
+        "span": "The system shall require users to authenticate before accessing protected resources.",
+        "section": "2. Authentication Requirements"
+      }
+    },
+    {
+      "id": "FR-002",
+      "statement": "The system shall maintain a traceability matrix linking requirements to source documents.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "tests/fixtures/srs/clean-uc-grounded/source.md",
+        "span": "The system shall maintain a traceability matrix linking requirements to source documents.",
+        "section": "3. Traceability Requirements"
+      }
+    },
+    {
+      "id": "NFR-001",
+      "statement": "System performance shall be evaluated through automated testing.",
+      "status": "derived",
+      "source_trace": {
+        "doc": "tests/fixtures/srs/clean-uc-grounded/source.md",
+        "span": "",
+        "section": ""
+      }
+    }
+  ]
+}

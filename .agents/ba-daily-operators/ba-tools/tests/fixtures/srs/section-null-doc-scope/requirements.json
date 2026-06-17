@@ -1,0 +1,14 @@
+{
+  "requirements": [
+    {
+      "id": "NFR-030",
+      "statement": "The system shall support concurrent access by up to one thousand users.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "tests/fixtures/srs/section-null-doc-scope/source.md",
+        "span": "The system shall support concurrent access by up to one thousand users simultaneously.",
+        "section": null
+      }
+    }
+  ]
+}

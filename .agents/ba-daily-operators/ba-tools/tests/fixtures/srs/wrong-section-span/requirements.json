@@ -1,0 +1,14 @@
+{
+  "requirements": [
+    {
+      "id": "NFR-020",
+      "statement": "The system shall respond to all API requests within 200 milliseconds.",
+      "status": "stated",
+      "source_trace": {
+        "doc": "tests/fixtures/srs/wrong-section-span/source.md",
+        "span": "The system shall respond to all API requests within 200 milliseconds under normal load.",
+        "section": "3. Security Requirements"
+      }
+    }
+  ]
+}
