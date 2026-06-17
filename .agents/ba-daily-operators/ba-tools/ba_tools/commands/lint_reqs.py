@@ -38,7 +38,10 @@ def _parse_md_table(text: str) -> list[dict]:
         | TOOL-01 | ... | stated | SRS §1 |
 
     Header names are lowercased and stripped. Leading/trailing ``|`` are
-    stripped from each cell. Separator rows (``---``) are skipped.
+    stripped from each cell. Separator rows (``---`` / GFM ``:---:``) are
+    skipped. GFM-escaped pipes (``\\|``) inside a cell are honored — the row
+    is split on unescaped pipes only, then each cell's ``\\|`` is unescaped to
+    a literal ``|`` (WR-05).
 
     Returns a list of row dicts (keys = lowercase header names).
     """
@@ -49,10 +52,13 @@ def _parse_md_table(text: str) -> list[dict]:
         stripped = line.strip()
         if not stripped.startswith("|"):
             continue
-        # Split on '|', strip each cell
-        cells = [c.strip() for c in stripped.split("|")]
-        # Remove the empty strings from the leading/trailing '|'
-        cells = [c for c in cells if True]  # keep all (head/tail may be empty)
+        # Split on UNescaped '|' so a GFM-escaped pipe (\|) inside a cell is
+        # not treated as a column boundary (WR-05). Each cell then has its
+        # \| sequences unescaped back to a literal '|'.
+        cells = [
+            c.replace(r"\|", "|").strip()
+            for c in re.split(r"(?<!\\)\|", stripped)
+        ]
         # Strip leading/trailing empty cells caused by '|...|' format
         if cells and cells[0] == "":
             cells = cells[1:]

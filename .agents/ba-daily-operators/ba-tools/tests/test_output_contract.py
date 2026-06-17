@@ -242,6 +242,30 @@ def test_lint_requirements_ok(tmp_path):
     assert "checked" in payload
 
 
+def test_lint_requirements_escaped_pipe_in_statement(tmp_path):
+    """A statement containing an escaped pipe (\\|) is not split into extra cells (WR-05).
+
+    The Source column must remain intact (not shifted), so the grounded
+    requirement produces no GROUNDING_MISSING failure.
+    """
+    reqs_file = tmp_path / "reqs.md"
+    reqs_file.write_text(
+        "# Requirements\n\n"
+        "| ID | Statement | Source |\n"
+        "|----|-----------|--------|\n"
+        r"| TOOL-01 | The CLI shall accept the regex `a\|b` and return 0. | SRS §3.1 |"
+        "\n",
+        encoding="utf-8",
+    )
+    result = _run(["lint-requirements", str(reqs_file)], repo_root=str(tmp_path))
+    payload = _assert_success(result, "lint-requirements escaped pipe")
+    assert payload["checked"] == 1
+    codes = [f["code"] for f in payload["findings"] if f.get("severity") == "fail"]
+    assert "GROUNDING_MISSING" not in codes, (
+        f"Escaped pipe must not shift the Source column. findings={payload['findings']!r}"
+    )
+
+
 def test_lint_requirements_relative_path_resolves_under_repo_root(tmp_path):
     """A relative --reqs path resolves under --repo-root, not the CWD (WR-01).
 
