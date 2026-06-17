@@ -357,3 +357,54 @@ def test_scaffold_creates_traces_subdir(tmp_path):
         f"Expected .ba-ops/traces/ to be created by ensure_scaffold; "
         f"found dirs: {[d.name for d in (tmp_path / '.ba-ops').iterdir() if d.is_dir()]}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Task 2 — F9 stability-drift fixture test (TOOL-05 / must_have truth 3)
+# ---------------------------------------------------------------------------
+
+
+def test_stability_drift():
+    """F9 fixture: same REQ-ID with materially changed statement triggers drift finding.
+
+    Uses the renumbered-reqid fixture files:
+    - requirements.json: FR-001 with traceability-index statement (v1)
+    - requirements_v2.json: FR-001 with an entirely different PDF-report statement (v2)
+
+    detect_reqid_issues(old_map, new_map) must return a REQ_ID_MATERIAL_CHANGE
+    finding for FR-001 (Pass 1 — same ID, material statement change).
+    """
+    import json
+    from pathlib import Path
+    from ba_tools.lint import detect_reqid_issues
+
+    fixture_dir = Path(__file__).parent / "fixtures" / "srs" / "renumbered-reqid"
+
+    old_reqs_list = json.loads((fixture_dir / "requirements.json").read_text(encoding="utf-8"))
+    new_reqs_list = json.loads((fixture_dir / "requirements_v2.json").read_text(encoding="utf-8"))
+
+    # Both files share FR-001 with differing statements
+    assert any(r["req_id"] == "FR-001" for r in old_reqs_list), "requirements.json must contain FR-001"
+    assert any(r["req_id"] == "FR-001" for r in new_reqs_list), "requirements_v2.json must contain FR-001"
+
+    old_map = {r["req_id"]: r["statement"] for r in old_reqs_list}
+    new_map = {r["req_id"]: r["statement"] for r in new_reqs_list}
+
+    # Statements must differ materially between versions
+    assert old_map["FR-001"] != new_map["FR-001"], (
+        "F9 fixture requires FR-001 to have different statements in v1 vs v2"
+    )
+
+    findings = detect_reqid_issues(old_map, new_map)
+
+    drift_findings = [
+        f for f in findings
+        if f.get("req_id") == "FR-001" and f.get("code") == "REQ_ID_MATERIAL_CHANGE"
+    ]
+    assert len(drift_findings) >= 1, (
+        f"Expected REQ_ID_MATERIAL_CHANGE for FR-001 (statement drift); "
+        f"got findings={findings}"
+    )
+    assert all(f["severity"] == "fail" for f in drift_findings), (
+        "Drift findings must have severity=fail (D-07)"
+    )

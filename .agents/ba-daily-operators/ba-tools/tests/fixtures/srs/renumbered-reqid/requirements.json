@@ -1,0 +1,12 @@
+[
+  {
+    "req_id": "FR-001",
+    "statement": "The system shall maintain a REQ-ID traceability index that maps each requirement to its source document, section, and verbatim span so that drift surfaces the moment it appears.",
+    "status": "stated",
+    "source_trace": {
+      "doc": "tests/fixtures/srs/renumbered-reqid/source.md",
+      "section": "1.1 Traceability",
+      "span": "maps each requirement to its source document"
+    }
+  }
+]
