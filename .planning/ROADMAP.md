@@ -23,7 +23,7 @@ milestone.
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Deterministic ba-tools CLI + Foundational Gates** - Full file/hash/command-provable CLI, `.ba-ops/` scaffold, lockfile state, REQ-ID stability lint, citation-exists verify, and the CI byte-check gate
+- [x] **Phase 1: Deterministic ba-tools CLI + Foundational Gates** - Full file/hash/command-provable CLI, `.ba-ops/` scaffold, lockfile state, REQ-ID stability lint, citation-exists verify, and the CI byte-check gate
 - [ ] **Phase 2: ba-srs-analyze + Quality Gate + Traceability Core** - Sources become atomic grounded requirements with a `source_trace` schema, gated by `ba-tools verify` + the fresh-context `ba-critic` CoVe loop, with the INDEX.md matrix and gap/orphan/stale drift detection
 - [ ] **Phase 3: ba-mermaid Diagram Operator** - UC/requirement becomes an MD-inline Mermaid diagram that cites the REQ-IDs it depicts, with optional `mmdc` export
 - [ ] **Phase 4: ba-mockup Operator** - Requirements become a UI mockup at `--fidelity html|wireframe`, each screen citing the REQ-IDs it realizes
@@ -56,7 +56,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-07-PLAN.md — Wave 2: cross-command output-contract + path-safety tests + git pre-commit byte-check hook
+- [x] 01-07-PLAN.md — Wave 2: cross-command output-contract + path-safety tests + git pre-commit byte-check hook
 
 ### Phase 2: ba-srs-analyze + Quality Gate + Traceability Core
 
@@ -122,7 +122,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Deterministic ba-tools CLI + Foundational Gates | 6/7 | In Progress|  |
+| 1. Deterministic ba-tools CLI + Foundational Gates | 7/7 | Complete | 2026-06-17 |
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 0/TBD | Not started | - |
 | 3. ba-mermaid Diagram Operator | 0/TBD | Not started | - |
 | 4. ba-mockup Operator | 0/TBD | Not started | - |

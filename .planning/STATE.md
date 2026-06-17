@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-06-PLAN.md
-last_updated: "2026-06-17T13:00:00Z"
-last_activity: 2026-06-17 -- Phase 01 Plan 06 completed
+stopped_at: Completed 01-07-PLAN.md
+last_updated: "2026-06-17T13:35:00Z"
+last_activity: 2026-06-17 -- Phase 01 Plan 07 completed
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 7
-  completed_plans: 6
-  percent: 0
+  completed_plans: 7
+  percent: 20
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-06-17)
 
 ## Current Position
 
-Phase: 01 (deterministic-ba-tools-cli-foundational-gates) — EXECUTING
-Plan: 7 of 7
-Status: Ready to execute
-Last activity: 2026-06-17 -- Phase 01 Plan 06 completed (utility commands: extract-uc, template, discovery, scan, confirm)
+Phase: 01 (deterministic-ba-tools-cli-foundational-gates) — COMPLETE
+Plan: 7 of 7 — ALL COMPLETE
+Status: Phase complete — ready for Phase 02
+Last activity: 2026-06-17 -- Phase 01 Plan 07 completed (cross-command output-contract + path-safety tests + git pre-commit hook)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 20% (Phase 1 of 5 complete)
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P04 | 7 minutes | 2 tasks | 7 files |
 | Phase 01 P05 | 8m | - tasks | - files |
 | Phase 01 P06 | 12 minutes | 3 tasks | 14 files |
+| Phase 01 P07 | 17 minutes | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,8 @@ Recent decisions affecting current work:
 - [Phase 01 P06]: template fill uses string.Template safe_substitute so unknown ${vars} remain as-is
 - [Phase 01 P06]: scan emits advisory WARN findings only, always exit 0 (Open Decision #2, D-07/D-08)
 - [Phase 01 P06]: confirm is v1 pass-through exiting 0; --yes flag reserved for future non-interactive use
+- [Phase 01 P07]: lint-requirements and verify require absolute file path args (not relative to --repo-root) — resolved by Path(args.file).resolve() resolving against cwd, not repo-root
+- [Phase 01 P07]: pre-commit hook uses 'python' on PATH (not sys.executable) because it is a sh script, not Python — sys.executable is only for Python subprocess calls inside ba_tools
 
 ### Pending Todos
 
@@ -112,6 +115,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-17T13:00:00Z
-Stopped at: Completed 01-06-PLAN.md
+Last session: 2026-06-17T13:35:00Z
+Stopped at: Completed 01-07-PLAN.md (Phase 01 COMPLETE)
 Resume file: None
