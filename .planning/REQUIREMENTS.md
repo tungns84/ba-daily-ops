@@ -11,7 +11,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 - [ ] **TOOL-01**: `ba-tools init <operator>` returns context JSON (config, routes, default_route, state)
 - [x] **TOOL-02**: `ba-tools resolve-route <operator>` returns the static DEFAULT_ROUTE only — never infers route from free text
-- [ ] **TOOL-03**: `ba-tools state update|patch|advance` writes `.ba-ops/STATE.md` guarded by an `O_EXCL` lockfile (stale-lock reclaimed after 10s)
+- [x] **TOOL-03**: `ba-tools state update|patch|advance` writes `.ba-ops/STATE.md` guarded by an `O_EXCL` lockfile (stale-lock reclaimed after 10s)
 - [ ] **TOOL-04**: `ba-tools lint-requirements` flags ambiguity, atomicity, grounding, verifiability, and citation issues
 - [ ] **TOOL-05**: `lint-requirements` enforces REQ-ID stability — IDs are permanent; it flags a material statement change on an existing ID (never silent renumber)
 - [ ] **TOOL-06**: `ba-tools verify` gate checks: verbatim citation-exists (≥12-char real substring, **section-scoped**), REQ-ID coverage, hash-match; folds the lint result
@@ -112,7 +112,7 @@ mermaid / mockup (independent) → uc conductor.
 |-------------|-------|--------|
 | TOOL-01 | Phase 1 | Pending |
 | TOOL-02 | Phase 1 | Complete |
-| TOOL-03 | Phase 1 | Pending |
+| TOOL-03 | Phase 1 | Complete |
 | TOOL-04 | Phase 1 | Pending |
 | TOOL-05 | Phase 1 | Pending |
 | TOOL-06 | Phase 1 | Pending |

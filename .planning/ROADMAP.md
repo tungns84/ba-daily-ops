@@ -49,7 +49,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] 01-01-PLAN.md — Wave 0: package skeleton, shared infra (errors/output/repo), argparse dispatcher, pyproject + filelock install, conftest + 17 test stubs
 - [x] 01-02-PLAN.md — Wave 1: foundational gates — resolve-route (static DEFAULT_ROUTES) + byte-check (32768 B limit)
-- [ ] 01-03-PLAN.md — Wave 1: state + lockfile (FileLock(timeout=10), Windows stale reclaim, concurrent-write no-clobber test)
+- [x] 01-03-PLAN.md — Wave 1: state + lockfile (FileLock(timeout=10), Windows stale reclaim, concurrent-write no-clobber test)
 - [ ] 01-04-PLAN.md — Wave 1: init + .ba-ops/ scaffold + config (absent=enabled) + uc-status
 - [ ] 01-05-PLAN.md — Wave 1: quality engine — lint-requirements (heuristics + two-pass REQ-ID stability) + verify (section-scoped citation-exists)
 - [ ] 01-06-PLAN.md — Wave 1: extract-uc + template fill + discovery + scan (advisory) + confirm (pass-through)
@@ -122,7 +122,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Deterministic ba-tools CLI + Foundational Gates | 2/7 | In Progress|  |
+| 1. Deterministic ba-tools CLI + Foundational Gates | 3/7 | In Progress|  |
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 0/TBD | Not started | - |
 | 3. ba-mermaid Diagram Operator | 0/TBD | Not started | - |
 | 4. ba-mockup Operator | 0/TBD | Not started | - |
