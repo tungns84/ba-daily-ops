@@ -2,17 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 2
+current_phase: 02
+current_phase_name: ba-srs-analyze-quality-gate-traceability-core
 status: executing
-stopped_at: Phase 2 context gathered
-last_updated: "2026-06-17T16:38:53.172Z"
+stopped_at: Phase 02 Plan 01 complete
+last_updated: "2026-06-18T00:00:00.000Z"
 last_activity: 2026-06-18
-last_activity_desc: Phase 2 plans revised for cross-AI review feedback
+last_activity_desc: Phase 02 Plan 01 executed (Wave-0 prerequisites + test scaffolding)
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 11
+  completed_plans: 8
   percent: 20
 ---
 
@@ -23,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-17)
 
 **Core value:** REQ-ID traceability across artifacts — one requirement seen consistently across SRS, diagram, mockup, and backlog, so drift surfaces the moment it appears.
-**Current focus:** Phase 01 — deterministic-ba-tools-cli-foundational-gates
+**Current focus:** Phase 02 — ba-srs-analyze-quality-gate-traceability-core
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-06-17 — Phase 2 planning complete
+Phase: 02 (ba-srs-analyze-quality-gate-traceability-core) — EXECUTING
+Plan: 2 of 4
+Status: Plan 01 complete — executing Plan 02
+Last activity: 2026-06-18 — Phase 02 Plan 01 executed (Wave-0 prerequisites)
 
 Progress: [██░░░░░░░░] 20% (Phase 1 of 5 complete)
 
@@ -61,6 +62,7 @@ Progress: [██░░░░░░░░] 20% (Phase 1 of 5 complete)
 | Phase 01 P05 | 8m | - tasks | - files |
 | Phase 01 P06 | 12 minutes | 3 tasks | 14 files |
 | Phase 01 P07 | 17 minutes | 2 tasks | 4 files |
+| Phase 02 P01 | 6 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -93,6 +95,10 @@ Recent decisions affecting current work:
 - [Phase 01 P06]: confirm is v1 pass-through exiting 0; --yes flag reserved for future non-interactive use
 - [Phase 01 P07]: lint-requirements and verify require absolute file path args (not relative to --repo-root) — resolved by Path(args.file).resolve() resolving against cwd, not repo-root
 - [Phase 01 P07]: pre-commit hook uses 'python' on PATH (not sys.executable) because it is a sh script, not Python — sys.executable is only for Python subprocess calls inside ba_tools
+- [Phase 02 P01]: check_grounding uses isinstance(_st, dict) guard: _st.get("doc", "").strip() for dict, _st.strip() for string — mirrors check_citation_present pattern (T-02-01 fix)
+- [Phase 02 P01]: _statement_hash normalises with strip+collapse-whitespace but NO case-fold per D-12 spec (case-sensitive drift detection in hashing.py)
+- [Phase 02 P01]: Shared ba_tools/hashing.py extracted in Wave-0 so plan 03 trace_cmd/index_cmd both import from it, eliminating circular-import risk (OpenCode MEDIUM resolved)
+- [Phase 02 P01]: test_smoke.py asserts commands by subparser choice keys not _COMMAND_MODULES list length (Codex LOW feedback resolved)
 
 ### Pending Todos
 
@@ -117,6 +123,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-17T15:44:20.330Z
+Last session: 2026-06-17T17:37:47.722Z
 Stopped at: Phase 2 context gathered
 Resume file: .planning/phases/02-ba-srs-analyze-quality-gate-traceability-core/02-CONTEXT.md

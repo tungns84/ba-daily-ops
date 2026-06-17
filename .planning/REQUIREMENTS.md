@@ -36,7 +36,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 - [ ] **SRS-01**: `ba-srs-analyze` turns sources into atomic, grounded, verifiable requirements (JSON)
 - [ ] **SRS-02**: `ba-srs-analyze` emits an SRS/BRD `.md`
-- [ ] **SRS-03**: every `stated` requirement carries a `source_trace` `{doc, span}`
+- [x] **SRS-03**: every `stated` requirement carries a `source_trace` `{doc, span}`
 - [ ] **SRS-04**: `ba-srs-writer` emits the quality-contract schema that `ba-tools verify` gates
 - [ ] **SRS-05**: `ba-critic` runs a fresh-context Chain-of-Verification loop (generate per-requirement questions → answer from source independently of the draft → return findings), ≤3 revisions, early-exit on convergence, read-only (never edits)
 - [ ] **SRS-06**: `ba-srs-analyze` supports routes extract/draft/lint/verify/full/iterate (default `full`)
@@ -45,7 +45,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 - [x] **TRACE-01**: `.ba-ops/` scaffold exists: PROJECT.md, REQUIREMENTS.md (the REQ-ID registry), INDEX.md, STATE.md, config.json
 - [x] **TRACE-02**: `.ba-ops/config.json` feature flags default `true` when missing (absent = enabled)
-- [ ] **TRACE-03**: every downstream artifact carries a `req_ids` field
+- [x] **TRACE-03**: every downstream artifact carries a `req_ids` field
 - [ ] **TRACE-04**: `INDEX.md` is a traceability matrix: REQ-ID → SRS § → mermaid → mockup → story
 - [ ] **TRACE-05**: INDEX flags gaps (missing coverage), orphans (req_ids that don't exist), and stale (source hash changed → re-run needed)
 
@@ -131,13 +131,13 @@ mermaid / mockup (independent) → uc conductor.
 | GATE-04 | Phase 1 | Complete |
 | SRS-01 | Phase 2 | Pending |
 | SRS-02 | Phase 2 | Pending |
-| SRS-03 | Phase 2 | Pending |
+| SRS-03 | Phase 2 | Complete |
 | SRS-04 | Phase 2 | Pending |
 | SRS-05 | Phase 2 | Pending |
 | SRS-06 | Phase 2 | Pending |
 | TRACE-01 | Phase 1 | Complete |
 | TRACE-02 | Phase 1 | Complete |
-| TRACE-03 | Phase 2 | Pending |
+| TRACE-03 | Phase 2 | Complete |
 | TRACE-04 | Phase 2 | Pending |
 | TRACE-05 | Phase 2 | Pending |
 | MMD-01 | Phase 3 | Pending |
