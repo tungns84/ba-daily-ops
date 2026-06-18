@@ -1,0 +1,18 @@
+interface:
+  display_name: "BA Mermaid"
+  short_description: "UC/requirement → Mermaid diagram .md with req_ids frontmatter; traceability via trace write + index update."
+  default_prompt: |
+    Use the ba-mermaid workflow on the given SRS slug, route `author` (default).
+    Run `ba-tools resolve-route ba-mermaid` to confirm the default route.
+
+    To start: open .agents/ba-daily-operators/ba-core/workflows/ba-mermaid.md
+    and follow the `author` route steps:
+      1. Run `ba-tools resolve-route ba-mermaid` to confirm route = author.
+      2. Run `ba-tools init ba-mermaid` for scaffold context.
+      3. Read .ba-ops/srs/<slug>/requirements.json.
+      4. Open .agents/ba-daily-operators/ba-core/agents/ba-diagrammer.md and follow the diagrammer role.
+      5. For full traceability: use route `full` (author → trace write → index update).
+
+    Provide the SRS slug. Example: slug = order-management
+policy:
+  allow_implicit_invocation: false
