@@ -1,0 +1,18 @@
+interface:
+  display_name: "BA Mockup"
+  short_description: "Requirements → UI mockup .html or wireframe .md; req_ids traceability via trace write + index update."
+  default_prompt: |
+    Use the ba-mockup workflow on the given SRS slug with --fidelity html|wireframe.
+    Run `ba-tools resolve-route ba-mockup` to confirm the default route = full.
+
+    To start: open .agents/ba-daily-operators/ba-core/workflows/ba-mockup.md
+    and follow the `full` route steps:
+      1. Run `ba-tools resolve-route ba-mockup` to confirm route = full.
+      2. Validate --fidelity (required: html or wireframe).
+      3. Run `ba-tools init ba-mockup` for scaffold context.
+      4. Open .agents/ba-daily-operators/ba-core/agents/ba-mockup-author.md and follow the author role.
+      5. After authoring: extract req_ids from artifact, run trace write --kind mockup, run index update.
+
+    Provide the SRS slug and --fidelity. Example: slug = order-management, --fidelity html
+policy:
+  allow_implicit_invocation: false
