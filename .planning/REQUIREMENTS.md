@@ -29,7 +29,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 - [x] **GATE-01**: Quality gate runs `ba-tools verify` + `ba-critic` judgement after an agent produces an artifact
 - [x] **GATE-02**: Confirm gate fires before any irreversible/outward step (e.g. overwriting a delivered SRS)
-- [ ] **GATE-03**: Safety gate contract defined for render/embed steps (enforced by deferred plugins): render CLI only, path-traversal + injection scan, `.png`/`.svg` extension check
+- [x] **GATE-03**: Safety gate contract defined for render/embed steps (enforced by deferred plugins): render CLI only, path-traversal + injection scan, `.png`/`.svg` extension check
 - [x] **GATE-04**: A CI/pre-commit byte-check gate fails if any eager-loaded doc (AGENTS.md / refs) is ≥ 32,768 B (Codex truncates silently)
 
 ### SRS Analysis (SRS)
@@ -65,7 +65,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 - [ ] **UC-01**: `ba-uc` delivers ONE use case end-to-end: srs-analyze → mermaid → mockup → index
 - [ ] **UC-02**: `ba-uc` runs as a single sequential agent loop with a Quality gate between steps
-- [ ] **UC-03**: `ba-uc` is resumable via `uc-status`; routes deliver/resume/status/iterate (default `deliver`)
+- [x] **UC-03**: `ba-uc` is resumable via `uc-status`; routes deliver/resume/status/iterate (default `deliver`)
 
 ### Codex Packaging (CDX)
 
@@ -127,7 +127,7 @@ mermaid / mockup (independent) → uc conductor.
 | TOOL-15 | Phase 1 | Complete |
 | GATE-01 | Phase 2 | Complete |
 | GATE-02 | Phase 1 | Complete |
-| GATE-03 | Phase 5 | Pending |
+| GATE-03 | Phase 5 | Complete |
 | GATE-04 | Phase 1 | Complete |
 | SRS-01 | Phase 2 | Complete |
 | SRS-02 | Phase 2 | Complete |
@@ -148,7 +148,7 @@ mermaid / mockup (independent) → uc conductor.
 | MOCK-03 | Phase 4 | Complete |
 | UC-01 | Phase 5 | Pending |
 | UC-02 | Phase 5 | Pending |
-| UC-03 | Phase 5 | Pending |
+| UC-03 | Phase 5 | Complete |
 | CDX-01 | Phase 2 | Complete |
 | CDX-02 | Phase 2 | Complete |
 | CDX-03 | Phase 2 | Complete |
