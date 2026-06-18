@@ -27,7 +27,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: ba-srs-analyze + Quality Gate + Traceability Core** - Sources become atomic grounded requirements with a `source_trace` schema, gated by `ba-tools verify` + the fresh-context `ba-critic` CoVe loop, with the INDEX.md matrix and gap/orphan/stale drift detection (completed 2026-06-17)
 - [x] **Phase 3: ba-mermaid Diagram Operator** - UC/requirement becomes an MD-inline Mermaid diagram that cites the REQ-IDs it depicts, with optional `mmdc` export (completed 2026-06-18)
 - [x] **Phase 4: ba-mockup Operator** - Requirements become a UI mockup at `--fidelity html|wireframe`, each screen citing the REQ-IDs it realizes (completed 2026-06-18)
-- [ ] **Phase 5: ba-uc Conductor + End-to-End Integration** - One use case delivered end-to-end (srs-analyze → mermaid → mockup → index) as a resumable sequential loop with a Quality gate between steps; the spine's integration test
+- [x] **Phase 5: ba-uc Conductor + End-to-End Integration** - One use case delivered end-to-end (srs-analyze → mermaid → mockup → index) as a resumable sequential loop with a Quality gate between steps; the spine's integration test (completed 2026-06-18)
 
 ## Phase Details
 
@@ -149,7 +149,7 @@ Plans:
   3. Killing the conductor mid-pipeline leaves recoverable state — `ba-tools uc-status` returns the correct single-UC pipeline state and `next_step`, and `resume` completes the remaining steps to a fully traced UC
   4. The Safety gate contract for render/embed steps is defined (render CLI only, path-traversal + injection scan, `.png`/`.svg` extension check) and documented as enforced by the deferred plugins, with no synthetic render path on the spine
 
-**Plans**: 2/3 plans executed
+**Plans**: 3/3 plans complete
 Plans:
 **Wave 1** *(parallel — no file overlap)*
 
@@ -158,7 +158,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 05-03-PLAN.md — ba-uc conductor: skill (SKILL.md + openai.yaml, implicit-invocation off) + thin workflow (deliver/resume/status/iterate; srs full → mermaid full → mockup full → index, per-step gate + complete-after-gate-only) + conductor agent prompt + workflow-contract test [UC-01, UC-02, UC-03]
+- [x] 05-03-PLAN.md — ba-uc conductor: skill (SKILL.md + openai.yaml, implicit-invocation off) + thin workflow (deliver/resume/status/iterate; srs full → mermaid full → mockup full → index, per-step gate + complete-after-gate-only) + conductor agent prompt + workflow-contract test [UC-01, UC-02, UC-03]
 
 ## Progress
 
@@ -171,4 +171,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 4/4 | Complete    | 2026-06-17 |
 | 3. ba-mermaid Diagram Operator | 3/3 | Complete    | 2026-06-18 |
 | 4. ba-mockup Operator | 3/3 | Complete    | 2026-06-18 |
-| 5. ba-uc Conductor + End-to-End Integration | 2/3 | In Progress|  |
+| 5. ba-uc Conductor + End-to-End Integration | 3/3 | Complete   | 2026-06-18 |

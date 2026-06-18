@@ -4,17 +4,17 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 05
 current_phase_name: ba-uc-conductor-end-to-end-integration
-status: executing
-stopped_at: Completed 05-02-PLAN.md — GATE-03 Safety Gate Contract defined in gates.md
-last_updated: "2026-06-18T12:12:03.793Z"
+status: verifying
+stopped_at: Completed 05-03-PLAN.md — ba-uc conductor operator, CDX skill, workflow, agent prompt, 5 static tests
+last_updated: "2026-06-18T12:25:32.062Z"
 last_activity: 2026-06-18
 last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 20
-  completed_plans: 19
-  percent: 80
+  completed_plans: 20
+  percent: 100
 ---
 
 # Project State
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-06-18)
 
 Phase: 05 (ba-uc-conductor-end-to-end-integration) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-18 — Phase 05 execution started
 
 Progress: [████████░░] 80% (Phase 4 of 5 plans complete)
@@ -77,6 +77,7 @@ Progress: [████████░░] 80% (Phase 4 of 5 plans complete)
 | Phase 04 P04-03 | 8min | - tasks | - files |
 | Phase 05 P01 | 25 | 2 tasks | 4 files |
 | Phase 05 P02 | 8 minutes | 1 tasks | 1 files |
+| Phase 05 P03 | 35 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -138,6 +139,9 @@ Recent decisions affecting current work:
 - [Phase ?]: Concurrent test design
 - [Phase ?]: GATE-03 contract defined in gates.md as plugin-enforced/spine-exempt with four clauses
 - [Phase ?]: Extended gates.md over sibling safety-gate.md to keep all gate contracts co-located (RESEARCH Q5)
+- [Phase ?]: ba-mermaid default route is 'author' — conductor must explicitly drive 'full' route; validated by test assertion
+- [Phase ?]: D-G2 covered_by NOT emitted by index update JSON; self-coverage predicate uses step_trace_req_ids vs gaps list
+- [Phase ?]: GATE-03 spine-exempt: conductor never fires Safety gate; ba-uc-conductor.md rule + test assertion
 
 ### Pending Todos
 
@@ -162,6 +166,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-18T12:12:03.786Z
-Stopped at: Completed 05-02-PLAN.md — GATE-03 Safety Gate Contract defined in gates.md
+Last session: 2026-06-18T12:25:32.053Z
+Stopped at: Completed 05-03-PLAN.md — ba-uc conductor operator, CDX skill, workflow, agent prompt, 5 static tests
 Resume file: None

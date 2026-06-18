@@ -63,8 +63,8 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 ### Conductor (UC)
 
-- [ ] **UC-01**: `ba-uc` delivers ONE use case end-to-end: srs-analyze → mermaid → mockup → index
-- [ ] **UC-02**: `ba-uc` runs as a single sequential agent loop with a Quality gate between steps
+- [x] **UC-01**: `ba-uc` delivers ONE use case end-to-end: srs-analyze → mermaid → mockup → index
+- [x] **UC-02**: `ba-uc` runs as a single sequential agent loop with a Quality gate between steps
 - [x] **UC-03**: `ba-uc` is resumable via `uc-status`; routes deliver/resume/status/iterate (default `deliver`)
 
 ### Codex Packaging (CDX)
@@ -146,8 +146,8 @@ mermaid / mockup (independent) → uc conductor.
 | MOCK-01 | Phase 4 | Complete |
 | MOCK-02 | Phase 4 | Complete |
 | MOCK-03 | Phase 4 | Complete |
-| UC-01 | Phase 5 | Pending |
-| UC-02 | Phase 5 | Pending |
+| UC-01 | Phase 5 | Complete |
+| UC-02 | Phase 5 | Complete |
 | UC-03 | Phase 5 | Complete |
 | CDX-01 | Phase 2 | Complete |
 | CDX-02 | Phase 2 | Complete |
