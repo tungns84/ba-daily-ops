@@ -57,9 +57,9 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 ### Mockup (MOCK)
 
-- [ ] **MOCK-01**: `ba-mockup` turns requirements into a UI mockup at `--fidelity html|wireframe` (fidelity required)
-- [ ] **MOCK-02**: each screen cites the REQ-IDs it realizes (`req_ids`)
-- [ ] **MOCK-03**: `html` fidelity writes a `.html` artifact; `wireframe` writes inline blocks
+- [x] **MOCK-01**: `ba-mockup` turns requirements into a UI mockup at `--fidelity html|wireframe` (fidelity required)
+- [x] **MOCK-02**: each screen cites the REQ-IDs it realizes (`req_ids`)
+- [x] **MOCK-03**: `html` fidelity writes a `.html` artifact; `wireframe` writes inline blocks
 
 ### Conductor (UC)
 
@@ -143,9 +143,9 @@ mermaid / mockup (independent) → uc conductor.
 | MMD-01 | Phase 3 | Complete |
 | MMD-02 | Phase 3 | Complete |
 | MMD-03 | Phase 3 | Complete |
-| MOCK-01 | Phase 4 | Pending |
-| MOCK-02 | Phase 4 | Pending |
-| MOCK-03 | Phase 4 | Pending |
+| MOCK-01 | Phase 4 | Complete |
+| MOCK-02 | Phase 4 | Complete |
+| MOCK-03 | Phase 4 | Complete |
 | UC-01 | Phase 5 | Pending |
 | UC-02 | Phase 5 | Pending |
 | UC-03 | Phase 5 | Pending |
