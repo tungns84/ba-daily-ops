@@ -26,7 +26,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Deterministic ba-tools CLI + Foundational Gates** - Full file/hash/command-provable CLI, `.ba-ops/` scaffold, lockfile state, REQ-ID stability lint, citation-exists verify, and the CI byte-check gate
 - [x] **Phase 2: ba-srs-analyze + Quality Gate + Traceability Core** - Sources become atomic grounded requirements with a `source_trace` schema, gated by `ba-tools verify` + the fresh-context `ba-critic` CoVe loop, with the INDEX.md matrix and gap/orphan/stale drift detection (completed 2026-06-17)
 - [x] **Phase 3: ba-mermaid Diagram Operator** - UC/requirement becomes an MD-inline Mermaid diagram that cites the REQ-IDs it depicts, with optional `mmdc` export (completed 2026-06-18)
-- [ ] **Phase 4: ba-mockup Operator** - Requirements become a UI mockup at `--fidelity html|wireframe`, each screen citing the REQ-IDs it realizes
+- [x] **Phase 4: ba-mockup Operator** - Requirements become a UI mockup at `--fidelity html|wireframe`, each screen citing the REQ-IDs it realizes (completed 2026-06-18)
 - [ ] **Phase 5: ba-uc Conductor + End-to-End Integration** - One use case delivered end-to-end (srs-analyze → mermaid → mockup → index) as a resumable sequential loop with a Quality gate between steps; the spine's integration test
 
 ## Phase Details
@@ -124,7 +124,7 @@ Plans:
   2. Each mockup screen carries a `req_ids` field, and after `ba-tools index update` those REQ-IDs appear in INDEX.md under the mockup column (no orphans introduced)
   3. A mockup citing a REQ-ID that does not exist in the registry is surfaced as an orphan by INDEX.md drift detection
 
-**Plans**: 2/3 plans executed
+**Plans**: 3/3 plans complete
 Plans:
 **Wave 1**
 
@@ -133,7 +133,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 04-03-PLAN.md — Integration verification: full suite green + zero-ba_tools-change + no-render constraint checks + human-verify the authored mockup reads as a usable screen
+- [x] 04-03-PLAN.md — Integration verification: full suite green + zero-ba_tools-change + no-render constraint checks + human-verify the authored mockup reads as a usable screen
 
 **UI hint**: yes
 
@@ -161,5 +161,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Deterministic ba-tools CLI + Foundational Gates | 7/7 | Complete    | 2026-06-17 |
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 4/4 | Complete    | 2026-06-17 |
 | 3. ba-mermaid Diagram Operator | 3/3 | Complete    | 2026-06-18 |
-| 4. ba-mockup Operator | 2/3 | In Progress|  |
+| 4. ba-mockup Operator | 3/3 | Complete   | 2026-06-18 |
 | 5. ba-uc Conductor + End-to-End Integration | 0/TBD | Not started | - |
