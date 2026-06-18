@@ -520,7 +520,7 @@ These directives are MANDATORY. Research recommendations are all consistent with
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Frontmatter parsing in the thin workflow**
    - What we know: The workflow reads `req_ids:` from YAML frontmatter and passes to `--req-ids`.
