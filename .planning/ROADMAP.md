@@ -124,12 +124,12 @@ Plans:
   2. Each mockup screen carries a `req_ids` field, and after `ba-tools index update` those REQ-IDs appear in INDEX.md under the mockup column (no orphans introduced)
   3. A mockup citing a REQ-ID that does not exist in the registry is surfaced as an orphan by INDEX.md drift detection
 
-**Plans**: 1/3 plans executed
+**Plans**: 2/3 plans executed
 Plans:
 **Wave 1**
 
 - [x] 04-01-PLAN.md — Wave 0 tests: 3 mockup fixtures + test_mockup_author.py (MOCK-01/03 fidelity-branch + workflow inspection) + test_mockup_trace_index.py (MOCK-02 + orphan); consumes trace write/index update as-is
-- [ ] 04-02-PLAN.md — ba-mockup skill operator: thin workflow (fidelity gate, screen/full routes, no render route) + ba-mockup-author agent prompt (html/wireframe branches) + SKILL.md + openai.yaml
+- [x] 04-02-PLAN.md — ba-mockup skill operator: thin workflow (fidelity gate, screen/full routes, no render route) + ba-mockup-author agent prompt (html/wireframe branches) + SKILL.md + openai.yaml
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -161,5 +161,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Deterministic ba-tools CLI + Foundational Gates | 7/7 | Complete    | 2026-06-17 |
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 4/4 | Complete    | 2026-06-17 |
 | 3. ba-mermaid Diagram Operator | 3/3 | Complete    | 2026-06-18 |
-| 4. ba-mockup Operator | 1/3 | In Progress|  |
+| 4. ba-mockup Operator | 2/3 | In Progress|  |
 | 5. ba-uc Conductor + End-to-End Integration | 0/TBD | Not started | - |
