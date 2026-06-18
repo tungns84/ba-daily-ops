@@ -30,6 +30,7 @@ from ba_tools.commands import (
     render_cmd,
     trace_cmd,
     index_cmd,
+    mermaid_render_cmd,
 )
 
 _COMMAND_MODULES = [
@@ -48,6 +49,7 @@ _COMMAND_MODULES = [
     render_cmd,
     trace_cmd,
     index_cmd,
+    mermaid_render_cmd,
 ]
 
 

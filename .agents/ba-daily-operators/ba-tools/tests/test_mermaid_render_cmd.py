@@ -141,7 +141,14 @@ def test_fence_absent(tmp_path):
 # ---------------------------------------------------------------------------
 
 def test_slug_path_traversal(tmp_path):
-    """--slug ../escape exits 2 with PATH_TRAVERSAL."""
+    """--slug with enough '..' segments to escape repo root exits 2 with PATH_TRAVERSAL.
+
+    root = tmp_path  (e.g. C:/Temp/abc/)
+    slug_dir = root / '.ba-ops' / 'mermaid' / '../../../../evil'
+             resolves: mermaid → .ba-ops → root → parent → grandparent → great-grandparent → evil
+    Four levels of '..' escape above root → PATH_TRAVERSAL.
+    (Mirrors test_render_srs_slug_path_traversal which also uses '../../../../evil'.)
+    """
     repo = _make_repo(tmp_path)
 
     env = _env_no_mermaid()
@@ -150,7 +157,7 @@ def test_slug_path_traversal(tmp_path):
         [
             "--repo-root", str(repo),
             "mermaid-render",
-            "--slug", "../escape",
+            "--slug", "../../../../evil",
             "--artifact", str(_SAMPLE_DIAGRAM),
         ],
         cwd=repo,
