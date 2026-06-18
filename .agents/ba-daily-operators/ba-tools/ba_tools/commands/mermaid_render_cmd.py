@@ -31,7 +31,7 @@ from filelock import FileLock, Timeout
 
 from ba_tools.errors import BaToolsError
 from ba_tools.output import ok_json
-from ba_tools.repo import is_within_root, resolve_repo_root
+from ba_tools.repo import is_within_root, resolve_repo_root, resolve_under_root
 
 # Lock timeout — matches STATE.md convention (D-02 / DESIGN §8, render_cmd.py line 34)
 _LOCK_TIMEOUT = 10
@@ -245,10 +245,14 @@ def run(args) -> None:
             ),
         }])
 
-    # Read artifact
-    artifact_path = Path(args.artifact)
-    if not artifact_path.is_absolute():
-        artifact_path = (root / artifact_path).resolve()
+    # Read artifact — T-03-01: guard under repo root (CR-01/WR-01)
+    artifact_path = resolve_under_root(args.artifact, root)
+    if not is_within_root(artifact_path, root):
+        raise BaToolsError([{
+            "code": "PATH_TRAVERSAL",
+            "path": str(artifact_path),
+            "message": f"--artifact {args.artifact!r} resolves outside repo root.",
+        }])
     if not artifact_path.exists():
         raise BaToolsError([{
             "code": "FILE_NOT_FOUND",
