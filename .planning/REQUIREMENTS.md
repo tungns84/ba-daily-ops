@@ -51,7 +51,7 @@ v1 milestone = the daily spine (CodexApp-first). Each maps to a roadmap phase.
 
 ### Diagram — Mermaid (MMD)
 
-- [ ] **MMD-01**: `ba-mermaid` turns a UC/requirement into a Mermaid diagram, MD-inline first
+- [x] **MMD-01**: `ba-mermaid` turns a UC/requirement into a Mermaid diagram, MD-inline first
 - [ ] **MMD-02**: each diagram cites the REQ-IDs it depicts (`req_ids`)
 - [x] **MMD-03**: `mmdc` render is optional (`.mmd`/PNG); default route `author` has no CLI dependency; export hard-fails if the CLI is missing
 
@@ -140,7 +140,7 @@ mermaid / mockup (independent) → uc conductor.
 | TRACE-03 | Phase 2 | Complete |
 | TRACE-04 | Phase 2 | Complete |
 | TRACE-05 | Phase 2 | Complete |
-| MMD-01 | Phase 3 | Pending |
+| MMD-01 | Phase 3 | Complete |
 | MMD-02 | Phase 3 | Pending |
 | MMD-03 | Phase 3 | Complete |
 | MOCK-01 | Phase 4 | Pending |

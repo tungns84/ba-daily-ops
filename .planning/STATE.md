@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 03
 current_phase_name: ba-mermaid-diagram-operator
 status: executing
-stopped_at: Phase 3 planned
-last_updated: "2026-06-18T04:47:52.315Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-06-18T04:59:06.119Z"
 last_activity: 2026-06-18
 last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 14
-  completed_plans: 12
+  completed_plans: 13
   percent: 40
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-06-17)
 ## Current Position
 
 Phase: 03 (ba-mermaid-diagram-operator) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-06-18 — Phase 03 execution started
 
@@ -68,6 +68,7 @@ Progress: [████░░░░░░] 40% (Phase 2 of 5 complete)
 | Phase 02 P03 | ~90min | 2 tasks | 11 files |
 | Phase 02 P04 | 90m | 2 tasks | 10 files |
 | Phase 03 P01 | 15 | 2 tasks | 5 files |
+| Phase 03 P02 | 25m | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,9 @@ Recent decisions affecting current work:
 - [Phase ?]: T-02-07c: source_doc in trace records resolved under root before re-hash; absent/out-of-root reports missing
 - [Phase ?]: test_slug_path_traversal uses '../../../../evil' (4-level escape) not '../escape' (stays within root on Windows)
 - [Phase ?]: resolve_mmdc called AFTER fence extraction so NO_MERMAID_CLI hard-fail writes no image (criterion-3 correct ordering)
+- [Phase ?]: D-06: source-doc=requirements.json for drift detection
+- [Phase ?]: Codex skill contract: SKILL.md name+description only; allow_implicit_invocation under policy:
+- [Phase ?]: Author route strict no-CLI invariant enforced by test (T-03-07 mitigation, criterion 1)
 
 ### Pending Todos
 
@@ -136,6 +140,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-18T04:47:45.139Z
-Stopped at: Phase 3 planned — ready to execute
-Resume file: .planning/phases/03-ba-mermaid-diagram-operator/03-01-PLAN.md
+Last session: 2026-06-18T04:59:06.112Z
+Stopped at: Completed 03-02-PLAN.md
+Resume file: None
