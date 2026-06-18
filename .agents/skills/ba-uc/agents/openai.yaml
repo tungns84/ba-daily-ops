@@ -1,0 +1,17 @@
+interface:
+  display_name: "BA UC Conductor"
+  short_description: "Delivers one UC end-to-end: srs-analyze → mermaid → mockup → index; resumable via uc-status; gate after each step."
+  default_prompt: |
+    Use the ba-uc workflow to deliver one use case end-to-end.
+    Run `ba-tools resolve-route ba-uc` to confirm the default route = deliver.
+
+    To start: open .agents/ba-daily-operators/ba-core/workflows/ba-uc.md
+    and follow the `deliver` route steps:
+      1. Run `ba-tools resolve-route ba-uc` to confirm route = deliver.
+      2. Validate --uc (required: "<file>: ## UC-001. <name>") and --fidelity (required: html or wireframe).
+      3. Run `ba-tools init ba-uc` for scaffold context.
+      4. Open .agents/ba-daily-operators/ba-core/workflows/ba-uc.md and follow the deliver route.
+
+    Provide the UC source file and --fidelity. Example: --uc "requirements/uc-001.md: ## UC-001. Login", --fidelity html
+policy:
+  allow_implicit_invocation: false
