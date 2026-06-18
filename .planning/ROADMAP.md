@@ -100,16 +100,17 @@ Plans:
   2. Each produced diagram carries a `req_ids` field, and after `ba-tools index update` those REQ-IDs appear in INDEX.md under the mermaid column (no orphans introduced)
   3. The optional `render` route invokes `mmdc` (resolved `--mermaid-cli` → `$MERMAID_CLI` → PATH → `npx -p @mermaid-js/mermaid-cli mmdc`) to emit `.mmd`/PNG, and hard-fails with a `BaToolsError` (exit 2) when no CLI is found — never producing a synthetic image
 
-**Plans**: 3 plans (2 waves)
+**Plans**: 1/3 plans executed
 Plans:
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — Wave 1: `mermaid-render` command (fence extract → .mmd → mmdc resolution chain → invoke; NO_MERMAID_CLI hard-fail exit 2, no synthetic image) + additive `__main__.py` wiring + tests/fixtures [MMD-03, criterion 3]
+- [x] 03-01-PLAN.md — Wave 1: `mermaid-render` command (fence extract → .mmd → mmdc resolution chain → invoke; NO_MERMAID_CLI hard-fail exit 2, no synthetic image) + additive `__main__.py` wiring + tests/fixtures [MMD-03, criterion 3]
 - [ ] 03-02-PLAN.md — Wave 1: ba-mermaid skill (SKILL.md + openai.yaml) + thin workflow (author/full/render) + ba-diagrammer agent prompt + author-no-CLI proof test [MMD-01, criterion 1]
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [ ] 03-03-PLAN.md — Wave 2: integration test — req_ids → INDEX mermaid column, no orphans (real IDs) + invented-ID orphan surfaced; reuses trace write/index update as-is [MMD-02, criterion 2]
+
 **UI hint**: yes
 
 ### Phase 4: ba-mockup Operator
@@ -149,6 +150,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Deterministic ba-tools CLI + Foundational Gates | 7/7 | Complete    | 2026-06-17 |
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 4/4 | Complete    | 2026-06-17 |
-| 3. ba-mermaid Diagram Operator | 0/TBD | Not started | - |
+| 3. ba-mermaid Diagram Operator | 1/3 | In Progress|  |
 | 4. ba-mockup Operator | 0/TBD | Not started | - |
 | 5. ba-uc Conductor + End-to-End Integration | 0/TBD | Not started | - |
