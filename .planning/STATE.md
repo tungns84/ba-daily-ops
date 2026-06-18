@@ -5,10 +5,10 @@ milestone_name: milestone
 current_phase: 04
 current_phase_name: ba-mockup-operator
 status: executing
-stopped_at: Phase 4 planned (3 plans, 2 waves)
-last_updated: "2026-06-18T09:34:30.295Z"
+stopped_at: "Phase 04 Plan 03 — Task 2 checkpoint:human-verify pending developer approval"
+last_updated: "2026-06-18T09:48:00.000Z"
 last_activity: 2026-06-18
-last_activity_desc: Phase 04 execution started
+last_activity_desc: "Phase 04 Plan 03 Task 1 complete; blocking checkpoint:human-verify at Task 2"
 progress:
   total_phases: 5
   completed_phases: 3
@@ -30,8 +30,8 @@ See: .planning/PROJECT.md (updated 2026-06-17)
 
 Phase: 04 (ba-mockup-operator) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
-Last activity: 2026-06-18 — Phase 04 execution started
+Status: In-progress — Task 2 checkpoint:human-verify pending
+Last activity: 2026-06-18 — Plan 03 Task 1 complete; awaiting human-verify checkpoint
 
 Progress: [██████░░░░] 60% (Phase 3 of 5 complete)
 
@@ -151,6 +151,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-18T09:33:47.991Z
-Stopped at: Phase 4 planned — ready to execute
-Resume file: .planning/phases/04-ba-mockup-operator/04-01-PLAN.md
+Last session: 2026-06-18T09:48:00Z
+Stopped at: "Phase 04 Plan 03 Task 2 — checkpoint:human-verify (blocking)"
+Resume file: .planning/phases/04-ba-mockup-operator/04-03-PLAN.md
