@@ -80,7 +80,7 @@ def test_no_cli_hard_fail(tmp_path):
     # Patch shutil.which to return None (no mmdc, no npx on PATH)
     # Patch os.environ.get for MERMAID_CLI to also return None
     with (
-        unittest.mock.patch("shutil.which", return_value=None),
+        unittest.mock.patch("ba_tools.commands.mermaid_render_cmd.shutil.which", return_value=None),
         unittest.mock.patch.dict("os.environ", {}, clear=True),
     ):
         from ba_tools.errors import BaToolsError
@@ -106,12 +106,18 @@ def test_fence_absent(tmp_path):
 
     Uses CLI subprocess so the full dispatch path is exercised.
     Uses a fake mmdc so resolve_mmdc succeeds (fence check happens before mmdc call).
+    The artifact is copied into the repo root so the traversal guard passes and
+    the fence-extraction check is what fires.
     """
     repo = _make_repo(tmp_path)
 
+    # Copy no_fence.md into the repo so the traversal guard passes (CR-01)
+    artifact_in_repo = repo / "no_fence.md"
+    artifact_in_repo.write_text(_NO_FENCE.read_text(encoding="utf-8"), encoding="utf-8")
+
     # Create a fake mmdc script that does nothing (exit 0)
     # We only need it to be resolvable — the fence check happens before mmdc invocation
-    fake_mmdc = tmp_path / "fake_mmdc"
+    fake_mmdc = repo / "fake_mmdc"
     fake_mmdc.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
 
     env = _env_no_mermaid()
@@ -122,7 +128,7 @@ def test_fence_absent(tmp_path):
             "--repo-root", str(repo),
             "mermaid-render",
             "--slug", "test-slug",
-            "--artifact", str(_NO_FENCE),
+            "--artifact", str(artifact_in_repo),
         ],
         cwd=repo,
         env=env,
@@ -173,6 +179,52 @@ def test_slug_path_traversal(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# test_artifact_path_traversal  (CR-01 regression)
+# ---------------------------------------------------------------------------
+
+def test_artifact_path_traversal(tmp_path):
+    """--artifact that resolves outside the repo root exits 2 with PATH_TRAVERSAL.
+
+    root = tmp_path/repo (a subdirectory); artifact = absolute path OUTSIDE it
+    (e.g. tmp_path itself, which is the parent of root).
+    No file is read — the traversal guard must fire before any open().
+
+    Mirrors test_slug_path_traversal; added by CR-01 fix.
+    """
+    # Create a repo root that is a strict subdirectory of tmp_path so that
+    # tmp_path itself is provably outside the root.
+    repo = tmp_path / "repo"
+    slug_dir = repo / ".ba-ops" / "mermaid" / "test-slug"
+    slug_dir.mkdir(parents=True, exist_ok=True)
+
+    # Place the artifact OUTSIDE the repo root (in the parent tmp_path).
+    outside_artifact = tmp_path / "outside.md"
+    outside_artifact.write_text("# outside\n", encoding="utf-8")
+
+    env = _env_no_mermaid()
+
+    result = _run(
+        [
+            "--repo-root", str(repo),
+            "mermaid-render",
+            "--slug", "test-slug",
+            "--artifact", str(outside_artifact),
+        ],
+        cwd=repo,
+        env=env,
+    )
+    assert result.returncode == 2, (
+        f"Expected exit 2 for --artifact path traversal; got {result.returncode}\n"
+        f"stderr={result.stderr}\nstdout={result.stdout}"
+    )
+    err = json.loads(result.stderr)
+    codes = [f.get("code") for f in err.get("failures", [])]
+    assert "PATH_TRAVERSAL" in codes, (
+        f"Expected PATH_TRAVERSAL in failures; got {codes}\nstderr={result.stderr}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # test_success_path
 # ---------------------------------------------------------------------------
 
@@ -182,8 +234,13 @@ def test_success_path(tmp_path):
     This test patches subprocess.run inside mermaid_render_cmd to avoid needing a real mmdc.
     resolve_mmdc is satisfied via $MERMAID_CLI env pointing to a fake path that shutil.which
     does not need to find (the flag path is returned directly).
+    The artifact is copied into the repo root so the traversal guard passes (CR-01).
     """
     repo = _make_repo(tmp_path)
+
+    # Copy sample_diagram.md into the repo so the traversal guard passes (CR-01)
+    artifact_in_repo = repo / "sample_diagram.md"
+    artifact_in_repo.write_text(_SAMPLE_DIAGRAM.read_text(encoding="utf-8"), encoding="utf-8")
 
     from ba_tools.commands import mermaid_render_cmd  # noqa: PLC0415
 
@@ -192,7 +249,7 @@ def test_success_path(tmp_path):
     args = argparse.Namespace(
         repo_root=str(repo),
         slug="test-slug",
-        artifact=str(_SAMPLE_DIAGRAM),
+        artifact=str(artifact_in_repo),
         format="svg",
         mermaid_cli="/fake/mmdc",  # direct path — resolve_mmdc returns ["/fake/mmdc"]
     )
