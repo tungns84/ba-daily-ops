@@ -1,0 +1,58 @@
+<mxfile host="spike" type="device">
+  <diagram id="bpmn1" name="UC-001 SRS Generation">
+    <mxGraphModel dx="1100" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Pool / lane -->
+        <mxCell id="pool" value="SRS Generator" style="swimlane;html=1;horizontal=0;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="980" height="240" as="geometry" />
+        </mxCell>
+
+        <!-- Start event (native BPMN stencil probe) -->
+        <mxCell id="start" value="UC received" style="shape=mxgraph.bpmn.shape;perimeter=ellipsePerimeter;html=1;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;outlineConnect=0;symbol=general;outline=standard;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="pool">
+          <mxGeometry x="40" y="100" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Task: validate (FR-002) -->
+        <mxCell id="t_validate" value="Validate identifier format&#10;(FR-002)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="pool">
+          <mxGeometry x="130" y="90" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Exclusive gateway: valid? -->
+        <mxCell id="gw" value="Valid?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="pool">
+          <mxGeometry x="330" y="95" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Task: produce SRS (FR-001) -->
+        <mxCell id="t_srs" value="Produce structured SRS&#10;(FR-001)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="pool">
+          <mxGeometry x="430" y="90" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Task: within 30s (NFR-001) -->
+        <mxCell id="t_perf" value="Complete within 30s&#10;(NFR-001)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="pool">
+          <mxGeometry x="630" y="90" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- End event: success (thick stroke) -->
+        <mxCell id="end_ok" value="SRS returned" style="ellipse;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=3;" vertex="1" parent="pool">
+          <mxGeometry x="840" y="100" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- End event: rejected -->
+        <mxCell id="end_rej" value="Rejected" style="ellipse;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=3;" vertex="1" parent="pool">
+          <mxGeometry x="345" y="180" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Sequence flows -->
+        <mxCell id="f1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="pool" source="start" target="t_validate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="pool" source="t_validate" target="gw"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f3" value="yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="pool" source="gw" target="t_srs"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f4" value="no" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="pool" source="gw" target="end_rej"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="pool" source="t_srs" target="t_perf"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="pool" source="t_perf" target="end_ok"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

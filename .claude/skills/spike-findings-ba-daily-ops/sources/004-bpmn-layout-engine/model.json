@@ -1,0 +1,23 @@
+{
+  "pool": "Study Draft Creation",
+  "lanes": ["BA", "System"],
+  "nodes": [
+    { "id": "start",   "type": "start",   "lane": "BA",     "label": "Request received" },
+    { "id": "t1",      "type": "task",    "lane": "BA",     "label": "Enter study metadata", "req_ids": ["FR-001"] },
+    { "id": "t2",      "type": "task",    "lane": "System", "label": "Validate identifier",  "req_ids": ["FR-002"] },
+    { "id": "gw",      "type": "gateway", "lane": "System", "label": "Valid?" },
+    { "id": "t3",      "type": "task",    "lane": "System", "label": "Generate SRS",         "req_ids": ["FR-003"] },
+    { "id": "t4",      "type": "task",    "lane": "System", "label": "Persist draft",        "req_ids": ["FR-004"] },
+    { "id": "end_ok",  "type": "end",     "lane": "System", "label": "Draft created" },
+    { "id": "end_rej", "type": "end",     "lane": "BA",     "label": "Show error" }
+  ],
+  "edges": [
+    { "id": "e1", "source": "start", "target": "t1" },
+    { "id": "e2", "source": "t1",    "target": "t2" },
+    { "id": "e3", "source": "t2",    "target": "gw" },
+    { "id": "e4", "source": "gw",    "target": "t3", "label": "yes" },
+    { "id": "e5", "source": "gw",    "target": "end_rej", "label": "no" },
+    { "id": "e6", "source": "t3",    "target": "t4" },
+    { "id": "e7", "source": "t4",    "target": "end_ok" }
+  ]
+}

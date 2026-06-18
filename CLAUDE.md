@@ -219,7 +219,7 @@ Architecture not yet mapped. Follow existing patterns found in the codebase.
 
 ## Project Skills
 
-No project skills found. Add skills to any of: `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, `.github/skills/`, or `.codex/skills/` with a `SKILL.md` index file.
+- **Spike findings for ba-daily-ops** (implementation patterns, constraints, gotchas — esp. `ba-make-diagram` BPMN/draw.io + ELK layout) → `Skill("spike-findings-ba-daily-ops")`
 <!-- GSD:skills-end -->
 
 <!-- GSD:workflow-start source:GSD defaults -->
