@@ -18,11 +18,17 @@ files_reviewed_list:
   - .agents/ba-daily-operators/ba-core/workflows/ba-mermaid.md
   - .agents/ba-daily-operators/ba-core/agents/ba-diagrammer.md
 findings:
-  critical: 2
-  warning: 3
+  critical: 0
+  warning: 2
   info: 2
-  total: 7
+  total: 4
 status: issues_found
+resolved:
+  - CR-01 (commit a90f495 — resolve_under_root + is_within_root guard on --artifact → PATH_TRAVERSAL exit 2)
+  - WR-01 (commit a90f495 — absolute --artifact now normalized via resolve_under_root)
+  - CR-02 (commit 75dee00 — patch target ba_tools.commands.mermaid_render_cmd.shutil.which + traversal regression test)
+deferred:
+  - WR-02, WR-03, IN-01, IN-02 (advisory; user-deferred 2026-06-18)
 ---
 
 # Phase 03: Code Review Report
@@ -30,7 +36,7 @@ status: issues_found
 **Reviewed:** 2026-06-18T00:00:00Z
 **Depth:** standard
 **Files Reviewed:** 13
-**Status:** issues_found
+**Status:** issues_found (2 Criticals + WR-01 resolved in commits a90f495 / 75dee00; WR-02/WR-03/IN-01/IN-02 deferred as advisory)
 
 ## Summary
 
