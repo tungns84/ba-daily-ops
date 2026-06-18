@@ -25,7 +25,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Deterministic ba-tools CLI + Foundational Gates** - Full file/hash/command-provable CLI, `.ba-ops/` scaffold, lockfile state, REQ-ID stability lint, citation-exists verify, and the CI byte-check gate
 - [x] **Phase 2: ba-srs-analyze + Quality Gate + Traceability Core** - Sources become atomic grounded requirements with a `source_trace` schema, gated by `ba-tools verify` + the fresh-context `ba-critic` CoVe loop, with the INDEX.md matrix and gap/orphan/stale drift detection (completed 2026-06-17)
-- [ ] **Phase 3: ba-mermaid Diagram Operator** - UC/requirement becomes an MD-inline Mermaid diagram that cites the REQ-IDs it depicts, with optional `mmdc` export
+- [x] **Phase 3: ba-mermaid Diagram Operator** - UC/requirement becomes an MD-inline Mermaid diagram that cites the REQ-IDs it depicts, with optional `mmdc` export (completed 2026-06-18)
 - [ ] **Phase 4: ba-mockup Operator** - Requirements become a UI mockup at `--fidelity html|wireframe`, each screen citing the REQ-IDs it realizes
 - [ ] **Phase 5: ba-uc Conductor + End-to-End Integration** - One use case delivered end-to-end (srs-analyze → mermaid → mockup → index) as a resumable sequential loop with a Quality gate between steps; the spine's integration test
 
@@ -100,7 +100,7 @@ Plans:
   2. Each produced diagram carries a `req_ids` field, and after `ba-tools index update` those REQ-IDs appear in INDEX.md under the mermaid column (no orphans introduced)
   3. The optional `render` route invokes `mmdc` (resolved `--mermaid-cli` → `$MERMAID_CLI` → PATH → `npx -p @mermaid-js/mermaid-cli mmdc`) to emit `.mmd`/PNG, and hard-fails with a `BaToolsError` (exit 2) when no CLI is found — never producing a synthetic image
 
-**Plans**: 2/3 plans executed
+**Plans**: 3/3 plans complete
 Plans:
 **Wave 1**
 
@@ -109,7 +109,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 03-03-PLAN.md — Wave 2: integration test — req_ids → INDEX mermaid column, no orphans (real IDs) + invented-ID orphan surfaced; reuses trace write/index update as-is [MMD-02, criterion 2]
+- [x] 03-03-PLAN.md — Wave 2: integration test — req_ids → INDEX mermaid column, no orphans (real IDs) + invented-ID orphan surfaced; reuses trace write/index update as-is [MMD-02, criterion 2]
 
 **UI hint**: yes
 
@@ -150,6 +150,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Deterministic ba-tools CLI + Foundational Gates | 7/7 | Complete    | 2026-06-17 |
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 4/4 | Complete    | 2026-06-17 |
-| 3. ba-mermaid Diagram Operator | 2/3 | In Progress|  |
+| 3. ba-mermaid Diagram Operator | 3/3 | Complete   | 2026-06-18 |
 | 4. ba-mockup Operator | 0/TBD | Not started | - |
 | 5. ba-uc Conductor + End-to-End Integration | 0/TBD | Not started | - |
