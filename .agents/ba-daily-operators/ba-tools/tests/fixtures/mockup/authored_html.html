@@ -1,0 +1,47 @@
+<!-- req_ids: [FR-001, FR-002] -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — test-slug</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; font-size: 1rem; line-height: 1.5;
+           background: #f9f9f9; color: #1a1a1a; padding: 1rem; }
+    .page { max-width: 960px; margin: 0 auto; }
+    header { padding: 1rem; background: #ffffff; border-bottom: 2px solid #dee2e6; }
+    main { padding: 1rem; }
+    .card { background: #ffffff; border: 1px solid #dee2e6; border-radius: 4px;
+            padding: 1rem; margin-bottom: 1rem; }
+    footer { padding: 0.75rem; text-align: center; font-size: 0.875rem;
+             color: #6c757d; border-top: 1px solid #dee2e6; }
+    label { display: block; margin-bottom: 0.25rem; font-weight: 500; }
+    input { width: 100%; padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da; border-radius: 4px;
+            font-size: 1rem; margin-bottom: 0.75rem; }
+    button { padding: 0.5rem 1rem; background: #0d6efd; color: #ffffff;
+             border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+    button:hover { background: #0b5ed7; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Login</h1>
+    </header>
+    <main>
+      <div class="card">
+        <form>
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Enter username">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter password">
+          <button type="submit">Sign in</button>
+        </form>
+      </div>
+    </main>
+    <footer>Mockup — test-slug | req_ids: [FR-001, FR-002]</footer>
+  </div>
+</body>
+</html>
