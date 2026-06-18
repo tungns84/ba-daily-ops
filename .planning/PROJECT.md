@@ -15,6 +15,18 @@ Claude Code transform on the v2 roadmap.
 across SRS, diagram, mockup, and backlog, so drift surfaces the moment it
 appears. If everything else fails, the traceability spine must work.
 
+## Current State
+
+**v1.0 shipped 2026-06-18** — the CodexApp-first daily spine is complete and audit-passed (44/44 requirements, 5/5 phases verified, E2E spine proven). Deterministic `ba-tools` CLI + `.ba-ops/` spine, four foundational gates, and the four spine operators (`ba-srs-analyze`, `ba-mermaid`, `ba-mockup`) driven by the `ba-uc` conductor. See `MILESTONES.md`.
+
+## Next Milestone Goals (v2 — not yet scoped)
+
+- Claude Code transform: Task-subagent spawn (true fresh-context `ba-critic`), command frontmatter, hooks, install-time transform. `ba-tools` + `.ba-ops/` carry over unchanged.
+- Deferred plugins (the rare ~20%): `ba-make-diagram` (draw.io BPMN), `ba-uc-delivery` (DOCX), `ba-backlog-grooming`.
+- Carry-forward cleanup: `/gsd-validate-phase 2` (Nyquist parity), Phase 1 tech-debt items, `ba-tools --help` Windows UTF-8 fix.
+
+Run `/gsd-new-milestone` to scope v2.
+
 ## Requirements
 
 ### Validated
@@ -31,16 +43,18 @@ appears. If everything else fails, the traceability spine must work.
 
 ### Active
 
-<!-- v1 milestone scope: the daily spine. Building toward these. -->
+<!-- v1 milestone scope: the daily spine. All shipped in v1.0 — see milestones/v1.0-REQUIREMENTS.md for the full 44-REQ traceability. Next active set defined by /gsd-new-milestone (v2). -->
 
-- [ ] `ba-tools` deterministic Python CLI (init, state, resolve-route, lint-requirements, verify, trace, index, uc-status, discovery, template fill, extract-uc) — *core commands shipped Phase 1; `trace`/`index` land in Phase 2*
-- [ ] `ba-srs-analyze` operator: sources → atomic, grounded, verifiable requirements (JSON) + SRS/BRD `.md`
-- [ ] `ba-critic` agent: fresh-context Chain-of-Verification self-critique loop (≤3 revisions, read-only)
-- [ ] `ba-uc` conductor: deliver ONE use case end-to-end (srs-analyze → mermaid → mockup → index) as a sequential agent loop, Quality gate between steps, resumable via `uc-status`
-- [ ] `.ba-ops/` file-state spine: PROJECT.md, REQUIREMENTS.md, INDEX.md traceability matrix, STATE.md (lockfile-guarded), config.json (absent = enabled) — *spine scaffold + lockfile-guarded STATE shipped Phase 1; INDEX.md matrix in Phase 2*
-- [ ] `ba-tools index update`: rebuild INDEX.md, flag gaps (missing coverage), orphans (bad req_ids), stale (source-hash drift)
-- [ ] Three verification gates: Confirm (irreversible/outward), Quality (verify + ba-critic), Safety (render/embed, plugins only)
-- [ ] Codex skill layout: flat `.agents/skills/ba-*/SKILL.md` + `agents/openai.yaml`, `allow_implicit_invocation: false` on spine/conductor
+_All v1.0 active requirements shipped and validated (Phases 1–5):_
+
+- [x] `ba-tools` deterministic Python CLI (init, state, resolve-route, lint-requirements, verify, trace, index, uc-status, discovery, template fill, extract-uc) — *shipped Phases 1–2*
+- [x] `ba-srs-analyze` operator: sources → atomic, grounded, verifiable requirements (JSON) + SRS/BRD `.md` — *Phase 2*
+- [x] `ba-critic` agent: fresh-context Chain-of-Verification self-critique loop (≤3 revisions, read-only) — *Phase 2 (sequential per Codex caveat)*
+- [x] `ba-uc` conductor: deliver ONE use case end-to-end (srs-analyze → mermaid → mockup → index), Quality gate between steps, resumable via `uc-status` — *Phase 5*
+- [x] `.ba-ops/` file-state spine: PROJECT/REQUIREMENTS/INDEX/STATE (lockfile-guarded)/config — *Phases 1–2*
+- [x] `ba-tools index update`: rebuild INDEX.md, flag gaps / orphans / stale — *Phase 2*
+- [x] Three verification gates: Confirm, Quality (verify + ba-critic), Safety (render/embed, plugin-deferred GATE-03 contract) — *Phases 1, 2, 5*
+- [x] Codex skill layout: flat `.agents/skills/ba-*/SKILL.md` + `agents/openai.yaml`, `allow_implicit_invocation: false` — *Phases 2–5*
 
 ### Out of Scope
 
@@ -98,4 +112,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-18 — Phase 4 complete (`ba-mockup` operator; MOCK-01/02/03 validated, fidelity-gated html/wireframe authoring joins the REQ-ID traceability matrix, zero new ba-tools commands, no synthetic render, 283 tests green)*
+*Last updated: 2026-06-18 — **v1.0 milestone shipped** (Phases 1–5 complete; 44/44 requirements validated; `ba-uc` conductor delivers the full spine end-to-end; audit passed; 305 tests green). Next: `/gsd-new-milestone` for v2 (Claude Code transform).*
