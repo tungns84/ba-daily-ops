@@ -161,3 +161,70 @@ Triggered when CoVe loop 3 completes with `converged: false`.
 | Never write traces on unverified requirements | Gate 3 guard |
 | Never run writer and critic concurrently | Codex v1 sequential |
 | Never auto-proceed after loop 3 non-convergence | Escalation rule |
+
+---
+
+## Safety Gate Contract
+
+**Scope:** Plugin-enforced. The spine (`ba-srs-analyze`, `ba-mermaid`, `ba-mockup`,
+`ba-uc`) invokes no render CLI; therefore the conductor **never fires the Safety gate**.
+This contract governs the deferred plugins: `ba-make-diagram`, `ba-uc-delivery`.
+
+**Phase-5 status:** Contract defined. Enforcement deferred to plugin implementation
+(PLUG-01..04). The spine is exempt.
+
+---
+
+### Clause 1 — Render CLI only
+
+Any render/export step must invoke a real CLI:
+
+```
+draw.io -x -f png -o <output>
+mmdc -i <file> -o <file>
+```
+
+No Pillow, no SVG-converter, no screenshot, no hand-pasted image. Synthetic render
+is forbidden regardless of visual fidelity. (DESIGN §6, §11.)
+
+### Clause 2 — Path-traversal and injection scan
+
+Before any `.ba-ops/` write triggered by a plugin, validate all paths via
+`resolve_under_root` + `is_within_root` (repo.py). Any path passed to a render
+CLI must resolve under `--repo-root`. Advisory injection scan runs via:
+
+```
+ba-tools scan --file <artifact>
+```
+
+(TOOL-15, always advisory, always exit 0 — see WARN semantics above.)
+
+### Clause 3 — Media extension check
+
+A rendered media file must carry extension `.png` or `.svg` (raster/vector). For
+export-only artifacts, `.pdf` is also valid. No other extension is acceptable for
+embedded media. Plugins must reject writes with non-conforming extensions at write
+time before any `.ba-ops/` state update.
+
+### Clause 4 — Hash manifest (PLUG-04, deferred)
+
+The render step writes a manifest JSON:
+
+```json
+{"rendered_sha256": "<hash>", "embedded_sha256": "<hash>"}
+```
+
+Pass condition: `rendered_sha256 == embedded_sha256`. A mismatch indicates the
+embedded media was not the file the CLI produced. This clause is enforced only
+when PLUG-04 is implemented — not this phase.
+
+---
+
+## Safety Gate — Prohibition summary
+
+| Prohibition | Rule |
+|-------------|------|
+| Never use Pillow/SVG-converter/screenshot for render | DESIGN §6/§11 |
+| Never write media with extension outside .png/.svg/.pdf | Clause 3 |
+| Never pass paths outside --repo-root to a render CLI | Clause 2 |
+| Never fire Safety gate from the spine | Scope marker |
