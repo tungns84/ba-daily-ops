@@ -149,12 +149,12 @@ Plans:
   3. Killing the conductor mid-pipeline leaves recoverable state — `ba-tools uc-status` returns the correct single-UC pipeline state and `next_step`, and `resume` completes the remaining steps to a fully traced UC
   4. The Safety gate contract for render/embed steps is defined (render CLI only, path-traversal + injection scan, `.png`/`.svg` extension check) and documented as enforced by the deferred plugins, with no synthetic render path on the spine
 
-**Plans**: 1/3 plans executed
+**Plans**: 2/3 plans executed
 Plans:
 **Wave 1** *(parallel — no file overlap)*
 
 - [x] 05-01-PLAN.md — Deterministic integration test suite: uc-status next_step over failed/killed steps, gate-reject recoverability, concurrent-write no-clobber, D-G2 orphan+self-coverage predicate, scaffold-four-rows regression guard + fixture UC [UC-03, GATE-03]
-- [ ] 05-02-PLAN.md — GATE-03 Safety-gate contract: extend gates.md with render-CLI-only / path-traversal+injection / .png-.svg extension clauses, scoped plugin-enforced + spine-exempt [GATE-03]
+- [x] 05-02-PLAN.md — GATE-03 Safety-gate contract: extend gates.md with render-CLI-only / path-traversal+injection / .png-.svg extension clauses, scoped plugin-enforced + spine-exempt [GATE-03]
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -171,4 +171,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 4/4 | Complete    | 2026-06-17 |
 | 3. ba-mermaid Diagram Operator | 3/3 | Complete    | 2026-06-18 |
 | 4. ba-mockup Operator | 3/3 | Complete    | 2026-06-18 |
-| 5. ba-uc Conductor + End-to-End Integration | 1/3 | In Progress|  |
+| 5. ba-uc Conductor + End-to-End Integration | 2/3 | In Progress|  |
