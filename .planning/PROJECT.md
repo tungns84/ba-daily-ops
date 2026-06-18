@@ -27,6 +27,7 @@ appears. If everything else fails, the traceability spine must work.
 - [x] Byte budgets enforced by gate: pre-commit/CI byte-check fails when an eager-loaded doc ≥ 32,768 B — *Validated in Phase 1*
 - [x] Terse, scannable `ba-tools` JSON output: every success prints UTF-8 JSON to stdout, every `BaToolsError` exits 2 (no traceback leaks) — *Validated in Phase 1*
 - [x] `ba-mermaid` operator: UC/requirement → Mermaid diagram authored MD-inline (default route invokes no CLI); each diagram cites REQ-IDs into the traceability matrix; optional `mmdc` render hard-fails (never synthesizes a substitute image) — *Validated in Phase 3 (MMD-01, MMD-02, MMD-03)*
+- [x] `ba-mockup` operator: requirements → UI mockup at a required `--fidelity html|wireframe` (workflow hard-rejects missing/invalid fidelity before authoring; html→`.html`, wireframe→inline `.md` blocks); each screen cites REQ-IDs into the traceability matrix; no render route / synthetic-render path (DESIGN §11); zero new ba-tools commands — *Validated in Phase 4 (MOCK-01, MOCK-02, MOCK-03)*
 
 ### Active
 
@@ -35,7 +36,6 @@ appears. If everything else fails, the traceability spine must work.
 - [ ] `ba-tools` deterministic Python CLI (init, state, resolve-route, lint-requirements, verify, trace, index, uc-status, discovery, template fill, extract-uc) — *core commands shipped Phase 1; `trace`/`index` land in Phase 2*
 - [ ] `ba-srs-analyze` operator: sources → atomic, grounded, verifiable requirements (JSON) + SRS/BRD `.md`
 - [ ] `ba-critic` agent: fresh-context Chain-of-Verification self-critique loop (≤3 revisions, read-only)
-- [ ] `ba-mockup` operator: requirements → UI mockup at `--fidelity html|wireframe`
 - [ ] `ba-uc` conductor: deliver ONE use case end-to-end (srs-analyze → mermaid → mockup → index) as a sequential agent loop, Quality gate between steps, resumable via `uc-status`
 - [ ] `.ba-ops/` file-state spine: PROJECT.md, REQUIREMENTS.md, INDEX.md traceability matrix, STATE.md (lockfile-guarded), config.json (absent = enabled) — *spine scaffold + lockfile-guarded STATE shipped Phase 1; INDEX.md matrix in Phase 2*
 - [ ] `ba-tools index update`: rebuild INDEX.md, flag gaps (missing coverage), orphans (bad req_ids), stale (source-hash drift)
@@ -98,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-18 — Phase 3 complete (`ba-mermaid` diagram operator; MMD-01/02/03 validated, REQ-ID traceability spine proven end-to-end, 271 tests green)*
+*Last updated: 2026-06-18 — Phase 4 complete (`ba-mockup` operator; MOCK-01/02/03 validated, fidelity-gated html/wireframe authoring joins the REQ-ID traceability matrix, zero new ba-tools commands, no synthetic render, 283 tests green)*

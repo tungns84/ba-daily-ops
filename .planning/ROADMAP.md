@@ -161,5 +161,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Deterministic ba-tools CLI + Foundational Gates | 7/7 | Complete    | 2026-06-17 |
 | 2. ba-srs-analyze + Quality Gate + Traceability Core | 4/4 | Complete    | 2026-06-17 |
 | 3. ba-mermaid Diagram Operator | 3/3 | Complete    | 2026-06-18 |
-| 4. ba-mockup Operator | 3/3 | Complete   | 2026-06-18 |
+| 4. ba-mockup Operator | 3/3 | Complete    | 2026-06-18 |
 | 5. ba-uc Conductor + End-to-End Integration | 0/TBD | Not started | - |
