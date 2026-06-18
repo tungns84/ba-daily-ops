@@ -149,7 +149,16 @@ Plans:
   3. Killing the conductor mid-pipeline leaves recoverable state — `ba-tools uc-status` returns the correct single-UC pipeline state and `next_step`, and `resume` completes the remaining steps to a fully traced UC
   4. The Safety gate contract for render/embed steps is defined (render CLI only, path-traversal + injection scan, `.png`/`.svg` extension check) and documented as enforced by the deferred plugins, with no synthetic render path on the spine
 
-**Plans**: TBD
+**Plans**: 3 plans (2 waves)
+Plans:
+**Wave 1** *(parallel — no file overlap)*
+
+- [ ] 05-01-PLAN.md — Deterministic integration test suite: uc-status next_step over failed/killed steps, gate-reject recoverability, concurrent-write no-clobber, D-G2 orphan+self-coverage predicate, scaffold-four-rows regression guard + fixture UC [UC-03, GATE-03]
+- [ ] 05-02-PLAN.md — GATE-03 Safety-gate contract: extend gates.md with render-CLI-only / path-traversal+injection / .png-.svg extension clauses, scoped plugin-enforced + spine-exempt [GATE-03]
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 05-03-PLAN.md — ba-uc conductor: skill (SKILL.md + openai.yaml, implicit-invocation off) + thin workflow (deliver/resume/status/iterate; srs full → mermaid full → mockup full → index, per-step gate + complete-after-gate-only) + conductor agent prompt + workflow-contract test [UC-01, UC-02, UC-03]
 
 ## Progress
 
