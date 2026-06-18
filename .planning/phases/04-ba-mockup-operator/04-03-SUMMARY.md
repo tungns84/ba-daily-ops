@@ -13,7 +13,7 @@ requires:
     provides: "ba-mockup.md workflow, ba-mockup-author.md, SKILL.md, openai.yaml"
 
 provides:
-  - "Phase verification record — full-suite result (283 passed), MOCK-01/02/03 criterion mapping, two hard-constraint outcomes"
+  - "Phase verification record — full-suite result (283 passed), MOCK-01/02/03 criterion mapping, two hard-constraint outcomes, human-verify PASSED"
   - "04-03-SUMMARY.md as the phase gate artifact before /gsd-verify-work"
 
 affects: [gsd-verify-work]
@@ -31,27 +31,29 @@ key-files:
   modified: []
 
 key-decisions:
-  - "Task 1 only — Task 2 is a blocking human-verify checkpoint; plan is in-progress pending human approval"
+  - "Task 1 complete: full suite 283 passed, both hard constraints confirmed"
+  - "Task 2 human-verify: PASSED — developer approved all three criteria (html renders recognizable screen, wireframe reads as layout sketch, fidelity gate rejects missing/invalid fidelity)"
+  - "Optional live SRS-slug invocation skipped — no SRS slug exists under .ba-ops/srs/; covered by integration tests"
 
 patterns-established: []
 
-requirements-completed: []
+requirements-completed: [MOCK-01, MOCK-02, MOCK-03]
 
-duration: ~7min
+duration: ~8min
 completed: 2026-06-18
-status: in-progress
+status: complete
 ---
 
 # Phase 4 Plan 03: ba-mockup Integration Gate Summary
 
-**Full pytest suite green (283 passed); zero ba_tools/ package changes; zero render-invocation tokens in all 4 operator files; human-verify checkpoint pending developer approval**
+**Full pytest suite green (283 passed); zero ba_tools/ package changes; zero render-invocation tokens in all 4 operator files; human-verify PASSED — all three MOCK-01/MOCK-02/MOCK-03 criteria confirmed**
 
 ## Performance
 
-- **Duration:** ~7 min
+- **Duration:** ~8 min
 - **Started:** 2026-06-18T09:41:09Z
-- **Completed:** 2026-06-18T09:48:00Z (Task 1 only; Task 2 checkpoint pending)
-- **Tasks:** 1 of 2 (Task 2 is a blocking human-verify checkpoint)
+- **Completed:** 2026-06-18T10:00:00Z (both tasks complete)
+- **Tasks:** 2 of 2 (Task 1 auto + Task 2 human-verify PASSED)
 - **Files created:** 1
 
 ## Accomplishments
@@ -94,10 +96,32 @@ Result after filtering prohibition lines: **0 matches** — no render invocation
 
 No `Route: render` heading exists in `ba-mockup.md`. The `test_screen_route_invokes_no_render_cli` automated test also confirms zero render tokens in the `## Route: screen` section.
 
+### Task 2: Human verify — an authored mockup reads as a usable screen
+
+**Result: PASSED** — developer typed "approved"
+
+Developer confirmed all three required criteria:
+
+**Criterion 1 — HTML fixture (`tests/fixtures/mockup/authored_html.html`):**
+- Renders a recognizable Login screen: header → card with username/password form + Sign-in submit button → footer
+- First line carries `<!-- req_ids: [FR-001, FR-002] -->`
+- Fully self-contained: inline `<style>` only, ZERO `<script>` tags, ZERO external asset references (no `src=` / `http` href / `<link>`)
+
+**Criterion 2 — Wireframe fixture (`tests/fixtures/mockup/authored_wireframe.md`):**
+- Reads as a layout sketch: Header/Main/Footer + Interaction Notes via markdown headings/lists/tables
+- Frontmatter `req_ids: [FR-001, FR-002]`
+- ZERO ASCII box-drawing characters (verified by grep over U+2500–U+257F = 0 matches)
+
+**Criterion 3 — Fidelity gate:**
+- `ba-mockup.md` Route:screen Step 2 stops with error "`--fidelity` is required and must be `html` or `wireframe`" when fidelity is absent/invalid, BEFORE any artifact is authored
+- The operator exposes only `screen` + `full` routes (no render route)
+
+**Optional live SRS-slug invocation:** Skipped — no SRS slug exists under `.ba-ops/srs/`. The end-to-end author→trace write→index update→orphan path is already proven by the 6 passing `test_mockup_trace_index.py` integration tests.
+
 ## Task Commits
 
-1. **Task 1: Run full suite + assert hard constraints** — committed with this SUMMARY
-2. **Task 2: Human verify** — PENDING (blocking checkpoint, no commit)
+1. **Task 1: Run full suite + assert hard constraints** — `0a0ab60`
+2. **Task 2: Human verify** — no new code commit (human verification gate; evidence recorded in this SUMMARY)
 
 ## Files Created/Modified
 
@@ -106,7 +130,9 @@ No `Route: render` heading exists in `ba-mockup.md`. The `test_screen_route_invo
 ## Decisions Made
 
 - Task 1 executes exactly as specified — no deviations, no auto-fixes needed
-- Plan is in-progress pending Task 2 human-verify resolution; SUMMARY.md and STATE.md updated to reflect checkpoint state
+- Task 2 human-verify PASSED: developer approved all three criteria on first review
+- Optional live SRS-slug invocation skipped — no SRS slug exists under `.ba-ops/srs/`; covered by integration tests
+- MOCK-01, MOCK-02, MOCK-03 requirements confirmed complete by automated tests + human-verify
 
 ## Deviations from Plan
 
@@ -122,8 +148,8 @@ No new network endpoints, auth paths, file access patterns, or schema changes in
 
 ---
 *Phase: 04-ba-mockup-operator*
-*Task 1 completed: 2026-06-18*
-*Task 2: awaiting human-verify checkpoint resolution*
+*Task 1 completed: 2026-06-18 — commit 0a0ab60*
+*Task 2 completed: 2026-06-18 — human-verify PASSED (developer approved)*
 
 ## Self-Check: PASSED
 
@@ -131,3 +157,6 @@ No new network endpoints, auth paths, file access patterns, or schema changes in
 - Full suite: 283 passed confirmed via pytest output
 - Constraint 1 (zero ba_tools/ changes): `no-ba_tools-change-ok` confirmed
 - Constraint 2 (no render tokens): 0 matches confirmed
+- Task 2 human-verify: PASSED — developer approved all three criteria
+- SUMMARY contains "MOCK-01" (required by must_haves artifact `contains` check): confirmed
+- Plan status: `complete`
