@@ -39,12 +39,17 @@ def _import_roots(path: Path) -> set[str]:
 
 
 def _payload(result: subprocess.CompletedProcess[bytes]) -> dict[str, object]:
-    assert result.returncode == 0, (
+    assert result.returncode in {0, 2}, (
         f"guarded command failed with {result.returncode}: "
         f"stdout={result.stdout!r}, stderr={result.stderr!r}"
     )
-    assert result.stderr == b""
-    return json.loads(result.stdout.decode("utf-8"))
+    selected, opposite = (
+        (result.stdout, result.stderr)
+        if result.returncode == 0
+        else (result.stderr, result.stdout)
+    )
+    assert opposite == b""
+    return json.loads(selected.decode("utf-8"))
 
 
 def test_runtime_imports_exclude_network_clients() -> None:
@@ -74,6 +79,7 @@ def test_every_runtime_command_is_zero_network(
     repo.mkdir()
     command_arguments = {
         "init": ["--repo-root", str(repo), "init"],
+        "doctor": ["--repo-root", str(repo), "doctor", "--all"],
     }
 
     assert set(cli.commands) == set(command_arguments)
@@ -88,7 +94,13 @@ def test_every_runtime_command_is_zero_network(
     ]
 
     payloads = [_payload(result) for result in results]
-    assert [payload["command"] for payload in payloads] == ["help", "help", "version", "init"]
+    assert [payload["command"] for payload in payloads] == [
+        "help",
+        "help",
+        "version",
+        "init",
+        "doctor",
+    ]
 
 
 def test_parallel_runtime_commands_are_zero_network(
@@ -100,9 +112,11 @@ def test_parallel_runtime_commands_are_zero_network(
         ["--version"],
         ["--help"],
         ["--repo-root", str(unicode_repo_with_spaces), "init"],
+        ["--repo-root", str(unicode_repo_with_spaces), "doctor", "--all"],
         ["--version"],
         ["--help"],
         ["--repo-root", str(unicode_repo_with_spaces), "init"],
+        ["--repo-root", str(unicode_repo_with_spaces), "doctor", "--all"],
     ]
 
     results = process_barrier(
@@ -114,3 +128,4 @@ def test_parallel_runtime_commands_are_zero_network(
 
     assert all(result.returncode != 97 for result in results)
     assert [payload["command"] for payload in payloads].count("init") == 2
+    assert [payload["command"] for payload in payloads].count("doctor") == 2

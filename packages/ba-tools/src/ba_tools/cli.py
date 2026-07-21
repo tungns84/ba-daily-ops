@@ -71,6 +71,44 @@ def init_command(ctx: click.Context, repair: bool) -> dict[str, object]:
     )
 
 
+@cli.command("doctor")
+@click.option("--all", "include_all", is_flag=True, help="Include every known optional check.")
+@click.pass_context
+def doctor_command(ctx: click.Context, include_all: bool) -> dict[str, object]:
+    """Return one complete ordered local diagnostic snapshot."""
+
+    from ba_tools.doctor import CheckStatus, run_doctor
+    from ba_tools.paths import resolve_repo_root
+
+    repo_root_text = ctx.parent.params.get("repo_root") if ctx.parent is not None else None
+    if repo_root_text is None:
+        raise BaToolsError(
+            code="REPO_ROOT_REQUIRED",
+            message="A repository root is required.",
+            remediation=("Pass --repo-root before the command.",),
+        )
+
+    result = run_doctor(
+        resolve_repo_root(repo_root_text),
+        include_all=include_all,
+    )
+    data = result.as_dict()
+    if result.status is CheckStatus.FAIL:
+        raise BaToolsError(
+            code="DOCTOR_FAILED",
+            message="One or more required local diagnostics failed.",
+            details=(data,),
+            remediation=("Apply the reported check remediation, then rerun doctor.",),
+        )
+    envelope = success_envelope("doctor", data)
+    envelope["warnings"] = [
+        check.summary
+        for check in result.checks
+        if check.status is CheckStatus.WARNING
+    ]
+    return envelope
+
+
 def invoke_cli(arguments: list[str]) -> dict[str, Any]:
     """Invoke Click without allowing it to print, exit, or serialize."""
 

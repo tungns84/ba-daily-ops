@@ -388,7 +388,11 @@ def test_generated_launcher_exposes_complete_doctor_snapshot(
     bootstrap = load_bootstrap()
     repo = tmp_path / "Dự án doctor launcher"
     repo.mkdir()
+    (repo / ".git").mkdir()
     shutil.copytree(PROJECT_ROOT / "installer", repo / "installer")
+    package_root = repo / "packages" / "ba-tools"
+    package_root.mkdir(parents=True)
+    shutil.copy2(PACKAGE_ROOT / "requirements.lock", package_root / "requirements.lock")
     runtime = repo / ".ba-tools-runtime"
     generation = runtime / "envs" / "doctor-generation"
     scripts = generation / ("Scripts" if sys.platform == "win32" else "bin")
@@ -398,6 +402,11 @@ def test_generated_launcher_exposes_complete_doctor_snapshot(
     source_cfg = dev_python.parents[1] / "pyvenv.cfg"
     if source_cfg.exists():
         shutil.copy2(source_cfg, generation / "pyvenv.cfg")
+    identity = bootstrap.compute_generation_identity(
+        dev_python,
+        package_root / "requirements.lock",
+    )
+    bootstrap._write_identity(generation, identity)
     (runtime / "current-env.txt").write_text(
         "doctor-generation\n",
         encoding="utf-8",
@@ -424,9 +433,12 @@ def test_generated_launcher_exposes_complete_doctor_snapshot(
         },
     )
 
-    assert result.returncode == 2
-    assert result.stdout == b""
-    snapshot = parse_document(result.stderr)["error"]["details"][0]
+    assert result.returncode == 0
+    assert result.stderr == b""
+    payload = parse_document(result.stdout)
+    assert payload["command"] == "doctor"
+    snapshot = payload["data"]
+    assert snapshot["status"] in {"pass", "warning"}
     assert [check["id"] for check in snapshot["checks"]] == [*PRE_INIT_IDS, *OPTIONAL_IDS]
 
 
@@ -434,7 +446,9 @@ def test_core_registry_contract_covers_d07_through_d10() -> None:
     module = doctor_module()
 
     assert [definition.id for definition in module.CORE_CHECKS] == PRE_INIT_IDS
-    assert [definition.id for definition in module.PROFILE_CHECKS] == POST_INIT_IDS[len(PRE_INIT_IDS) :]
+    assert [definition.id for definition in module.PROFILE_CHECKS] == POST_INIT_IDS[
+        len(PRE_INIT_IDS) :
+    ]
     assert [definition.id for definition in module.OPTIONAL_CHECKS] == OPTIONAL_IDS
     assert hashlib.sha256(
         "|".join([*POST_INIT_IDS, *OPTIONAL_IDS]).encode("utf-8")

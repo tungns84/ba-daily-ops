@@ -16,6 +16,8 @@ def _command_name(arguments: list[str]) -> str:
         return "version"
     if "init" in arguments:
         return "init"
+    if "doctor" in arguments:
+        return "doctor"
     if not arguments or "--help" in arguments:
         return "help"
     return "unknown"
