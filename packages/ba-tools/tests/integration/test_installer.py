@@ -8,6 +8,8 @@ import os
 import shutil
 import subprocess
 import sys
+import tomllib
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pytest
@@ -67,6 +69,9 @@ def test_installer_surfaces_and_repository_boundaries_exist() -> None:
 
 def test_generation_identity_includes_exact_tool_version(dev_python: Path) -> None:
     bootstrap = load_bootstrap()
+    from ba_tools import __version__
+
+    pyproject = tomllib.loads((PACKAGE_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     identity = bootstrap.compute_generation_identity(dev_python, LOCK_PATH)
     changed = bootstrap.compute_generation_identity(
         dev_python,
@@ -74,7 +79,7 @@ def test_generation_identity_includes_exact_tool_version(dev_python: Path) -> No
         package_version="0.1.1",
     )
 
-    assert identity.package_version == VERSION
+    assert pyproject["project"]["version"] == __version__ == identity.package_version == VERSION
     assert identity.lock_digest == hashlib.sha256(LOCK_PATH.read_bytes()).hexdigest()
     assert identity.python_version == f"{sys.version_info.major}.{sys.version_info.minor}"
     assert identity.os_name
@@ -186,6 +191,7 @@ def test_candidate_rejects_version_surface_mismatch(
     candidate = tmp_path / "candidate"
     candidate.mkdir()
     identity = bootstrap.compute_generation_identity(Path(sys.executable), LOCK_PATH)
+    bootstrap._write_identity(candidate, identity)
     monkeypatch.setattr(
         bootstrap,
         "_version_surfaces",
@@ -208,6 +214,22 @@ def test_installer_ui_has_exact_four_stages_and_success_copy() -> None:
         "Next: ./ba-tools doctor",
     ):
         assert stage in source
+
+
+def test_installer_sources_forbid_global_or_policy_mutation() -> None:
+    source = "\n".join(
+        path.read_text(encoding="utf-8").lower()
+        for path in (POWERSHELL_INSTALLER, POSIX_INSTALLER, BOOTSTRAP_PATH)
+    )
+    for forbidden in (
+        "setx ",
+        "pip install --user",
+        "set-executionpolicy",
+        "$profile",
+        "/etc/profile",
+        ".bashrc",
+    ):
+        assert forbidden not in source
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="requires Windows PowerShell")
@@ -272,12 +294,13 @@ def test_launchers_forward_argv_streams_and_code(
     bootstrap = load_bootstrap()
     repo = tmp_path / "Dự án launcher có khoảng trắng"
     repo.mkdir()
+    shutil.copytree(PROJECT_ROOT / "installer", repo / "installer")
     runtime = repo / ".ba-tools-runtime"
     generation = runtime / "envs" / "gen-test"
     scripts = generation / ("Scripts" if sys.platform == "win32" else "bin")
     scripts.mkdir(parents=True)
     interpreter = scripts / ("python.exe" if sys.platform == "win32" else "python")
-    os.link(dev_python, interpreter)
+    shutil.copy2(dev_python, interpreter)
     source_cfg = dev_python.parents[1] / "pyvenv.cfg"
     if source_cfg.exists():
         shutil.copy2(source_cfg, generation / "pyvenv.cfg")
@@ -291,23 +314,50 @@ def test_launchers_forward_argv_streams_and_code(
         if sys.platform == "win32"
         else [str(launcher), *arguments]
     )
+    dev_site_packages = next(
+        path for path in map(Path, sys.path) if path.name == "site-packages"
+    )
     result = subprocess.run(
         command,
         cwd=tmp_path,
         capture_output=True,
         check=False,
         timeout=30,
-        env={**os.environ, "PYTHONPATH": str(PACKAGE_ROOT / "src")},
+        env={
+            **os.environ,
+            "PYTHONPATH": os.pathsep.join(
+                (str(PACKAGE_ROOT / "src"), str(dev_site_packages))
+            ),
+        },
     )
     assert result.returncode == 0
     assert result.stderr == b""
     payload = parse_document(result.stdout)
     assert payload["data"] == {"version": VERSION}
 
+    failure_command = command[:-1] + ["--not-a-real-option", "mục tiêu"]
+    failure = subprocess.run(
+        failure_command,
+        cwd=tmp_path,
+        capture_output=True,
+        check=False,
+        timeout=30,
+        env={
+            **os.environ,
+            "PYTHONPATH": os.pathsep.join(
+                (str(PACKAGE_ROOT / "src"), str(dev_site_packages))
+            ),
+        },
+    )
+    assert failure.returncode == 2
+    assert failure.stdout == b""
+    assert parse_document(failure.stderr)["error"]["code"] == "CLI_USAGE_ERROR"
+
 
 def test_malicious_pointer_is_rejected(tmp_path: Path) -> None:
     bootstrap = load_bootstrap()
     repo = tmp_path / "repo"
+    shutil.copytree(PROJECT_ROOT / "installer", repo / "installer")
     runtime = repo / ".ba-tools-runtime"
     runtime.mkdir(parents=True)
     (runtime / "current-env.txt").write_text("../outside\n", encoding="utf-8")
@@ -379,6 +429,7 @@ def test_missing_python_or_git_fails_before_packages(
     calls: list[list[str]] = []
     monkeypatch.setattr(bootstrap, "_run", lambda command, **_kwargs: calls.append(command))
     monkeypatch.setattr(bootstrap.shutil, "which", lambda _name: None)
+    monkeypatch.setattr(bootstrap.sys, "version_info", (3, 10))
 
     with pytest.raises(bootstrap.InstallerError, match="Python 3.11 or newer is required"):
         bootstrap.discover_prerequisites()
@@ -391,17 +442,22 @@ def test_concurrent_activation_never_publishes_unverified_generation(
 ) -> None:
     bootstrap = load_bootstrap()
     repo = tmp_path / "repo"
-    candidates = [tmp_path / "candidate-a", tmp_path / "candidate-b"]
+    shutil.copytree(PROJECT_ROOT / "installer", repo / "installer")
+    candidates = [
+        tmp_path / "candidate-a",
+        tmp_path / "candidate-b",
+        tmp_path / "candidate-c",
+    ]
     for candidate in candidates:
         candidate.mkdir()
     identity = bootstrap.compute_generation_identity(Path(sys.executable), LOCK_PATH)
-    verified: set[Path] = {candidates[1]}
+    verified_names = {candidates[1].name, candidates[2].name}
     monkeypatch.setattr(
         bootstrap,
         "verify_generation",
         lambda _repo, candidate, _identity: (
             None
-            if candidate in verified
+            if candidate.name in verified_names
             else (_ for _ in ()).throw(bootstrap.InstallerError("candidate not verified"))
         ),
     )
@@ -410,7 +466,18 @@ def test_concurrent_activation_never_publishes_unverified_generation(
         bootstrap._publish_verified_candidate(repo, candidates[0], identity)
     assert not (repo / ".ba-tools-runtime/current-env.txt").exists()
 
-    active = bootstrap._publish_verified_candidate(repo, candidates[1], identity)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        active_names = set(
+            pool.map(
+                lambda candidate: bootstrap._publish_verified_candidate(
+                    repo,
+                    candidate,
+                    identity,
+                ),
+                candidates[1:],
+            )
+        )
     pointer = (repo / ".ba-tools-runtime/current-env.txt").read_text(encoding="utf-8").strip()
-    assert pointer == active
-    assert (repo / ".ba-tools-runtime/envs" / active).is_dir()
+    assert active_names == verified_names
+    assert pointer in verified_names
+    assert all((repo / ".ba-tools-runtime/envs" / name).is_dir() for name in verified_names)

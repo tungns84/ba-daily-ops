@@ -1,0 +1,20 @@
+#!/bin/sh
+
+launcher_not_ready() {
+    printf '%s\n' '{"schema_version":1,"ok":false,"command":"launcher","error":{"code":"LAUNCHER_NOT_READY","message":"The project-local BA Tools runtime is not ready.","details":[],"remediation":["Rerun the repository installer, then retry this command."]}}' >&2
+    exit 2
+}
+
+repo_root=$(CDPATH= cd "$(dirname "$0")" && pwd -P) || launcher_not_ready
+pointer=$repo_root/.ba-tools-runtime/current-env.txt
+[ -f "$pointer" ] || launcher_not_ready
+
+IFS= read -r generation < "$pointer" || launcher_not_ready
+case $generation in
+    ""|"."|".."|*[!A-Za-z0-9._-]*) launcher_not_ready ;;
+esac
+
+python=$repo_root/.ba-tools-runtime/envs/$generation/bin/python
+[ -f "$python" ] && [ -x "$python" ] || launcher_not_ready
+
+exec "$python" -X utf8 -m ba_tools --repo-root "$repo_root" "$@"
