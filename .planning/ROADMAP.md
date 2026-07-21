@@ -30,12 +30,12 @@ BA Daily Ops ships as a harness-first vertical MVP: deterministic `ba-tools` + `
   4. Every successful `ba-tools` command emits exactly one JSON object on stdout; errors emit JSON on stderr with exit code 2
   5. Vietnamese UTF-8 text round-trips through CLI I/O; all business paths resolve under `--repo-root` with traversal blocked
 
-**Plans**: 11 plans
+**Plans**: 1/11 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Approve binary-only dependency closures for every supported target
+- [x] 01-01-PLAN.md — Approve binary-only dependency closures for every supported target
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -175,7 +175,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Harness Foundation | 0/11 | Not started | - |
+| 1. Harness Foundation | 1/11 | In Progress|  |
 | 2. REQ-ID Spine & SRS Pair | 0/TBD | Not started | - |
 | 3. Executable Runner & Conductor | 0/TBD | Not started | - |
 | 4. Golden Path Artifacts (Light Tier) | 0/TBD | Not started | - |

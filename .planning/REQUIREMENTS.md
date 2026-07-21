@@ -43,7 +43,7 @@ Requirements for initial release (light tier pilot + harness foundation). Each m
 
 - [ ] **FOUND-01**: `ba-tools` CLI trả đúng một JSON UTF-8 ra stdout khi thành công; lỗi ra stderr với exit code 2 (BRD-022)
 - [ ] **FOUND-02**: `ba-tools doctor` kiểm tra Python, UTF-8, cấu trúc repo và dependency tùy chọn (BRD-019)
-- [ ] **FOUND-03**: Installer một lệnh (Windows PowerShell + POSIX) không hard-code path máy (BRD-020)
+- [x] **FOUND-03**: Installer một lệnh (Windows PowerShell + POSIX) không hard-code path máy (BRD-020)
 - [ ] **FOUND-04**: `.ba-ops/` file-state khởi tạo với `config.json`, `coverage-policy.json`, `business-goals.json` (BRD-021, BRD-028)
 - [ ] **FOUND-05**: Mọi path nghiệp vụ resolve tương đối `--repo-root`; chống path traversal (NFR-009)
 - [ ] **FOUND-06**: Write operations dùng lock và atomic replace; crash không để canonical nửa ghi (NFR-010)
@@ -93,7 +93,7 @@ Requirements for initial release (light tier pilot + harness foundation). Each m
 
 - [ ] **NFR-01**: Verify/trace/index không gọi renderer/LLM hoàn tất ≤3s @ 200 REQ (NFR-001)
 - [ ] **NFR-02**: Core chạy Windows 10+, macOS 12+, Linux; Python 3.11+ (NFR-003)
-- [ ] **NFR-03**: `ba-tools` zero-network — không HTTP/DNS/telemetry/LLM (NFR-009)
+- [x] **NFR-03**: `ba-tools` zero-network — không HTTP/DNS/telemetry/LLM (NFR-009)
 - [ ] **NFR-04**: Artifact và CLI output hỗ trợ UTF-8 tiếng Việt đầy đủ (NFR-008)
 - [ ] **NFR-05**: Determinism boundary: CLI không tự suy đoán nghiệp vụ (NFR-006)
 
@@ -141,7 +141,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | FOUND-01 | Phase 1 | Pending |
 | FOUND-02 | Phase 1 | Pending |
-| FOUND-03 | Phase 1 | Pending |
+| FOUND-03 | Phase 1 | Complete |
 | FOUND-04 | Phase 1 | Pending |
 | FOUND-05 | Phase 1 | Pending |
 | FOUND-06 | Phase 1 | Pending |
@@ -170,11 +170,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SKILL-03 | Phase 4 | Pending |
 | NFR-01 | Phase 7 | Pending |
 | NFR-02 | Phase 1 | Pending |
-| NFR-03 | Phase 1 | Pending |
+| NFR-03 | Phase 1 | Complete |
 | NFR-04 | Phase 1 | Pending |
 | NFR-05 | Phase 1 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 34 distinct IDs (header previously noted 35)
 - Mapped to phases: 34/34 ✓
 - Unmapped: 0

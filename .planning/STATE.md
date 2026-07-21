@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 1
+current_phase: 01
 current_phase_name: Harness Foundation
 status: executing
-stopped_at: Phase 1 UI-SPEC approved
-last_updated: "2026-07-21T04:06:27.302Z"
+stopped_at: Completed BAOPS-01-01-PLAN.md
+last_updated: "2026-07-21T09:17:24.637Z"
 last_activity: 2026-07-21
-last_activity_desc: Phase 1 planning complete — 11 plans ready
+last_activity_desc: Phase BAOPS-01 execution started
 progress:
-  total_phases: 7
+  total_phases: 1
   completed_phases: 0
   total_plans: 11
-  completed_plans: 0
+  completed_plans: 1
 ---
 
 # Project State
@@ -23,16 +23,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-20)
 
 **Core value:** Truy vết REQ-ID xuyên suốt các giao phẩm — drift lộ ra ngay khi xuất hiện
-**Current focus:** Phase 1 — Harness Foundation
+**Current focus:** Phase BAOPS-01 — Harness Foundation
 
 ## Current Position
 
-Phase: 1 of 7 (Harness Foundation)
-Plan: 11 plans ready
-Status: Ready to execute
-Last activity: 2026-07-21 — Phase 1 planning complete
+Phase: BAOPS-01 (Harness Foundation) — EXECUTING
+Plan: 2 of 11
+Status: Executing Phase BAOPS-01
+Last activity: 2026-07-21 — Phase BAOPS-01 execution started
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 9%
 
 ## Performance Metrics
 
@@ -54,6 +54,11 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase BAOPS-01 P01 | 4h 16m | 1 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -65,6 +70,10 @@ Recent decisions affecting current work:
 - Roadmap: 7 vertical MVP phases derived from research SUMMARY and v1 requirements
 - Phase 6 scoped to extension scaffolding; v2 tier/plugin/team reqs deferred
 - Critical path: 1 → 2 → 3 → 5 → 7 (Phase 4 artifacts parallel-safe once trace schema stable)
+- [Phase BAOPS-01]: Approved exact six direct pins and all 17 SUS package dispositions with no substitutions. — The blocking-human checkpoint authorized only the presented exact closure contract.
+- [Phase BAOPS-01]: Normalized colorama as Windows-only. — Click and pytest PEP 508 markers include colorama only on Windows, and the user accepted this normalization.
+- [Phase BAOPS-01]: Scoped Linux x64 dependency approval to manylinux_2_17_x86_64. — The approved target is glibc-compatible manylinux, not musllinux.
+- [Phase BAOPS-01]: Kept installer network consent invocation-scoped. — Package approval is not persistent consent for future installer network access under D-05.
 
 ### Pending Todos
 
@@ -86,6 +95,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-07-21T02:22:25.118Z
-Stopped at: Phase 1 UI-SPEC approved
-Resume file: .planning/phases/BAOPS-01-harness-foundation/01-UI-SPEC.md
+Last session: 2026-07-21T09:17:24.629Z
+Stopped at: Completed BAOPS-01-01-PLAN.md
+Resume file: None
