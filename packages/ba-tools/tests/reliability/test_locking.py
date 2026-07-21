@@ -117,6 +117,7 @@ def test_lock_timeout_is_bounded(tmp_path: Path) -> None:
             holder.kill()
             holder.join(timeout=5)
     assert holder.exitcode == 0
+    assert tuple(tmp_path.rglob("*")) == ()
 
 
 def test_concurrent_writers_are_serialized(tmp_path: Path) -> None:

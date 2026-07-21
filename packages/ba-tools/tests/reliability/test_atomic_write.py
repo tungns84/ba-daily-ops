@@ -114,9 +114,21 @@ def test_fault_preserves_previous_canonical(tmp_path: Path, step: str) -> None:
         hashlib.sha256(previous).hexdigest(),
         hashlib.sha256(replacement).hexdigest(),
     }
-    if after.payload == previous:
+    prepublication_steps = {
+        "before_write",
+        "after_write",
+        "after_flush",
+        "after_fsync",
+        "before_replace",
+    }
+    temporaries = _temps(target)
+    if step in prepublication_steps:
         assert after == before
-    for temporary in _temps(target):
+        assert temporaries
+    else:
+        assert after.payload == replacement
+        assert temporaries == ()
+    for temporary in temporaries:
         assert temporary.read_bytes() in {b"", replacement}
 
 
@@ -145,9 +157,23 @@ def test_create_fault_never_exposes_partial_canonical(tmp_path: Path, step: str)
     with pytest.raises(OSError, match="injected fault"):
         atomic.atomic_create(target, payload, fault=_raise_at(step))
 
+    precleanup_steps = {
+        "before_write",
+        "after_write",
+        "after_flush",
+        "after_fsync",
+        "before_link",
+        "after_link",
+        "before_cleanup",
+    }
+    temporaries = _temps(target)
     if target.path.exists():
         assert target.path.read_bytes() == payload
-    for temporary in _temps(target):
+    if step in precleanup_steps:
+        assert temporaries
+    else:
+        assert temporaries == ()
+    for temporary in temporaries:
         assert temporary.read_bytes() in {b"", payload}
 
 

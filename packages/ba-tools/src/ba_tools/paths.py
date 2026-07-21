@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import stat
 from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path, PurePosixPath, PureWindowsPath
 
 from ba_tools.errors import BaToolsError
@@ -13,6 +14,12 @@ PATH_MESSAGE = "The requested path is outside the repository or uses a disallowe
 PATH_REMEDIATION = (
     "Use a repository-relative POSIX path without .., a drive, UNC prefix, or backslashes.",
 )
+
+
+class PathPolicy(StrEnum):
+    """Filesystem access policy carried by a resolved business path."""
+
+    STRICT = "strict"
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,6 +36,7 @@ class ResolvedBusinessPath:
     root: ResolvedRepoRoot
     relative: str
     path: Path
+    policy: PathPolicy = PathPolicy.STRICT
 
 
 def _path_error(code: str = "PATH_INVALID") -> BaToolsError:
@@ -93,23 +101,36 @@ def reject_symlink_or_reparse_components(root: ResolvedRepoRoot, path: PurePosix
             raise _path_error("PATH_REDIRECTED")
 
 
+def assert_resolved_containment(root: ResolvedRepoRoot, candidate: Path) -> None:
+    """Prove a resolved candidate is a descendant of the resolved repository root."""
+
+    try:
+        candidate.relative_to(root.path)
+    except ValueError as error:
+        raise _path_error("PATH_TRAVERSAL") from error
+
+
 def resolve_business_path(
     root: ResolvedRepoRoot,
     value: str | PurePosixPath,
+    *,
+    policy: PathPolicy = PathPolicy.STRICT,
 ) -> ResolvedBusinessPath:
     """Resolve a canonical business path beneath a trusted root."""
 
-    portable = parse_business_path(value) if isinstance(value, str) else value
+    portable = parse_business_path(value if isinstance(value, str) else value.as_posix())
     reject_symlink_or_reparse_components(root, portable)
 
     try:
         candidate = (root.path / Path(*portable.parts)).resolve(strict=False)
-        candidate.relative_to(root.path)
     except (OSError, RuntimeError, ValueError) as error:
         raise _path_error("PATH_TRAVERSAL") from error
+    assert_resolved_containment(root, candidate)
+    reject_symlink_or_reparse_components(root, portable)
 
     return ResolvedBusinessPath(
         root=root,
         relative=portable.as_posix(),
         path=candidate,
+        policy=policy,
     )
