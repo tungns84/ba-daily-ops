@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(slots=True)
 class BaToolsError(Exception):
     """An expected failure whose fields are safe to expose to callers."""
 
