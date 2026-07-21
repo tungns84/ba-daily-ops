@@ -92,9 +92,11 @@ def test_repo_root_init_walking_skeleton(tmp_path: Path) -> None:
         },
         "init command/state behavior",
     )
-    assert sorted(path.as_posix() for path in repo_root.rglob("*") if path.is_file()) == sorted(
-        STATE_FILES
-    )
+    assert sorted(
+        path.relative_to(repo_root).as_posix()
+        for path in repo_root.rglob("*")
+        if path.is_file()
+    ) == sorted(STATE_FILES)
     for relative_path in STATE_FILES:
         source = PACKAGE_DEFAULTS / Path(relative_path).name
         generated = repo_root / relative_path
