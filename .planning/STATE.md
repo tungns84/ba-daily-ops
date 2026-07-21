@@ -102,9 +102,9 @@ Recent decisions affecting current work:
 - [Phase BAOPS-01]: Require the running interpreter to equal the contained active generation for installed-version health.
 - [Phase BAOPS-01]: Keep durable-state diagnostics independent from repository and install findings.
 - [Phase BAOPS-01]: Keep NFR-02 pending until native POSIX and exact-minimum-host evidence is available.
-- [Phase ?]: Run the foundation smoke offline and invoke only generated launchers after installation.
-- [Phase ?]: Bind Windows installer discovery to the selected matrix Python with invocation-scoped PY_PYTHON.
-- [Phase ?]: Keep workflow source, remote CI conclusions, and exact-minimum-host evidence as separate claims owned by Plans 01-09, 01-10, and 01-11.
+- [Phase BAOPS-01]: Run the foundation smoke offline and invoke only generated launchers after installation.
+- [Phase BAOPS-01]: Bind Windows installer discovery to the selected matrix Python with invocation-scoped PY_PYTHON.
+- [Phase BAOPS-01]: Keep workflow source, remote CI conclusions, and exact-minimum-host evidence as separate claims owned by Plans 01-09, 01-10, and 01-11.
 
 ### Pending Todos
 
