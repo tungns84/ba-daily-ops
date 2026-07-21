@@ -83,11 +83,11 @@ def test_fresh_init_creates_exact_files(temp_repo: Path, run_cli_bytes: RunCli) 
         "created": list(REQUIRED_STATE_FILES),
         "quarantined": [],
     }
-    assert [
+    assert {
         path.relative_to(temp_repo).as_posix()
         for path in temp_repo.rglob("*")
         if path.is_file()
-    ] == list(REQUIRED_STATE_FILES)
+    } == set(REQUIRED_STATE_FILES)
     for relative in REQUIRED_STATE_FILES:
         target = _state_path(temp_repo, relative)
         assert target.read_bytes() == canonical_file_bytes(target.name)

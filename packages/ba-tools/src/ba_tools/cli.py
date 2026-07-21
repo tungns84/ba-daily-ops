@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from typing import Any
 
 import click
@@ -41,8 +42,9 @@ def cli(
 
 
 @cli.command("init")
+@click.option("--repair", is_flag=True, help="Create missing required state files only.")
 @click.pass_context
-def init_command(ctx: click.Context) -> dict[str, object]:
+def init_command(ctx: click.Context, repair: bool) -> dict[str, object]:
     """Create the minimal canonical workspace state."""
 
     from ba_tools.init_command import run_init
@@ -56,12 +58,13 @@ def init_command(ctx: click.Context) -> dict[str, object]:
             remediation=("Pass --repo-root before the command.",),
         )
 
-    result = run_init(resolve_repo_root(repo_root_text))
+    result = run_init(resolve_repo_root(repo_root_text), repair=repair)
     return success_envelope(
         "init",
         {
             "changed": result.changed,
             "created": list(result.created),
+            "quarantined": [asdict(record) for record in result.quarantined],
         },
     )
 
