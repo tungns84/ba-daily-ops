@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 01
 current_phase_name: Harness Foundation
 status: executing
-stopped_at: Completed BAOPS-01-01-PLAN.md
-last_updated: "2026-07-21T09:17:24.637Z"
+stopped_at: Completed BAOPS-01-02-PLAN.md
+last_updated: "2026-07-21T10:46:02.236Z"
 last_activity: 2026-07-21
 last_activity_desc: Phase BAOPS-01 execution started
 progress:
   total_phases: 1
   completed_phases: 0
   total_plans: 11
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-07-20)
 ## Current Position
 
 Phase: BAOPS-01 (Harness Foundation) — EXECUTING
-Plan: 2 of 11
+Plan: 3 of 11
 Status: Executing Phase BAOPS-01
 Last activity: 2026-07-21 — Phase BAOPS-01 execution started
 
-Progress: [█░░░░░░░░░] 9%
+Progress: [██░░░░░░░░] 18%
 
 ## Performance Metrics
 
@@ -59,6 +59,7 @@ Progress: [█░░░░░░░░░] 9%
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase BAOPS-01 P01 | 4h 16m | 1 tasks | 4 files |
+| Phase BAOPS-01 P02 | 1h 17m | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ Recent decisions affecting current work:
 - [Phase BAOPS-01]: Normalized colorama as Windows-only. — Click and pytest PEP 508 markers include colorama only on Windows, and the user accepted this normalization.
 - [Phase BAOPS-01]: Scoped Linux x64 dependency approval to manylinux_2_17_x86_64. — The approved target is glibc-compatible manylinux, not musllinux.
 - [Phase BAOPS-01]: Kept installer network consent invocation-scoped. — Package approval is not persistent consent for future installer network access under D-05.
+- [Phase BAOPS-01]: Use CPython 3.14.6 for the canonical locked development environment because it matches the approved target artifacts.
+- [Phase BAOPS-01]: Keep the importable entrypoint behaviorally RED until Plan 01-03 implements the CLI-to-state path.
+- [Phase BAOPS-01]: Enforce LF checkout semantics for packaged defaults so canonical bytes survive Windows checkouts.
 
 ### Pending Todos
 
@@ -95,6 +99,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-07-21T09:17:24.629Z
-Stopped at: Completed BAOPS-01-01-PLAN.md
+Last session: 2026-07-21T10:46:02.225Z
+Stopped at: Completed BAOPS-01-02-PLAN.md
 Resume file: None
