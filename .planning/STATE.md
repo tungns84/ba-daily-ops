@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 01
 current_phase_name: Harness Foundation
 status: executing
-stopped_at: Completed BAOPS-01-06-PLAN.md
-last_updated: "2026-07-21T16:45:09.996Z"
+stopped_at: Completed BAOPS-01-07-PLAN.md
+last_updated: "2026-07-21T18:00:25.731Z"
 last_activity: 2026-07-21
 last_activity_desc: Phase BAOPS-01 execution started
 progress:
   total_phases: 1
   completed_phases: 0
   total_plans: 11
-  completed_plans: 6
+  completed_plans: 7
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-07-20)
 ## Current Position
 
 Phase: BAOPS-01 (Harness Foundation) — EXECUTING
-Plan: 7 of 11
+Plan: 8 of 11
 Status: Executing Phase BAOPS-01
 Last activity: 2026-07-21 — Phase BAOPS-01 execution started
 
-Progress: [██████░░░░] 55%
+Progress: [██████░░░░] 64%
 
 ## Performance Metrics
 
@@ -64,6 +64,7 @@ Progress: [██████░░░░] 55%
 | Phase BAOPS-01 P04 | 19 min | 2 tasks | 6 files |
 | Phase BAOPS-01 P05 | 24 min | 2 tasks | 6 files |
 | Phase BAOPS-01 P06 | 19 min | 3 tasks | 8 files |
+| Phase BAOPS-01 P07 | 63 min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,9 @@ Recent decisions affecting current work:
 - [Phase BAOPS-01]: Load only allowlisted, self-checked local Draft 2020-12 schemas and reject remote references.
 - [Phase BAOPS-01]: Sort state diagnostics by declared file order, JSON pointer, validator, and message.
 - [Phase BAOPS-01]: Report quarantine data only when evidence exists so established empty init envelopes remain byte-identical.
+- [Phase BAOPS-01]: Installer network consent remains invocation-scoped; only --yes or an approved offline wheelhouse authorizes dependency access.
+- [Phase BAOPS-01]: Active installer state is one allowlisted generation component, reverified under the install lock before atomic publication.
+- [Phase BAOPS-01]: Native POSIX and exact-minimum-host evidence remains assigned to Plans 01-09 through 01-11; local claims are limited to the current Windows host.
 
 ### Pending Todos
 
@@ -113,6 +117,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-07-21T16:45:09.987Z
-Stopped at: Completed BAOPS-01-06-PLAN.md
+Last session: 2026-07-21T18:00:25.721Z
+Stopped at: Completed BAOPS-01-07-PLAN.md
 Resume file: None
