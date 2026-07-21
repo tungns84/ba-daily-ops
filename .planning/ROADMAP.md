@@ -30,7 +30,7 @@ BA Daily Ops ships as a harness-first vertical MVP: deterministic `ba-tools` + `
   4. Every successful `ba-tools` command emits exactly one JSON object on stdout; errors emit JSON on stderr with exit code 2
   5. Vietnamese UTF-8 text round-trips through CLI I/O; all business paths resolve under `--repo-root` with traversal blocked
 
-**Plans**: 5/11 plans executed
+**Plans**: 6/11 plans executed
 
 Plans:
 **Wave 1**
@@ -52,7 +52,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 01-06-PLAN.md — Complete schema-backed init, repair, and invalid-state preservation
+- [x] 01-06-PLAN.md — Complete schema-backed init, repair, and invalid-state preservation
 - [ ] 01-07-PLAN.md — Install exact-version local generations through PowerShell 5.1 and POSIX launchers
 
 **Wave 6** *(blocked on Wave 5 completion)*
@@ -175,7 +175,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Harness Foundation | 5/11 | In Progress|  |
+| 1. Harness Foundation | 6/11 | In Progress|  |
 | 2. REQ-ID Spine & SRS Pair | 0/TBD | Not started | - |
 | 3. Executable Runner & Conductor | 0/TBD | Not started | - |
 | 4. Golden Path Artifacts (Light Tier) | 0/TBD | Not started | - |
