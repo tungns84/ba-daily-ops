@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 01
 current_phase_name: Harness Foundation
 status: executing
-stopped_at: Completed BAOPS-01-07-PLAN.md
-last_updated: "2026-07-21T18:00:25.731Z"
+stopped_at: Completed BAOPS-01-08-PLAN.md
+last_updated: "2026-07-21T18:27:58.651Z"
 last_activity: 2026-07-21
 last_activity_desc: Phase BAOPS-01 execution started
 progress:
   total_phases: 1
   completed_phases: 0
   total_plans: 11
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-07-20)
 ## Current Position
 
 Phase: BAOPS-01 (Harness Foundation) — EXECUTING
-Plan: 8 of 11
+Plan: 9 of 11
 Status: Executing Phase BAOPS-01
 Last activity: 2026-07-21 — Phase BAOPS-01 execution started
 
-Progress: [██████░░░░] 64%
+Progress: [███████░░░] 73%
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Progress: [██████░░░░] 64%
 | Phase BAOPS-01 P05 | 24 min | 2 tasks | 6 files |
 | Phase BAOPS-01 P06 | 19 min | 3 tasks | 8 files |
 | Phase BAOPS-01 P07 | 63 min | 2 tasks | 8 files |
+| Phase BAOPS-01 P08 | 18 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,10 @@ Recent decisions affecting current work:
 - [Phase BAOPS-01]: Installer network consent remains invocation-scoped; only --yes or an approved offline wheelhouse authorizes dependency access.
 - [Phase BAOPS-01]: Active installer state is one allowlisted generation component, reverified under the install lock before atomic publication.
 - [Phase BAOPS-01]: Native POSIX and exact-minimum-host evidence remains assigned to Plans 01-09 through 01-11; local claims are limited to the current Windows host.
+- [Phase BAOPS-01]: Validate doctor registry identity, dependency order, and acyclicity before any probe executes.
+- [Phase BAOPS-01]: Require the running interpreter to equal the contained active generation for installed-version health.
+- [Phase BAOPS-01]: Keep durable-state diagnostics independent from repository and install findings.
+- [Phase BAOPS-01]: Keep NFR-02 pending until native POSIX and exact-minimum-host evidence is available.
 
 ### Pending Todos
 
@@ -117,6 +122,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-07-21T18:00:25.721Z
-Stopped at: Completed BAOPS-01-07-PLAN.md
+Last session: 2026-07-21T18:27:58.642Z
+Stopped at: Completed BAOPS-01-08-PLAN.md
 Resume file: None
