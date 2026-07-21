@@ -14,6 +14,22 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
+def pytest_sessionstart() -> None:
+    """Keep explicit source paths stable when subprocesses change cwd."""
+
+    pythonpath = os.environ.get("PYTHONPATH")
+    if pythonpath is None:
+        return
+
+    entries = (
+        path if path.is_absolute() else (PROJECT_ROOT / path).resolve()
+        for value in pythonpath.split(os.pathsep)
+        if value
+        for path in (Path(value),)
+    )
+    os.environ["PYTHONPATH"] = os.pathsep.join(map(str, entries))
+
+
 @pytest.fixture
 def dev_python() -> Path:
     """Return and enforce the locked development interpreter."""
