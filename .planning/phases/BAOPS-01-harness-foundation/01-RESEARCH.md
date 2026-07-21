@@ -561,11 +561,13 @@ Production code must retain the lock object/context for the entire mutation, ass
    - What we know: official docs/source repositories and exact PyPI versions exist; the seam returned `SUS` because downloads were unavailable and some latest releases were recent. `[VERIFIED: package audit]`
    - What's unclear: whether the organization accepts those signals or requires internal mirrors/approved versions. `[VERIFIED: no policy in repository]`
    - Recommendation: add one blocking `checkpoint:human-verify` before writing/installing the final lock, then rerun the gate on all transitive packages. `[VERIFIED: package legitimacy protocol]`
+   - **RESOLVED IN PLANNING:** Blocking Plan 01-01 resolves binary-only runtime and development closures for every supported target, reruns every closure after an approved substitution, audits the normalized unions, and records the exact approved data contract before Plan 01-02 may create locks or install packages.
 
 2. **Where will minimum supported OS versions be exercised?**
    - What we know: the current machine provides one Windows environment; no local macOS 12 host or confirmed Windows 10/macOS 12 CI runner is present. Hosted “latest” runners do not by themselves prove minimum-version support. `[VERIFIED: environment audit]`
    - What's unclear: whether self-hosted/pilot machines or an external CI service will provide exact Windows 10 and macOS 12 smoke runs. `[VERIFIED: repository has no CI configuration]`
    - Recommendation: build reusable installer/CLI smoke scripts now, run ordinary Windows/macOS/Linux CI in Phase 1, and make exact-minimum-OS evidence a named manual/self-hosted acceptance checkpoint instead of claiming it from newer runners. `[VERIFIED: NFR-02 risk analysis]`
+   - **RESOLVED IN PLANNING:** Blocking Plan 01-11 (the exact-minimum evidence plan renumbered from the original 01-07 after scope splits) requires real Windows 10 with Windows PowerShell Desktop 5.1 and real macOS 12 evidence; Plan 01-10 separately requires an actual successful ordinary six-job CI run.
 
 ## Environment Availability
 
