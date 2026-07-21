@@ -292,11 +292,16 @@ def run_foundation_smoke(options: SmokeOptions) -> dict[str, Any]:
     guard = _network_guard(work_dir)
     host = collect_host_evidence()
     evidence: list[CommandEvidence] = []
+    installer_env = {**os.environ, "NO_COLOR": "1"}
+    if os.name == "nt":
+        installer_env["PY_PYTHON"] = (
+            f"{sys.version_info.major}.{sys.version_info.minor}"
+        )
 
     installer = run_command_bytes(
         _installer_command(repo, wheelhouse),
         cwd=repo,
-        env={**os.environ, "NO_COLOR": "1"},
+        env=installer_env,
         timeout=900,
     )
     evidence.append(_record("installer.offline", installer))

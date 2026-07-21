@@ -1,0 +1,125 @@
+name: foundation
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  foundation:
+    name: ${{ matrix.platform }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            python: "3.11"
+          - os: windows-latest
+            platform: windows
+            python: "3.14"
+          - os: macos-latest
+            platform: macos
+            python: "3.11"
+          - os: macos-latest
+            platform: macos
+            python: "3.14"
+          - os: ubuntu-latest
+            platform: linux
+            python: "3.11"
+          - os: ubuntu-latest
+            platform: linux
+            python: "3.14"
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Select exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: ${{ matrix.python }}
+          cache: ""
+
+      - name: Acquire approved wheels on Windows
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force '.ba-tools-runtime\dev-wheelhouse' | Out-Null
+          New-Item -ItemType Directory -Force '.ba-tools-runtime\runtime-wheelhouse' | Out-Null
+          python -m pip download --disable-pip-version-check --require-hashes --only-binary=:all: -r packages/ba-tools/requirements-dev.lock -d .ba-tools-runtime/dev-wheelhouse
+          python -m pip download --disable-pip-version-check --require-hashes --only-binary=:all: -r packages/ba-tools/requirements.lock -d .ba-tools-runtime/runtime-wheelhouse
+          python -m venv .ba-tools-runtime/dev
+          & ".\.ba-tools-runtime\dev\Scripts\python.exe" -m pip install --disable-pip-version-check --no-input --no-index --find-links .ba-tools-runtime/dev-wheelhouse --require-hashes --only-binary=:all: -r packages/ba-tools/requirements-dev.lock
+          & ".\.ba-tools-runtime\dev\Scripts\python.exe" -m pip install --disable-pip-version-check --no-input --no-index --no-deps --no-build-isolation packages/ba-tools
+
+      - name: Acquire approved wheels on POSIX
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .ba-tools-runtime/dev-wheelhouse .ba-tools-runtime/runtime-wheelhouse
+          python -m pip download --disable-pip-version-check --require-hashes --only-binary=:all: -r packages/ba-tools/requirements-dev.lock -d .ba-tools-runtime/dev-wheelhouse
+          python -m pip download --disable-pip-version-check --require-hashes --only-binary=:all: -r packages/ba-tools/requirements.lock -d .ba-tools-runtime/runtime-wheelhouse
+          python -m venv .ba-tools-runtime/dev
+          ./.ba-tools-runtime/dev/bin/python -m pip install --disable-pip-version-check --no-input --no-index --find-links .ba-tools-runtime/dev-wheelhouse --require-hashes --only-binary=:all: -r packages/ba-tools/requirements-dev.lock
+          ./.ba-tools-runtime/dev/bin/python -m pip install --disable-pip-version-check --no-input --no-index --no-deps --no-build-isolation packages/ba-tools
+
+      - name: Run locked quality gates on Windows
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:PYTHONPATH = 'packages/ba-tools/src'
+          & ".\.ba-tools-runtime\dev\Scripts\python.exe" -m ruff check packages/ba-tools/src packages/ba-tools/tests installer scripts
+          & ".\.ba-tools-runtime\dev\Scripts\python.exe" -m pytest packages/ba-tools/tests -q -m 'not online_install'
+
+      - name: Run locked quality gates on POSIX
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH='packages/ba-tools/src'
+          ./.ba-tools-runtime/dev/bin/python -m ruff check packages/ba-tools/src packages/ba-tools/tests installer scripts
+          ./.ba-tools-runtime/dev/bin/python -m pytest packages/ba-tools/tests -q -m 'not online_install'
+
+      - name: Run offline smoke with Windows PowerShell
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($PSVersionTable.PSEdition -ne 'Desktop' -or $PSVersionTable.PSVersion -lt [version]'5.1') {
+            throw 'Windows PowerShell Desktop 5.1 or newer is required.'
+          }
+          & powershell.exe -NoProfile -Command "if (`$PSVersionTable.PSEdition -ne 'Desktop' -or `$PSVersionTable.PSVersion -lt [version]'5.1') { exit 1 }"
+          if ($LASTEXITCODE -ne 0) {
+            throw 'powershell.exe is not Windows PowerShell Desktop 5.1 or newer.'
+          }
+          $work = Join-Path $env:RUNNER_TEMP 'ba smoke — Dự án có khoảng trắng'
+          $evidence = ".ba-tools-runtime\evidence\foundation-$($env:RUNNER_OS)-${{ matrix.python }}.json"
+          & ".\.ba-tools-runtime\dev\Scripts\python.exe" scripts/smoke_foundation.py --repo-source $env:GITHUB_WORKSPACE --work-dir $work --wheelhouse .ba-tools-runtime/runtime-wheelhouse --expected-platform windows --evidence-out $evidence
+
+      - name: Run offline smoke on POSIX
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -x install.sh
+          test -x installer/launcher-templates/ba-tools
+          ./.ba-tools-runtime/dev/bin/python -c "from pathlib import Path; assert all(b'\r' not in Path(path).read_bytes() for path in ('install.sh', 'installer/launcher-templates/ba-tools'))"
+          work="$RUNNER_TEMP/ba smoke — Dự án có khoảng trắng"
+          evidence=".ba-tools-runtime/evidence/foundation-${RUNNER_OS}-${{ matrix.python }}.json"
+          ./.ba-tools-runtime/dev/bin/python scripts/smoke_foundation.py --repo-source "$GITHUB_WORKSPACE" --work-dir "$work" --wheelhouse .ba-tools-runtime/runtime-wheelhouse --expected-platform "${{ matrix.platform }}" --evidence-out "$evidence"
+
+      - name: Upload redacted source evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: foundation-${{ matrix.platform }}-py${{ matrix.python }}-source-evidence
+          path: .ba-tools-runtime/evidence/*.json
+          if-no-files-found: error
+          retention-days: 7
