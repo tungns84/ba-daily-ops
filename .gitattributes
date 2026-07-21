@@ -1,1 +1,6 @@
+*.py text eol=lf
+*.sh text eol=lf
+*.json text eol=lf
+*.schema.json text eol=lf
+installer/launcher-templates/ba-tools text eol=lf
 packages/ba-tools/src/ba_tools/state/resources/defaults/*.json text eol=lf
