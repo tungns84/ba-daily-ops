@@ -1,11 +1,12 @@
 ---
 phase: BAOPS-01
 slug: harness-foundation
-status: draft
+status: approved
 surface: terminal
 shadcn_initialized: false
 preset: none
 created: 2026-07-21
+reviewed_at: 2026-07-21
 ---
 
 # Phase BAOPS-01 — UI Design Contract
@@ -236,18 +237,18 @@ Independent checks continue after a failure. No check, observed value, or remedi
 
 ## UI Considerations
 
-Applicable state considerations resolved: **8 covered, 0 backstop, 0 unresolved**.
+Probe coverage: **40/40 applicable element-state considerations resolved explicitly** across six confirmed terminal surfaces. Aggregated result: **8 covered categories, 0 backstop, 0 unresolved**.
 
 | Category | Element(s) | Status | Resolution / Reason |
 |----------|------------|--------|---------------------|
-| empty | `business_goals` list collection | ✅ covered | The Copywriting Contract defines the intentional empty-state meaning; canonical JSON uses `business_goals: []` without sample data |
-| loading | installer form; CLI command | ✅ covered | Installer shows four ordered stages; synchronous `ba-tools` stays silent until its single final JSON emission and never uses a spinner |
-| error | installer, launcher, CLI | ✅ covered | The Copywriting Contract and stream rules require a problem plus next action, stable code, safe details, and no traceback/absolute path |
-| populated | `doctor` check collection | ✅ covered | Every applicable check is emitted in stable registry order with status, observed value, and remediation |
-| partial | `doctor` checks; `.ba-ops/` state | ✅ covered | Dependency-blocked checks are `skipped`; partial init fails without mutation and points to explicit repair |
-| overflow | diagnostics and JSON static content | ✅ covered | No truncation, pagination, ellipsis, or fixed table width; host visual wrapping does not alter bytes |
-| zero-one-many | warnings, checks, details, remediation arrays | ✅ covered | Arrays remain arrays at every cardinality; machine consumers do not depend on singular/plural prose |
-| long-text | messages, paths, help, observed values | ✅ covered | Preserve full UTF-8 content, use repo-relative paths, natural wrap, and no semantic truncation |
+| empty | installer; CLI envelope; doctor checks; initialization state; business goals | ✅ covered | Empty collections remain JSON arrays; `business_goals: []` uses the Copywriting Contract's empty state; empty or EOF installer consent means No; mandatory doctor checks are never omitted |
+| loading | installer; CLI envelope; doctor checks; initialization state; business goals | ✅ covered | The installer shows four ordered stages; launchers and runtime commands emit no spinner, progress, or partial JSON and produce only the final envelope |
+| error | installer; CLI envelope; doctor checks; initialization state; business goals | ✅ covered | Failures use the Copywriting Contract's stable code, safe message, and remediation with no traceback or absolute path; installer failures add exactly one `Next:` action |
+| populated | CLI envelope; doctor checks; initialization state; business goals | ✅ covered | Doctor, init, goals, warning, detail, and remediation collections preserve every applicable item in deterministic schema order; no count or summary hides items |
+| partial | installer; CLI envelope; doctor checks; initialization state; business goals | ✅ covered | Partial init writes nothing and points to repair; skipped doctor checks name failed prerequisites; arrays preserve available items without inferred replacements |
+| overflow | installer; launcher; CLI envelope; doctor checks; initialization state; business goals | ✅ covered | Host terminals wrap naturally; output is never truncated, ellipsized, paginated, or hidden; JSON remains one physical line and commands are not split |
+| zero-one-many | CLI envelope; doctor checks; initialization state; business goals | ✅ covered | Collection fields remain arrays at every cardinality with no scalar special case; machine behavior never depends on singular or plural prose |
+| long-text | installer; launcher; CLI envelope; doctor checks; initialization state; business goals | ✅ covered | Full UTF-8 content and repo-relative paths are preserved; human prose wraps naturally without semantic truncation while JSON bytes remain unchanged |
 
 ---
 
@@ -276,11 +277,11 @@ Python package legitimacy is a separate dependency-supply-chain checkpoint in `0
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved 2026-07-21
