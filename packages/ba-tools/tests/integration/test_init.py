@@ -81,7 +81,6 @@ def test_fresh_init_creates_exact_files(temp_repo: Path, run_cli_bytes: RunCli) 
     assert payload["data"] == {
         "changed": True,
         "created": list(REQUIRED_STATE_FILES),
-        "quarantined": [],
     }
     assert {
         path.relative_to(temp_repo).as_posix()
@@ -109,7 +108,6 @@ def test_complete_init_is_byte_and_mtime_noop(
     assert _payload(second)["data"] == {
         "changed": False,
         "created": [],
-        "quarantined": [],
     }
     _assert_preserved(before, temp_repo)
 
@@ -152,7 +150,6 @@ def test_repair_creates_only_missing_files(
     assert _payload(process)["data"] == {
         "changed": True,
         "created": list(REQUIRED_STATE_FILES[1:]),
-        "quarantined": [],
     }
     assert (existing.read_bytes(), existing.stat().st_mtime_ns) == existing_before
     for relative in REQUIRED_STATE_FILES[1:]:

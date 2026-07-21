@@ -59,13 +59,15 @@ def init_command(ctx: click.Context, repair: bool) -> dict[str, object]:
         )
 
     result = run_init(resolve_repo_root(repo_root_text), repair=repair)
+    data: dict[str, object] = {
+        "changed": result.changed,
+        "created": list(result.created),
+    }
+    if result.quarantined:
+        data["quarantined"] = [asdict(record) for record in result.quarantined]
     return success_envelope(
         "init",
-        {
-            "changed": result.changed,
-            "created": list(result.created),
-            "quarantined": [asdict(record) for record in result.quarantined],
-        },
+        data,
     )
 
 
