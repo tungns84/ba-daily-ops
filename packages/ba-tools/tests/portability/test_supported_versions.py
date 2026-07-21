@@ -7,7 +7,6 @@ import pytest
 
 from ba_tools import doctor
 
-
 WindowsVersion = namedtuple("WindowsVersion", "major minor build")
 Uname = namedtuple("Uname", "sysname nodename release version machine")
 
@@ -27,6 +26,7 @@ def _os_observation(
             doctor.os,
             "uname",
             lambda: Uname("Darwin", "host", release, release, "arm64"),
+            raising=False,
         )
     return doctor._os_probe(None)
 
@@ -62,19 +62,20 @@ def test_below_minimum_versions_are_rejected(
 
 
 @pytest.mark.parametrize(
-    "version",
+    ("windows_version", "macos_version"),
     [
-        (10, 10, 12345),
-        (11, 0, 0),
-        (99, 100, 101),
+        ((10, 10, 12345), (12, 10, 12345)),
+        ((11, 0, 0), (13, 0, 0)),
+        ((99, 100, 101), (99, 100, 101)),
     ],
 )
 def test_newer_multi_digit_versions_are_supported(
     monkeypatch: pytest.MonkeyPatch,
-    version: tuple[int, int, int],
+    windows_version: tuple[int, int, int],
+    macos_version: tuple[int, int, int],
 ) -> None:
-    windows = _os_observation(monkeypatch, platform="win32", version=version)
-    macos = _os_observation(monkeypatch, platform="darwin", version=version)
+    windows = _os_observation(monkeypatch, platform="win32", version=windows_version)
+    macos = _os_observation(monkeypatch, platform="darwin", version=macos_version)
 
     assert windows.ok
     assert macos.ok

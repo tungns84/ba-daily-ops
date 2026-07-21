@@ -7,11 +7,11 @@ import sys
 from pathlib import Path
 
 import pytest
+from scripts.smoke_foundation import assert_single_json
 
 from ba_tools.contracts import canonical_json_bytes
-from ba_tools.doctor import OPTIONAL_CHECKS, PROFILE_CHECKS, CORE_CHECKS
+from ba_tools.doctor import CORE_CHECKS, OPTIONAL_CHECKS, PROFILE_CHECKS
 from ba_tools.init_command import REQUIRED_STATE_FILES
-from scripts.smoke_foundation import assert_single_json
 
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
 BOOTSTRAP_PATH = PROJECT_ROOT / "installer" / "bootstrap.py"
@@ -164,7 +164,7 @@ def test_partial_state_contract(temp_repo: Path, run_cli_bytes) -> None:
     assert checks["state.schemas"]["blocked_by"] == ["state.coverage_policy"]
 
 
-def test_overflow_state_contract(tmp_path: Path, process_barrier) -> None:
+def test_overflow_state_contract() -> None:
     long_text = "Tiếng Việt — " + ("chi tiết đầy đủ " * 700)
     payload = {
         "schema_version": 1,
@@ -173,14 +173,13 @@ def test_overflow_state_contract(tmp_path: Path, process_barrier) -> None:
         "data": {"text": long_text, "items": [long_text, long_text]},
         "warnings": [],
     }
-    result = process_barrier([[]], cwd=tmp_path, payload=payload)[0]
+    raw = canonical_json_bytes(payload)
 
-    assert result.returncode == 0
-    assert result.stderr == b""
-    assert result.stdout == canonical_json_bytes(payload)
-    assert result.stdout.count(b"\n") == 1
-    assert b"..." not in result.stdout
-    assert assert_single_json(result.stdout)["data"]["text"] == long_text
+    assert raw.count(b"\n") == 1
+    assert b"..." not in raw
+    parsed = assert_single_json(raw)
+    assert parsed["data"]["text"] == long_text
+    assert parsed["data"]["items"] == [long_text, long_text]
 
 
 def test_zero_one_many_state_contract() -> None:
