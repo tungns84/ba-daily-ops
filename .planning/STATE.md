@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 01
 current_phase_name: Harness Foundation
 status: executing
-stopped_at: Completed BAOPS-01-02-PLAN.md
-last_updated: "2026-07-21T10:46:02.236Z"
+stopped_at: Completed BAOPS-01-03-PLAN.md
+last_updated: "2026-07-21T11:23:41.605Z"
 last_activity: 2026-07-21
 last_activity_desc: Phase BAOPS-01 execution started
 progress:
   total_phases: 1
   completed_phases: 0
   total_plans: 11
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-07-20)
 ## Current Position
 
 Phase: BAOPS-01 (Harness Foundation) — EXECUTING
-Plan: 3 of 11
+Plan: 4 of 11
 Status: Executing Phase BAOPS-01
 Last activity: 2026-07-21 — Phase BAOPS-01 execution started
 
-Progress: [██░░░░░░░░] 18%
+Progress: [███░░░░░░░] 27%
 
 ## Performance Metrics
 
@@ -60,6 +60,7 @@ Progress: [██░░░░░░░░] 18%
 |------|----------|-------|-------|
 | Phase BAOPS-01 P01 | 4h 16m | 1 tasks | 4 files |
 | Phase BAOPS-01 P02 | 1h 17m | 3 tasks | 12 files |
+| Phase BAOPS-01 P03 | 24 min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,9 @@ Recent decisions affecting current work:
 - [Phase BAOPS-01]: Use CPython 3.14.6 for the canonical locked development environment because it matches the approved target artifacts.
 - [Phase BAOPS-01]: Keep the importable entrypoint behaviorally RED until Plan 01-03 implements the CLI-to-state path.
 - [Phase BAOPS-01]: Enforce LF checkout semantics for packaged defaults so canonical bytes survive Windows checkouts.
+- [Phase BAOPS-01]: Keep command callbacks emission-free and make entrypoint the only stream and exit boundary. — This guarantees one canonical JSON document on exactly one designated stream.
+- [Phase BAOPS-01]: Key the native workspace lock by resolved repository identity in private runtime storage. — This preserves cross-platform mutual exclusion without polluting durable state or deleting persistent POSIX lock files.
+- [Phase BAOPS-01]: Use exact packaged bytes as the Plan 01-03 state validity contract. — Schema-backed partial, repair, and invalid-state behavior remains assigned to Plan 01-06.
 
 ### Pending Todos
 
@@ -99,6 +103,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-07-21T10:46:02.225Z
-Stopped at: Completed BAOPS-01-02-PLAN.md
+Last session: 2026-07-21T11:23:41.594Z
+Stopped at: Completed BAOPS-01-03-PLAN.md
 Resume file: None

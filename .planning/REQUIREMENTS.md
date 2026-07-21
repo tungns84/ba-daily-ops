@@ -45,8 +45,8 @@ Requirements for initial release (light tier pilot + harness foundation). Each m
 - [ ] **FOUND-02**: `ba-tools doctor` kiểm tra Python, UTF-8, cấu trúc repo và dependency tùy chọn (BRD-019)
 - [x] **FOUND-03**: Installer một lệnh (Windows PowerShell + POSIX) không hard-code path máy (BRD-020)
 - [x] **FOUND-04**: `.ba-ops/` file-state khởi tạo với `config.json`, `coverage-policy.json`, `business-goals.json` (BRD-021, BRD-028)
-- [ ] **FOUND-05**: Mọi path nghiệp vụ resolve tương đối `--repo-root`; chống path traversal (NFR-009)
-- [ ] **FOUND-06**: Write operations dùng lock và atomic replace; crash không để canonical nửa ghi (NFR-010)
+- [x] **FOUND-05**: Mọi path nghiệp vụ resolve tương đối `--repo-root`; chống path traversal (NFR-009)
+- [x] **FOUND-06**: Write operations dùng lock và atomic replace; crash không để canonical nửa ghi (NFR-010)
 
 ### Traceability & Registry
 
@@ -143,8 +143,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FOUND-02 | Phase 1 | Pending |
 | FOUND-03 | Phase 1 | Complete |
 | FOUND-04 | Phase 1 | Complete |
-| FOUND-05 | Phase 1 | Pending |
-| FOUND-06 | Phase 1 | Pending |
+| FOUND-05 | Phase 1 | Complete |
+| FOUND-06 | Phase 1 | Complete |
 | TRACE-01 | Phase 2 | Pending |
 | TRACE-02 | Phase 2 | Pending |
 | TRACE-03 | Phase 5 | Pending |
