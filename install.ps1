@@ -22,7 +22,7 @@ $pythonCommand = $null
 $pythonPrefix = @()
 $py = Get-Command "py.exe" -ErrorAction SilentlyContinue
 if ($null -ne $py) {
-    & $py.Source -3 -c "import sys;raise SystemExit(0 if sys.version_info >= (3, 11) else 1)" 2>$null
+    & $py.Source -3 -c "import sys;raise SystemExit(0 if sys.version_info >= (3, 14) else 1)" 2>$null
     if ($LASTEXITCODE -eq 0) {
         $pythonCommand = $py.Source
         $pythonPrefix = @("-3")
