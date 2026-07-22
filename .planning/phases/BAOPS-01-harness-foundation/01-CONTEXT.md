@@ -1,12 +1,17 @@
 # Phase 1: Harness Foundation - Context
 
 **Gathered:** 2026-07-20
-**Status:** Ready for planning
+**Scope updated:** 2026-07-22 — see `01-SCOPE.md`
+**Status:** Ready for planning (current scope: Windows 10+ x64 + CPython 3.14)
 
 <domain>
 ## Phase Boundary
 
-Deliver a portable, local-first foundation that lets a BA bootstrap and validate a project workspace on Windows or POSIX: a project-local `ba-tools` installation, repo-root launchers, `doctor`, safe `init`/repair behavior, the initial `.ba-ops/` files, path containment, UTF-8 JSON I/O, and crash-safe writes.
+Deliver a local-first foundation that lets a BA bootstrap and validate a project workspace on **Windows 10+ x64 with CPython 3.14** (current release scope): a project-local `ba-tools` installation, repo-root Windows launcher, `doctor`, safe `init`/repair behavior, the initial `.ba-ops/` files, path containment, UTF-8 JSON I/O, and crash-safe writes.
+
+**Current scope (NFR-06):** Windows installer path, Windows doctor certification, one Windows/Python 3.14 CI job evidence.
+
+**Deferred (NFR-02 → Phase 7):** Python 3.11, macOS, Linux, POSIX launcher as *supported* path, six-job CI, exact minimum-host evidence. POSIX launchers and locks remain forward assets — not current support claims.
 
 REQ-ID registries, SRS authoring, workflow execution, artifact generation, trace/INDEX semantics, plugins, and team mode remain in later phases.
 
@@ -54,7 +59,8 @@ No discussed decision was delegated. The planner may choose unconstrained implem
 
 ### Product and phase contracts
 - `.planning/PROJECT.md` — product boundary, deterministic/agent split, portability, security, and CLI constraints.
-- `.planning/REQUIREMENTS.md` — Phase 1 requirements `FOUND-01` through `FOUND-06` and `NFR-02` through `NFR-05`.
+- `.planning/REQUIREMENTS.md` — Phase 1 requirements `FOUND-01` through `FOUND-06`, `NFR-06` (current scope), and `NFR-03` through `NFR-05`; `NFR-02` deferred Phase 7.
+- `.planning/phases/BAOPS-01-harness-foundation/01-SCOPE.md` — **authoritative** current vs deferred support matrix.
 - `.planning/ROADMAP.md` — Phase 1 goal and success criteria; apply decision D-03 when interpreting the literal `PATH` wording.
 - `docs/BRD-v1.0.md` — normative requirements for doctor, installer, file-state, CLI output, UTF-8, zero-network operation, path containment, locking, and atomic writes.
 - `docs/SRS-SPEC.md` — upstream canonical SRS contract; Phase 1 scaffolding must remain compatible with the schemas and deterministic behavior required in Phase 2.
@@ -98,7 +104,13 @@ No discussed decision was delegated. The planner may choose unconstrained implem
 <deferred>
 ## Deferred Ideas
 
-None — discussion stayed within phase scope.
+### Portability completion (Phase 7 / NFR-02)
+- Python 3.11 target re-enable (fix cp311 `typing-extensions` gap in approved closure)
+- macOS and Linux supported installer/doctor/CI evidence
+- Six-job CI matrix and exact minimum-host smoke (Windows 10 build-specific, macOS 12)
+- POSIX symlink test fixture fix for honest POSIX evidence
+
+Historical plans 01-01…01-09 SUMMARY bodies are not rewritten; `01-SCOPE.md` supersedes their support claims by dated annotation.
 
 </deferred>
 
@@ -106,3 +118,4 @@ None — discussion stayed within phase scope.
 
 *Phase: 1-Harness Foundation*
 *Context gathered: 2026-07-20*
+*Scope narrowed: 2026-07-22 (01-SCOPE.md)*

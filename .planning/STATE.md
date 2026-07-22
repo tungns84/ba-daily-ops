@@ -6,9 +6,9 @@ current_phase: 01
 current_phase_name: Harness Foundation
 status: executing
 stopped_at: Completed BAOPS-01-09-PLAN.md
-last_updated: "2026-07-21T19:01:07.741Z"
-last_activity: 2026-07-21
-last_activity_desc: Phase BAOPS-01 execution started
+last_updated: "2026-07-22T02:12:00.000Z"
+last_activity: 2026-07-22
+last_activity_desc: Scope narrowed to Windows 10+ x64 + CPython 3.14 (01-SCOPE.md)
 progress:
   total_phases: 1
   completed_phases: 0
@@ -101,7 +101,9 @@ Recent decisions affecting current work:
 - [Phase BAOPS-01]: Validate doctor registry identity, dependency order, and acyclicity before any probe executes.
 - [Phase BAOPS-01]: Require the running interpreter to equal the contained active generation for installed-version health.
 - [Phase BAOPS-01]: Keep durable-state diagnostics independent from repository and install findings.
-- [Phase BAOPS-01]: Keep NFR-02 pending until native POSIX and exact-minimum-host evidence is available.
+- [Phase BAOPS-01]: Current release scope is Windows 10+ x64 + CPython 3.14 only (NFR-06); multi-OS/Python 3.11/six-job CI/minimum-host evidence deferred to Phase 7 (NFR-02).
+- [Phase BAOPS-01]: Known deferred issues — cp311 approved closure missing typing-extensions; POSIX symlink test fixture resolves wrong interpreter.
+- [Phase BAOPS-01]: Plan 01-10 rescoped to one Windows/Python 3.14 CI job; Plan 01-11 is portability handoff — must not mark NFR-02 complete.
 - [Phase BAOPS-01]: Run the foundation smoke offline and invoke only generated launchers after installation.
 - [Phase BAOPS-01]: Bind Windows installer discovery to the selected matrix Python with invocation-scoped PY_PYTHON.
 - [Phase BAOPS-01]: Keep workflow source, remote CI conclusions, and exact-minimum-host evidence as separate claims owned by Plans 01-09, 01-10, and 01-11.
@@ -112,7 +114,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- REQUIREMENTS.md header lists 35 v1 IDs but 34 distinct requirement IDs exist — all 34 mapped
+- REQUIREMENTS.md tracks 35 v1 IDs (NFR-06 added 2026-07-22) — all mapped
 - Phase 6 has no v1 requirement mappings by design (v2 deferred)
 - draw.io headless CI on Linux may need research during Phase 6 planning
 
@@ -120,6 +122,9 @@ None yet.
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
+| Portability | Python 3.11, macOS, Linux, six-job CI, minimum-host evidence (NFR-02) | Phase 7 | 2026-07-22 scope decision |
+| Known gap | cp311 typing-extensions in approved closure | Fix Phase 7 | 2026-07-22 scope decision |
+| Known gap | POSIX symlink test fixture wrong interpreter | Fix Phase 7 | 2026-07-22 scope decision |
 | v2 | Standard tier (STD-01…04) | Planned Phase 6+ | Roadmap init |
 | v2 | Strict tier & plugins (STRICT-01…04) | Planned Phase 6+ | Roadmap init |
 | v2 | Team mode (TEAM-01…02) | Planned Phase 6+ | Roadmap init |

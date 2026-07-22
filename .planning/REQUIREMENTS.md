@@ -92,7 +92,8 @@ Requirements for initial release (light tier pilot + harness foundation). Each m
 ### Non-Functional
 
 - [ ] **NFR-01**: Verify/trace/index không gọi renderer/LLM hoàn tất ≤3s @ 200 REQ (NFR-001)
-- [ ] **NFR-02**: Core chạy Windows 10+, macOS 12+, Linux; Python 3.11+ (NFR-003)
+- [ ] **NFR-02**: Core chạy Windows 10+, macOS 12+, Linux; Python 3.11+ (NFR-003) — **deferred Phase 7**; POSIX/macOS/Linux code retained as forward assets, not current support
+- [ ] **NFR-06**: Current release scope: Windows 10+ x64 + CPython 3.14 only; installer, doctor, and CI evidence limited to this matrix (Phase 1)
 - [x] **NFR-03**: `ba-tools` zero-network — không HTTP/DNS/telemetry/LLM (NFR-009)
 - [x] **NFR-04**: Artifact và CLI output hỗ trợ UTF-8 tiếng Việt đầy đủ (NFR-008)
 - [x] **NFR-05**: Determinism boundary: CLI không tự suy đoán nghiệp vụ (NFR-006)
@@ -169,17 +170,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SKILL-02 | Phase 4 | Pending |
 | SKILL-03 | Phase 4 | Pending |
 | NFR-01 | Phase 7 | Pending |
-| NFR-02 | Phase 1 | Pending |
+| NFR-02 | Phase 7 | Pending |
+| NFR-06 | Phase 1 | Pending |
 | NFR-03 | Phase 1 | Complete |
 | NFR-04 | Phase 1 | Complete |
 | NFR-05 | Phase 1 | Complete |
 
 **Coverage:**
 
-- v1 requirements: 34 distinct IDs (header previously noted 35)
-- Mapped to phases: 34/34 ✓
+- v1 requirements: 35 distinct IDs (NFR-06 added 2026-07-22)
+- Mapped to phases: 35/35 ✓
 - Unmapped: 0
+
+## Known Deferred Issues (current scope)
+
+| Issue | Impact | Resolution phase |
+|-------|--------|------------------|
+| cp311 approved closure missing `typing-extensions` | Blocks Python 3.11 target re-enable | Phase 7 |
+| POSIX symlink test fixture resolves wrong interpreter | Blocks honest POSIX host/CI evidence | Phase 7 |
 
 ---
 *Requirements defined: 2026-07-20*
-*Last updated: 2026-07-20 after roadmap creation*
+*Last updated: 2026-07-22 — NFR-06 current scope; NFR-02 remapped Phase 7*

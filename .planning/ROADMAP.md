@@ -18,17 +18,21 @@ BA Daily Ops ships as a harness-first vertical MVP: deterministic `ba-tools` + `
 
 ### Phase 1: Harness Foundation
 
-**Goal**: BA can bootstrap a portable, healthy harness workspace on any supported OS
+**Goal**: BA can bootstrap a healthy harness workspace on **Windows 10+ x64 with CPython 3.14** (current release scope)
 **Mode:** mvp
 **Depends on**: Nothing (first phase)
-**Requirements**: FOUND-01, FOUND-02, FOUND-03, FOUND-04, FOUND-05, FOUND-06, NFR-02, NFR-03, NFR-04, NFR-05
+**Requirements**: FOUND-01, FOUND-02, FOUND-03, FOUND-04, FOUND-05, FOUND-06, NFR-06, NFR-03, NFR-04, NFR-05
+**Scope record**: `.planning/phases/BAOPS-01-harness-foundation/01-SCOPE.md`
 **Success Criteria** (what must be TRUE):
 
-  1. BA runs one-command installer (PowerShell or POSIX) without machine-specific paths and gets a working `ba-tools` on PATH
-  2. `ba-tools doctor` reports pass/fail for Python, UTF-8, repo layout, and optional dependencies with actionable fixes
+  1. BA runs the Windows one-command installer (`install.ps1`) without machine-specific paths and gets a working repo-root `ba-tools.ps1` launcher on CPython 3.14
+  2. `ba-tools doctor` reports pass/fail for Python 3.14, UTF-8, repo layout, and optional dependencies with actionable fixes on Windows 10+
   3. `ba-tools init` creates `.ba-ops/` with `config.json`, `coverage-policy.json`, and `business-goals.json`
   4. Every successful `ba-tools` command emits exactly one JSON object on stdout; errors emit JSON on stderr with exit code 2
   5. Vietnamese UTF-8 text round-trips through CLI I/O; all business paths resolve under `--repo-root` with traversal blocked
+  6. One successful `foundation` GitHub Actions job on `windows-latest` + Python 3.14 evidences the locked offline path (Plan 01-10)
+
+**Deferred (Phase 7 / Plan 01-11 handoff — does not block Phase 1 current scope):** Python 3.11, macOS, Linux, six-job CI matrix, exact minimum-host evidence (NFR-02). Known gaps: cp311 `typing-extensions` in approved closure; POSIX symlink test fixture.
 
 **Plans**: 9/11 plans executed
 
@@ -65,11 +69,11 @@ Plans:
 
 **Wave 8** *(blocked on Wave 7 completion)*
 
-- [ ] 01-10-PLAN.md — Verify an actual successful exact-commit six-job CI run
+- [ ] 01-10-PLAN.md — Verify an actual successful exact-commit Windows/Python 3.14 CI run (one job)
 
 **Wave 9** *(blocked on Wave 8 completion)*
 
-- [ ] 01-11-PLAN.md — Verify exact Windows 10/PowerShell 5.1 and macOS 12 hosts
+- [ ] 01-11-PLAN.md — Record portability handoff and deferred multi-OS / minimum-host evidence (NFR-02 not complete)
 
 ### Phase 2: REQ-ID Spine & SRS Pair
 
@@ -157,12 +161,12 @@ Plans:
 **Goal**: Pilot BA can ship a UC handoff meeting conformance, performance, and stakeholder expectations
 **Mode:** mvp
 **Depends on**: Phase 6
-**Requirements**: COV-03, NFR-01
+**Requirements**: COV-03, NFR-01, NFR-02
 **Success Criteria** (what must be TRUE):
 
   1. Conformance mutation corpus (≥50 seeded cases) detects ≥49/50 injected defects with zero false-green blockers
   2. `ba-tools verify`, trace, and index complete in ≤3s at 200 REQs without invoking renderer or LLM
-  3. Full installer and 3-OS CI matrix pass on Windows (primary), macOS, and Linux
+  3. Full installer and 3-OS CI matrix pass on Windows (primary), macOS, and Linux; Python 3.11+ and exact minimum-host evidence complete NFR-02
   4. Pilot KPI instrumentation reports golden path command count, RTM completeness, and citation integrity per UC
   5. Stakeholder readout distinguishes hash/trace integrity from semantic correctness — human sign-off expectations are explicit
 

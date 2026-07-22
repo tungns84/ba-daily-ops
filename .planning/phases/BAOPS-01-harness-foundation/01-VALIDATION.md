@@ -5,14 +5,28 @@ status: draft
 nyquist_compliant: false
 wave_0_complete: false
 created: 2026-07-21
-revised: 2026-07-21
+revised: 2026-07-22
+scope_record: .planning/phases/BAOPS-01-harness-foundation/01-SCOPE.md
 ---
 
 # Phase BAOPS-01 — Validation Strategy
 
 > Per-phase validation contract for feedback sampling during execution.
+> **Scope (2026-07-22):** Current gates prove **Windows 10+ x64 + CPython 3.14** (NFR-06). Deferred gates prove **multi-OS / Python 3.11+ / minimum-host** (NFR-02, Phase 7). See `01-SCOPE.md`.
 
 ---
+
+## Current vs Deferred Gates
+
+| Gate | Requirement | Status | Owner |
+|------|-------------|--------|-------|
+| Local suite + Ruff via `DEV_PYTHON` | FOUND-*, NFR-03…05 | **Current** | Plans 01-02…01-09 |
+| One-job `foundation` CI (windows-latest + 3.14) | NFR-06 | **Current** | Plan 01-10 |
+| Portability handoff record | NFR-02 **not complete** | **Current (honest close)** | Plan 01-11 |
+| Six-job CI matrix (3 OS × 2 Python) | NFR-02 | **Deferred** | Phase 7 |
+| Exact Windows 10 / macOS 12 host smoke | NFR-02 | **Deferred** | Phase 7 |
+| cp311 `typing-extensions` closure fix | NFR-02 | **Deferred** | Phase 7 |
+| POSIX symlink test fixture fix | NFR-02 | **Deferred** | Phase 7 |
 
 ## Locked Development Interpreter Contract
 
@@ -50,7 +64,8 @@ The prerequisite host interpreter may run the standard-library lock comparator o
 - **After every plan wave:** `DEV_PYTHON -m pytest packages/ba-tools/tests -q -m "not online_install"`
 - **After installer-affecting waves:** `DEV_PYTHON -m pytest packages/ba-tools/tests/integration/test_installer.py -q`, followed by cached/offline smoke through generated launchers
 - **After workflow edits:** `DEV_PYTHON -m pytest packages/ba-tools/tests/contract/test_foundation_workflow.py -q`
-- **Before `/gsd-verify-work`:** full suite and Ruff through `DEV_PYTHON`, a successful exact-commit six-job GitHub Actions run, and exact Windows 10/macOS 12 host evidence
+- **Before `/gsd-verify-work` (current scope):** full suite and Ruff through `DEV_PYTHON`, a successful exact-commit **one-job** Windows/Python 3.14 GitHub Actions run (Plan 01-10), and approved portability handoff record (Plan 01-11)
+- **Before Phase 7 NFR-02 close (deferred):** six-job CI or equivalent, exact Windows 10/macOS 12 host evidence, cp311 closure fix, POSIX fixture fix
 - **Max local feedback latency:** under 20 seconds for quick/static sampling; approximately 180 seconds for the full local gate
 
 ---
@@ -78,8 +93,8 @@ The prerequisite host interpreter may run the standard-library lock comparator o
 | 01-08-02 | 08 | 6 | FOUND-02 | T-BAOPS-01-08-NET | Doctor passes integration, contract, and zero-network checks | `DEV_PYTHON -m pytest packages/ba-tools/tests/integration/test_doctor.py packages/ba-tools/tests/contract/test_cli_io.py packages/ba-tools/tests/security/test_zero_network.py -q` | ❌ W0 |
 | 01-09-01 | 09 | 7 | NFR-02, NFR-04 | T-BAOPS-01-09-NET | Exact version floors and eight UI categories pass in offline smoke | `DEV_PYTHON -m pytest packages/ba-tools/tests/portability/test_supported_versions.py packages/ba-tools/tests/portability/test_terminal_states.py -q` | ❌ W0 |
 | 01-09-02 | 09 | 7 | all phase IDs | T-BAOPS-01-09-CI | Workflow source is read-only, pinned, complete, locked, and PowerShell 5.1-aware | `DEV_PYTHON -m pytest packages/ba-tools/tests/contract/test_foundation_workflow.py -q` | ❌ W0 |
-| 01-10-01 | 10 | 8 | all phase IDs | T-BAOPS-01-10-EVIDENCE | Exact-commit six-job remote run concludes success | `gh run view FOUNDATION_RUN_ID --json headSha,conclusion,event,jobs,url,startedTime,updatedAt` | ✅ external CLI |
-| 01-11-01 | 11 | 9 | FOUND-03, NFR-02, NFR-04 | T-BAOPS-01-11-EVIDENCE | Real minimum hosts pass; Windows uses Desktop PowerShell 5.1 | `DEV_PYTHON -m pytest packages/ba-tools/tests/portability/test_supported_versions.py packages/ba-tools/tests/portability/test_terminal_states.py -q` plus host evidence | ❌ W0 |
+| 01-10-01 | 10 | 8 | NFR-06 | T-BAOPS-01-10-EVIDENCE | Exact-commit one-job Windows/3.14 remote run concludes success | `gh run view FOUNDATION_RUN_ID --json headSha,conclusion,event,jobs,url,startedTime,updatedAt` | ✅ external CLI |
+| 01-11-01 | 11 | 9 | FOUND-03, NFR-04 | T-BAOPS-01-11-EVIDENCE | Portability handoff recorded; NFR-02 remains pending | Review `01-11-SUMMARY.md` `Portability Handoff` section | ❌ W0 |
 
 *Status legend: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -99,17 +114,28 @@ The prerequisite host interpreter may run the standard-library lock comparator o
 - [ ] `packages/ba-tools/tests/portability/test_utf8.py`, `test_supported_versions.py`, `test_terminal_states.py`
 - [ ] `packages/ba-tools/tests/integration/test_init.py`, `test_doctor.py`, `test_installer.py`
 - [ ] `packages/ba-tools/tests/unit/test_defaults.py`
-- [ ] `.github/workflows/foundation.yml` — explicit read-only permissions and six-job ordinary matrix
+- [ ] `.github/workflows/foundation.yml` — explicit read-only permissions and **current-scope** one-job Windows/Python 3.14 matrix (multi-OS expansion deferred Phase 7)
 
 ---
 
 ## Manual and External Evidence Gates
 
+### Current scope (Phase 1 close)
+
 | Behavior | Requirement | Why External/Human | Test Instructions |
 |---|---|---|---|
 | All target dependency closures are legitimate and approved | FOUND-03, NFR-03 | Legitimacy seam returned `SUS`; organizational approval is human | Review direct/transitive binary-only target tables and approve exact substitutions/closures before lock creation |
-| Actual ordinary CI matrix completed successfully | all phase IDs | Workflow YAML and local tests cannot prove remote jobs ran | Inspect exact-commit `foundation` run and all six job/step conclusions via `gh` and run URL |
-| Exact Windows 10 + PowerShell 5.1 and macOS 12 hosts pass | NFR-02 | Hosted latest runners do not prove exact minimum versions | Run `smoke_foundation.py` on real hosts and attach redacted host/version/hash/stream evidence |
+| Actual **one-job** Windows/Python 3.14 CI completed successfully | NFR-06 | Workflow YAML and local tests cannot prove remote job ran | Inspect exact-commit `foundation` run and single job/step conclusion via `gh` and run URL |
+| Portability handoff approved | NFR-02 pending | Prevents false multi-OS completion claim | Review `01-11-SUMMARY.md` — NFR-02 deferred to Phase 7 |
+
+### Deferred (Phase 7 — NFR-02)
+
+| Behavior | Requirement | Why Deferred | Notes |
+|---|---|---|---|
+| Six-job ordinary CI matrix | NFR-02 | Scope narrowed 2026-07-22 | Re-enable with workflow expansion |
+| Exact Windows 10 + PowerShell 5.1 and macOS 12 hosts | NFR-02 | No current host evidence | `smoke_foundation.py` on real hosts |
+| cp311 typing-extensions in approved closure | NFR-02 | Known gap | Fix before 3.11 targets |
+| POSIX symlink test fixture | NFR-02 | Wrong interpreter resolution | Fix before POSIX CI/host evidence |
 
 ---
 
@@ -121,8 +147,9 @@ The prerequisite host interpreter may run the standard-library lock comparator o
 - [ ] Fast workflow-source feedback is under 20 seconds
 - [ ] Full local suite remains the final local gate
 - [ ] Read-only workflow permissions are source-tested
-- [ ] Actual six-job remote evidence is approved
-- [ ] Exact-minimum host evidence includes Windows PowerShell Desktop 5.1
-- [ ] `nyquist_compliant: true` set after all gates pass
+- [ ] Actual **one-job** remote evidence is approved (NFR-06)
+- [ ] Portability handoff record approved — NFR-02 **not** marked complete
+- [ ] Deferred gates documented for Phase 7 (six-job CI, minimum hosts, cp311, POSIX fixture)
+- [ ] `nyquist_compliant: true` set after **current-scope** gates pass
 
 **Approval:** pending

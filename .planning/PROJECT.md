@@ -34,7 +34,7 @@ Sản phẩm **harness-first**: không cạnh tranh tốc độ soạn nháp v�
 - [ ] SRS artifact pair: `requirements.json` canonical + `SRS.md` derived view theo SRS-SPEC
 - [ ] Golden path một lệnh `$ba-deliver run --uc <slug>` với resume (US-03, US-07)
 - [ ] Phát hiện drift qua hash; chống false-green RTM (OBJ-4, OBJ-6, BRD-026)
-- [ ] Portability: resolve path theo `--repo-root`, zero-network cho `ba-tools`, UTF-8 tiếng Việt (NFR-003…009)
+- [ ] Portability: resolve path theo `--repo-root`, zero-network cho `ba-tools`, UTF-8 tiếng Việt (NFR-003…009); phạm vi phát hành hiện tại Windows 10+ x64 + CPython 3.14 (NFR-06)
 
 ### Out of Scope
 
@@ -62,7 +62,8 @@ Sản phẩm **harness-first**: không cạnh tranh tốc độ soạn nháp v�
 
 ## Constraints
 
-- **Tech stack**: Python 3.11+ (`ba-tools`), chat skill runtime, Node 18+ (Mermaid/draw.io khi cần), git 2.x+
+- **Tech stack**: Python 3.14 (`ba-tools`, current scope — see `01-SCOPE.md`), chat skill runtime, Node 18+ (Mermaid/draw.io khi cần), git 2.x+
+- **Current platform scope**: Windows 10+ x64 + CPython 3.14 only for Phase 1 release; Python 3.11, macOS, Linux, six-job CI, and minimum-host evidence deferred to Phase 7 (NFR-02)
 - **Determinism boundary**: `ba-tools` chỉ provable ops; agent sở hữu judgement/authoring
 - **CLI contract**: success → 1 JSON UTF-8 stdout; error → JSON stderr + exit 2
 - **Render**: draw.io Desktop CLI (BPMN), `@mermaid-js/mermaid-cli` (Mermaid) — cấm screenshot fallback
@@ -99,4 +100,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-20 after initialization*
+*Last updated: 2026-07-22 — Windows 10+ / CPython 3.14 current scope (01-SCOPE.md); multi-OS deferred Phase 7*
