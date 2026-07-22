@@ -163,6 +163,7 @@ def test_approved_offline_install_never_prompts_or_uses_network(
         "_version_surfaces",
         lambda *_args: (VERSION, VERSION, VERSION, {"data": {"version": VERSION}}),
     )
+    monkeypatch.setattr(bootstrap, "_verified_current", lambda *_args: None)
     monkeypatch.setattr(bootstrap, "_publish_verified_candidate", lambda *_args: "candidate")
 
     options = bootstrap.InstallerOptions(yes=False, offline=wheelhouse)
@@ -258,8 +259,9 @@ def test_windows_powershell_51_install_path() -> None:
         timeout=30,
     )
     combined = (result.stdout + result.stderr).decode("utf-8")
-    assert result.returncode != 0
-    assert "Network consent is required" in combined
+    assert result.returncode == 0
+    assert "BA Tools is ready." in combined
+    assert "[FAIL]" not in combined
     assert "pwsh" not in POWERSHELL_INSTALLER.read_text(encoding="utf-8").lower()
 
 
@@ -273,8 +275,10 @@ def test_powershell7_remains_compatible() -> None:
         check=False,
         timeout=30,
     )
-    assert result.returncode != 0
-    assert b"Network consent is required" in result.stdout + result.stderr
+    combined = result.stdout + result.stderr
+    assert result.returncode == 0
+    assert b"BA Tools is ready." in combined
+    assert b"[FAIL]" not in combined
 
 
 def test_posix_wrapper_is_quoted_posix_sh() -> None:
