@@ -436,6 +436,73 @@ def test_missing_python_or_git_fails_before_packages(
     assert calls == []
 
 
+def test_stale_install_lock_is_recovered(tmp_path: Path) -> None:
+    bootstrap = load_bootstrap()
+    runtime = tmp_path / ".ba-tools-runtime"
+    runtime.mkdir(parents=True)
+    lock_path = runtime / "install.lock"
+    lock_path.write_text("424242\n", encoding="ascii")
+
+    assert bootstrap._is_stale_install_lock(lock_path)
+    with bootstrap._install_lock(runtime):
+        assert lock_path.exists()
+    assert not lock_path.exists()
+
+
+def test_windows_installer_requires_python_314_for_py_launcher() -> None:
+    source = POWERSHELL_INSTALLER.read_text(encoding="utf-8")
+    assert "sys.version_info >= (3, 14)" in source
+    assert "sys.version_info >= (3, 11)" not in source
+
+
+def test_posix_launcher_resolves_generation_under_envs_root(tmp_path: Path) -> None:
+    source = POSIX_LAUNCHER.read_text(encoding="utf-8")
+    assert "envs_root=$(CDPATH= cd" in source
+    assert "generation_root=$(CDPATH= cd" in source
+    assert 'case "$generation_root" in' in source
+
+    repo = tmp_path / "repo"
+    runtime = repo / ".ba-tools-runtime"
+    envs = runtime / "envs"
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    envs.mkdir(parents=True)
+    redirect = envs / "escape"
+    try:
+        redirect.symlink_to(outside, target_is_directory=True)
+    except OSError as error:
+        if os.name != "nt":
+            pytest.skip(f"symbolic-link capability unavailable: {error}")
+        result = subprocess.run(
+            ["cmd.exe", "/d", "/c", "mklink", "/J", str(redirect), str(outside)],
+            capture_output=True,
+            check=False,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode != 0:
+            pytest.skip("junction creation unavailable")
+
+    (runtime / "current-env.txt").write_text("escape\n", encoding="utf-8", newline="\n")
+    shutil.copytree(PROJECT_ROOT / "installer", repo / "installer")
+    load_bootstrap().publish_launchers(repo)
+    launcher = repo / "ba-tools"
+    shell = shutil.which("sh")
+    if shell is None:
+        pytest.skip("POSIX shell is unavailable")
+    result = subprocess.run(
+        [shell, str(launcher), "--version"],
+        cwd=tmp_path,
+        capture_output=True,
+        check=False,
+        timeout=20,
+    )
+    assert result.returncode == 2
+    assert result.stdout == b""
+    payload = parse_document(result.stderr)
+    assert payload["error"]["code"] == "LAUNCHER_NOT_READY"
+
+
 def test_concurrent_activation_never_publishes_unverified_generation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

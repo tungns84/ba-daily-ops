@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
 import hashlib
 import json
 import os
@@ -462,6 +463,65 @@ def publish_launchers(repo_root: Path) -> bool:
     return changed_windows or changed_posix
 
 
+def _read_lock_owner(lock_path: Path) -> int | None:
+    try:
+        text = lock_path.read_text(encoding="ascii").strip()
+        pid = int(text)
+        return pid if pid > 0 else None
+    except (OSError, ValueError):
+        return None
+
+
+def _probe_pid_liveness(pid: int) -> bool:
+    """Return True when the lock owner is definitely dead."""
+
+    if pid <= 0:
+        return False
+    if os.name == "nt":
+        process_query_limited_information = 0x1000
+        error_invalid_parameter = 87
+        still_active = 259
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.OpenProcess.argtypes = [ctypes.c_ulong, ctypes.c_bool, ctypes.c_ulong]
+        kernel32.OpenProcess.restype = ctypes.c_void_p
+        kernel32.GetExitCodeProcess.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_ulong)]
+        kernel32.GetExitCodeProcess.restype = ctypes.c_bool
+        kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+        kernel32.CloseHandle.restype = ctypes.c_bool
+        handle = kernel32.OpenProcess(process_query_limited_information, False, pid)
+        if not handle:
+            error = ctypes.get_last_error()
+            if error == error_invalid_parameter:
+                return True
+            return False
+        try:
+            exit_code = ctypes.c_ulong()
+            if not kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+                return False
+            return exit_code.value != still_active
+        finally:
+            kernel32.CloseHandle(handle)
+
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return True
+    except (PermissionError, OSError):
+        return False
+    return False
+
+
+def _is_stale_install_lock(lock_path: Path) -> bool:
+    pid = _read_lock_owner(lock_path)
+    if pid is None:
+        try:
+            age = time.monotonic() - lock_path.stat().st_mtime
+        except OSError:
+            return False
+        return age > 2.0
+    return _probe_pid_liveness(pid)
+
+
 @contextmanager
 def _install_lock(runtime: Path) -> Iterator[None]:
     runtime.mkdir(parents=True, exist_ok=True)
@@ -472,6 +532,9 @@ def _install_lock(runtime: Path) -> Iterator[None]:
         try:
             descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
         except FileExistsError:
+            if _is_stale_install_lock(lock_path):
+                lock_path.unlink(missing_ok=True)
+                continue
             if time.monotonic() >= deadline:
                 raise InstallerError(
                     "Another installer did not finish in time.",
