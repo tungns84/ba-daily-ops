@@ -54,7 +54,7 @@ def test_no_job_elevates_permissions() -> None:
     assert "self-hosted" not in source
 
 
-def test_workflow_matrix_has_six_required_jobs() -> None:
+def test_workflow_matrix_has_one_windows_python314_job() -> None:
     source = _source()
     include, separator, _steps = source.partition("    steps:\n")
     assert separator
@@ -67,14 +67,7 @@ def test_workflow_matrix_has_six_required_jobs() -> None:
         )
     )
 
-    assert rows == {
-        ("windows-latest", "windows", "3.11"),
-        ("windows-latest", "windows", "3.14"),
-        ("macos-latest", "macos", "3.11"),
-        ("macos-latest", "macos", "3.14"),
-        ("ubuntu-latest", "linux", "3.11"),
-        ("ubuntu-latest", "linux", "3.14"),
-    }
+    assert rows == {("windows-latest", "windows", "3.14")}
     assert "runs-on: ${{ matrix.os }}" in source
     assert "python-version: ${{ matrix.python }}" in source
 
@@ -100,7 +93,7 @@ def test_jobs_use_locked_development_interpreter() -> None:
     assert "--no-deps --no-build-isolation" in source
     assert "--no-index --find-links" in source
     assert source.count(r".\.ba-tools-runtime\dev\Scripts\python.exe") >= 4
-    assert source.count("./.ba-tools-runtime/dev/bin/python") >= 4
+    assert "./.ba-tools-runtime/dev/bin/python" not in source
     assert "-m pytest packages/ba-tools/tests -q -m 'not online_install'" in source
     assert "-m ruff check packages/ba-tools/src packages/ba-tools/tests installer scripts" in source
 
@@ -108,7 +101,7 @@ def test_jobs_use_locked_development_interpreter() -> None:
 def test_jobs_run_offline_smoke() -> None:
     source = _source()
 
-    assert source.count("scripts/smoke_foundation.py") == 2
+    assert source.count("scripts/smoke_foundation.py") == 1
     assert "--repo-source" in source
     assert "--work-dir" in source
     assert "--wheelhouse" in source
@@ -122,15 +115,14 @@ def test_jobs_run_offline_smoke() -> None:
 
 def test_windows_job_uses_powershell_51() -> None:
     source = _source()
-    windows_steps = [
-        section for section in source.split("      - name: ") if "runner.os == 'Windows'" in section
+    powershell_steps = [
+        section for section in source.split("      - name: ") if "shell: powershell" in section
     ]
 
-    assert windows_steps
-    assert any("shell: powershell" in section for section in windows_steps)
-    assert any("$PSVersionTable.PSEdition -ne 'Desktop'" in section for section in windows_steps)
-    assert any("[version]'5.1'" in section for section in windows_steps)
-    assert any("powershell.exe" in section for section in windows_steps)
+    assert powershell_steps
+    assert any("$PSVersionTable.PSEdition -ne 'Desktop'" in section for section in powershell_steps)
+    assert any("[version]'5.1'" in section for section in powershell_steps)
+    assert any("powershell.exe" in section for section in powershell_steps)
     assert "windows-2019" not in source
     assert "macos-12" not in source
 
