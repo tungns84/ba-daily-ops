@@ -14,12 +14,17 @@ from ba_tools.errors import BaToolsError
 def _command_name(arguments: list[str]) -> str:
     if "--version" in arguments:
         return "version"
-    if "init" in arguments:
-        return "init"
-    if "doctor" in arguments:
-        return "doctor"
     if not arguments or "--help" in arguments:
         return "help"
+    idx = 0
+    while idx < len(arguments):
+        token = arguments[idx]
+        if token in {"--repo-root", "--repair", "--all"}:
+            idx += 2 if token == "--repo-root" else 1
+            continue
+        if token in {"init", "doctor"}:
+            return token
+        idx += 1
     return "unknown"
 
 

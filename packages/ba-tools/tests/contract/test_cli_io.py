@@ -171,6 +171,14 @@ def test_concurrent_process_outputs_are_independent(
     assert sum(payload["data"].get("changed") is False for payload in payloads) == 1  # type: ignore[union-attr]
 
 
+def test_command_name_ignores_substrings_in_paths() -> None:
+    from ba_tools.__main__ import _command_name
+
+    assert _command_name(["--repo-root", r"D:\projects\init-toolkit", "doctor"]) == "doctor"
+    assert _command_name(["--repo-root", r"D:\projects\doctor-notes", "init"]) == "init"
+    assert _command_name(["--not-an-option"]) == "unknown"
+
+
 def test_unexpected_error_is_redacted(
     temp_repo: Path,
     inject_cli_fault: Callable[..., subprocess.CompletedProcess[bytes]],
