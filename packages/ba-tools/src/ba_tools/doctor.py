@@ -320,19 +320,23 @@ def _os_probe(_context: DoctorContext) -> ProbeObservation:
         )
         release = ".".join(map(str, version))
         supported = version is not None and version >= (10, 0, 0)
+        remediation = () if supported else ("Use Windows 10 or newer.",)
     elif sys.platform == "darwin":
         system = "Darwin"
         release = os.uname().release
         version = _version_tuple(release)
-        supported = version is not None and version >= (12, 0, 0)
+        supported = False
+        remediation = ("Current release scope supports Windows 10+ only.",)
     elif sys.platform.startswith("linux"):
         system = "Linux"
         release = os.uname().release
-        supported = True
+        supported = False
+        remediation = ("Current release scope supports Windows 10+ only.",)
     else:
         system = sys.platform
         release = ""
         supported = False
+        remediation = ("Use Windows 10 or newer.",)
     return ProbeObservation(
         ok=supported,
         summary=(
@@ -341,25 +345,23 @@ def _os_probe(_context: DoctorContext) -> ProbeObservation:
             else "The operating system is unsupported."
         ),
         observed={"system": system, "release": release},
-        remediation=()
-        if supported
-        else ("Use Windows 10+, macOS 12+, or a supported Linux distribution.",),
+        remediation=remediation,
     )
 
 
 def _python_probe(_context: DoctorContext) -> ProbeObservation:
     version = sys.version_info[:3]
-    supported = version >= (3, 11, 0)
+    supported = version >= (3, 14, 0)
     rendered = ".".join(map(str, version))
     return ProbeObservation(
         ok=supported,
         summary="Python meets the supported version floor."
         if supported
-        else "Python 3.11 or newer is required.",
-        observed={"version": rendered, "minimum": "3.11"},
+        else "Python 3.14 or newer is required.",
+        observed={"version": rendered, "minimum": "3.14"},
         remediation=()
         if supported
-        else ("Install Python 3.11 or newer, then rerun the repository installer.",),
+        else ("Install Python 3.14 or newer, then rerun the repository installer.",),
     )
 
 

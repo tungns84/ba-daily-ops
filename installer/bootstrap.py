@@ -129,9 +129,9 @@ def _run(
 def discover_prerequisites() -> PrerequisiteResult:
     """Find compatible host tools without installing or modifying them."""
 
-    if sys.version_info < (3, 11):
+    if sys.version_info < (3, 14):
         raise InstallerError(
-            "Python 3.11 or newer is required.",
+            "Python 3.14 or newer is required.",
             "Install Python from https://www.python.org/downloads/ and "
             "rerun the installer after Python is available.",
         )

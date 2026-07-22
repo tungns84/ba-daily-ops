@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "ba-tools"
 version = "0.1.0"
 description = "Deterministic local harness tools for BA Daily Ops"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 dependencies = [
   "click==8.4.2",
   "filelock==3.29.6",

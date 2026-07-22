@@ -33,7 +33,7 @@ if ($null -eq $pythonCommand) {
     foreach ($name in @("python3.exe", "python.exe")) {
         $candidate = Get-Command $name -ErrorAction SilentlyContinue
         if ($null -ne $candidate) {
-            & $candidate.Source -c "import sys;raise SystemExit(0 if sys.version_info >= (3, 11) else 1)" 2>$null
+            & $candidate.Source -c "import sys;raise SystemExit(0 if sys.version_info >= (3, 14) else 1)" 2>$null
             if ($LASTEXITCODE -eq 0) {
                 $pythonCommand = $candidate.Source
                 break
@@ -43,7 +43,7 @@ if ($null -eq $pythonCommand) {
 }
 
 if ($null -eq $pythonCommand) {
-    [Console]::Error.WriteLine("[FAIL] Checking prerequisites: Python 3.11 or newer is required.")
+    [Console]::Error.WriteLine("[FAIL] Checking prerequisites: Python 3.14 or newer is required.")
     [Console]::Error.WriteLine("    Next: Install Python from https://www.python.org/downloads/windows/, then rerun the installer after Python is available.")
     exit 1
 }

@@ -429,9 +429,9 @@ def test_missing_python_or_git_fails_before_packages(
     calls: list[list[str]] = []
     monkeypatch.setattr(bootstrap, "_run", lambda command, **_kwargs: calls.append(command))
     monkeypatch.setattr(bootstrap.shutil, "which", lambda _name: None)
-    monkeypatch.setattr(bootstrap.sys, "version_info", (3, 10))
+    monkeypatch.setattr(bootstrap.sys, "version_info", (3, 13))
 
-    with pytest.raises(bootstrap.InstallerError, match="Python 3.11 or newer is required"):
+    with pytest.raises(bootstrap.InstallerError, match="Python 3.14 or newer is required"):
         bootstrap.discover_prerequisites()
     assert calls == []
 
