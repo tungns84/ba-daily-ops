@@ -251,7 +251,7 @@ def test_windows_powershell_51_install_path() -> None:
     assert tuple(map(int, version.split(".")[:2])) >= (5, 1)
 
     result = subprocess.run(
-        ["powershell.exe", "-NoProfile", "-File", str(POWERSHELL_INSTALLER)],
+        ["powershell.exe", "-NoProfile", "-File", str(POWERSHELL_INSTALLER), "--yes"],
         cwd=PROJECT_ROOT,
         stdin=subprocess.DEVNULL,
         capture_output=True,
@@ -268,7 +268,7 @@ def test_windows_powershell_51_install_path() -> None:
 @pytest.mark.skipif(shutil.which("pwsh") is None, reason="PowerShell 7 is optional")
 def test_powershell7_remains_compatible() -> None:
     result = subprocess.run(
-        ["pwsh", "-NoProfile", "-File", str(POWERSHELL_INSTALLER)],
+        ["pwsh", "-NoProfile", "-File", str(POWERSHELL_INSTALLER), "--yes"],
         cwd=PROJECT_ROOT,
         stdin=subprocess.DEVNULL,
         capture_output=True,
