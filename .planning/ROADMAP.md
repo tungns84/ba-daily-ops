@@ -34,7 +34,7 @@ BA Daily Ops ships as a harness-first vertical MVP: deterministic `ba-tools` + `
 
 **Deferred (Phase 7 / Plan 01-11 handoff — does not block Phase 1 current scope):** Python 3.11, macOS, Linux, six-job CI matrix, exact minimum-host evidence (NFR-02). Known gaps: cp311 `typing-extensions` in approved closure; POSIX symlink test fixture.
 
-**Plans**: 9/11 plans executed
+**Plans**: 11/11 plans executed
 
 Plans:
 **Wave 1**
@@ -69,11 +69,11 @@ Plans:
 
 **Wave 8** *(blocked on Wave 7 completion)*
 
-- [ ] 01-10-PLAN.md — Verify an actual successful exact-commit Windows/Python 3.14 CI run (one job)
+- [x] 01-10-PLAN.md — Verify an actual successful exact-commit Windows/Python 3.14 CI run (one job)
 
 **Wave 9** *(blocked on Wave 8 completion)*
 
-- [ ] 01-11-PLAN.md — Record portability handoff and deferred multi-OS / minimum-host evidence (NFR-02 not complete)
+- [x] 01-11-PLAN.md — Record portability handoff and deferred multi-OS / minimum-host evidence (NFR-02 not complete)
 
 ### Phase 2: REQ-ID Spine & SRS Pair
 
@@ -179,7 +179,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Harness Foundation | 9/11 | In Progress|  |
+| 1. Harness Foundation | 11/11 | Ready for verification |  |
 | 2. REQ-ID Spine & SRS Pair | 0/TBD | Not started | - |
 | 3. Executable Runner & Conductor | 0/TBD | Not started | - |
 | 4. Golden Path Artifacts (Light Tier) | 0/TBD | Not started | - |
