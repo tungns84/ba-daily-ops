@@ -14,7 +14,13 @@ case $generation in
     ""|"."|".."|*[!A-Za-z0-9._-]*) launcher_not_ready ;;
 esac
 
-python=$repo_root/.ba-tools-runtime/envs/$generation/bin/python
+envs_root=$(CDPATH= cd "$repo_root/.ba-tools-runtime/envs" && pwd -P) || launcher_not_ready
+generation_root=$(CDPATH= cd "$envs_root/$generation" 2>/dev/null && pwd -P) || launcher_not_ready
+case "$generation_root" in
+    "$envs_root"/*) ;;
+    *) launcher_not_ready ;;
+esac
+python=$generation_root/bin/python
 [ -f "$python" ] && [ -x "$python" ] || launcher_not_ready
 
 exec "$python" -X utf8 -m ba_tools --repo-root "$repo_root" "$@"
